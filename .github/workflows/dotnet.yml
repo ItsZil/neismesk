@@ -18,6 +18,7 @@ jobs:
 
     - name: Restore dependencies
       run: npm install
+      working-directory: ./ClientApp
 
     - name: Build and Test
       run: dotnet build
