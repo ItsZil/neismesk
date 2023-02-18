@@ -1,4 +1,4 @@
-name: Build and Test
+name: Test Build
 
 on:
   pull_request:
@@ -20,5 +20,5 @@ jobs:
       run: npm install
       working-directory: ./ClientApp
 
-    - name: Build and Test
+    - name: Build
       run: dotnet build
