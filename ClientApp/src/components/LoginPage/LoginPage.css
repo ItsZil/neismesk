@@ -33,7 +33,7 @@ button {
     border-radius: 5px;
 }
 
-.forgotPasswordButton, p {
+.forgotPasswordButton, .noAccount {
     color: rgb(240, 240, 240);
 }
 
