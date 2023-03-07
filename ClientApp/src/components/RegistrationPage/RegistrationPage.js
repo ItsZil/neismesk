@@ -1,8 +1,7 @@
 import React, {useState } from 'react';
 import './RegistrationPage.css'
 
-export const RegistrationPage = (props) => {
-    //render() {
+export const RegistrationPage = () => {
         
         const [name, setName] = useState('');
         const [surname, setSurname] = useState('');
@@ -12,6 +11,23 @@ export const RegistrationPage = (props) => {
         
         const handleSubmit  = () => {
             console.log(name,surname,email,password,confirmPassword);
+            const requestOptions = {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    name: name,
+                    surname: surname,
+                    password: password,
+                    email: email,
+                }),
+                
+            };
+            fetch("registracijosEndPointCia", requestOptions)
+                .then((response) => response.text())
+                .then((data) => {
+                   
+    
+                })
         }
 
         return (
@@ -38,10 +54,9 @@ export const RegistrationPage = (props) => {
                         <button onClick={()=>handleSubmit()} type='submit'>Registruotis</button>
                     </div>
                     <div className='returnToLogin'>
-                        <a href="" className='returnToLoginButton' >Grįžti į prisijungimą</a>
+                        <a href="/login" className='returnToLoginButton' >Grįžti į prisijungimą</a>
                     </div>
                 </div>
             </div>
         )
-    //}
 }
