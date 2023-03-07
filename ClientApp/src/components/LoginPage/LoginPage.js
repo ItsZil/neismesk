@@ -1,14 +1,28 @@
 import React, { useState } from 'react';
 import './LoginPage.css'
 
-export const LoginPage = (props) => {
+export const LoginPage = () => {
 
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
 
     const handleSubmit = () => {
-        console.log(email, password);
+        const requestOptions = {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+                password: password,
+                email: email
+            }),
+        };
+        fetch("LoginEndpointasCia", requestOptions)
+            .then((response) => response.text())
+            .then((data) => {
+               
+            })
     }
+
+
 
     return (
         <div className='outerBox'>

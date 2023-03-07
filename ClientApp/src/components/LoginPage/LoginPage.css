@@ -42,7 +42,7 @@ button {
     margin-bottom: 10%;
 }
 
-.forgotPasswordButton, .noAccount, .boxLabel {
+.forgotPasswordButton, .noAccount, .boxLabel, .loginButton, .registerButton {
     display: flex;
     justify-content: center;
 }
@@ -52,16 +52,12 @@ button {
     margin: auto;
     margin-top: 5%;
     margin-bottom: 1%;
-    display: flex;
-    justify-content: center;
 }
 
 .registerButton {
     width: 40%;
     margin: auto;
     margin-top: 5%;
-    display: flex;
-    justify-content: center;
 }
 
 hr {
