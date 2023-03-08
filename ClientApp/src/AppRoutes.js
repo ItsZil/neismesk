@@ -1,7 +1,7 @@
 import { Counter } from "./components/Counter";
 import { FetchData } from "./components/FetchData";
 import { Home } from "./components/Home";
-import { RegistrationPage } from "./components/RegistrationPage/RegistrationPage";
+import RegistrationPage from "./components/RegistrationPage/RegistrationPage";
 import { DatabaseDemo } from "./components/DatabaseDemo";
 
 const AppRoutes = [

@@ -41,3 +41,7 @@ button {
     color:white;
     margin-bottom: 10%;
 }
+
+.warningText {
+    color: rgb(255, 22, 22);
+}
