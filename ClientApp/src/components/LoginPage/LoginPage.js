@@ -29,7 +29,7 @@ export const LoginPage = () => {
             <div className='innerBox'>
                 <h2 className='boxLabel'>Prisijungimas</h2>
                 <div className='inputWrapper'>
-                    <input type='text' name='email' id='email' value={email} onChange={(e) => setEmail(e.target.value)} placeholder='El. paštas'></input>
+                    <input type='email' name='email' id='email' value={email} onChange={(e) => setEmail(e.target.value)} placeholder='El. paštas'></input>
                 </div>
                 <div className='inputWrapper'>
                     <input type="password" name='password' id='password' value={password} onChange={(e) => setPassword(e.target.value)} placeholder='Slaptažodis'></input>
