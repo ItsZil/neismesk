@@ -9,8 +9,6 @@ namespace neismesk
 
             // Add services to the container.
 
-            builder.Services.AddControllersWithViews();
-
             builder.Services.AddCors(options =>
             {
                 options.AddPolicy("MyPolicy",
@@ -22,6 +20,7 @@ namespace neismesk
                     });
             });
 
+            builder.Services.AddControllersWithViews();
 
             var app = builder.Build();
 

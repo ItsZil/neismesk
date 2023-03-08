@@ -18,9 +18,12 @@ namespace neismesk.Controllers
         }
 
         [HttpPost]
-        [EnableCors("MyPolicy")]
         public async Task<IActionResult> Register([FromBody] RegistrationViewModel registration)
         {
+            Response.Headers.Add("Access-Control-Allow-Origin", "*");
+            Response.Headers.Add("Access-Control-Allow-Headers", "*");
+            Response.Headers.Add("Access-Control-Allow-Methods", "*");
+            Response.Headers.Add("Access-Control-Allow-Credentials", "true");
             bool success = await _database.SaveData("INSERT INTO User (name, surname, email, encrypted_password) VALUES (@name, @surname, @email, @password)", registration);
 
             if (success)
