@@ -13,13 +13,15 @@ namespace neismesk
 
             builder.Services.AddCors(options =>
             {
-                options.AddPolicy("AllowAnyOrigin", builder =>
-                {
-                    builder.AllowAnyOrigin()
-                        .AllowAnyHeader()
-                        .AllowAnyMethod();
-                });
+                options.AddPolicy("MyPolicy",
+                    builder =>
+                    {
+                        builder.WithOrigins("https://localhost:44486")
+                               .AllowAnyMethod()
+                               .AllowAnyHeader();
+                    });
             });
+
 
             var app = builder.Build();
 
@@ -30,11 +32,7 @@ namespace neismesk
                 app.UseHsts();
             }
 
-            app.UseCors(x => x
-                    .AllowAnyMethod()
-                    .AllowAnyHeader()
-                    .SetIsOriginAllowed(origin => true) // allow any origin
-                    .AllowCredentials()); // allow credentials
+            app.UseCors("MyPolicy");
             app.UseHttpsRedirection();
             app.UseStaticFiles();
             app.UseRouting();
