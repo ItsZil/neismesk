@@ -22,7 +22,7 @@ export const RegistrationPage = () => {
                 }),
                 
             };
-            fetch("/registration/register", requestOptions)
+            fetch("https://localhost:7185/registration/register", requestOptions)
                 .then((response) => response.text())
                 .then((data) => {
                     console.log(data)
