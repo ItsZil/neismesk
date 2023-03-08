@@ -1,12 +1,11 @@
 import { Counter } from "./components/Counter";
 import { FetchData } from "./components/FetchData";
 import { Home } from "./components/Home";
-<<<<<<< HEAD
 import { DatabaseDemo } from "./components/DatabaseDemo";
+
+// User authentication
 import { LoginPage } from "./components/LoginPage/LoginPage";
-=======
 import { RegistrationPage } from "./components/RegistrationPage/RegistrationPage";
->>>>>>> frontend/registration-page
 
 const AppRoutes = [
   {

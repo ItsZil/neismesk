@@ -22,11 +22,10 @@ export const RegistrationPage = () => {
                 }),
                 
             };
-            fetch("registracijosEndPointCia", requestOptions)
+            fetch("/registration/register", requestOptions)
                 .then((response) => response.text())
                 .then((data) => {
-                   
-    
+                    console.log(data)
                 })
         }
 

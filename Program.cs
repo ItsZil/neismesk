@@ -11,6 +11,16 @@ namespace neismesk
 
             builder.Services.AddControllersWithViews();
 
+            builder.Services.AddCors(options =>
+            {
+                options.AddPolicy("AllowAnyOrigin", builder =>
+                {
+                    builder.AllowAnyOrigin()
+                        .AllowAnyHeader()
+                        .AllowAnyMethod();
+                });
+            });
+
             var app = builder.Build();
 
             // Configure the HTTP request pipeline.
@@ -20,6 +30,8 @@ namespace neismesk
                 app.UseHsts();
             }
 
+            app.UseCors();
+            //app.UseCors("AllowAnyOrigin");
             app.UseHttpsRedirection();
             app.UseStaticFiles();
             app.UseRouting();
