@@ -27,6 +27,11 @@ namespace neismesk.Utilities
 
         private readonly string _connectionString;
 
+        public DatabaseAccess()
+        {
+            _connectionString = Environment.GetEnvironmentVariable("DATABASE_CONN_STRING");
+        }
+
         public DatabaseAccess(string connectionString)
         {
             _connectionString = connectionString;
