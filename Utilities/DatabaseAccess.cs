@@ -74,7 +74,6 @@ namespace neismesk.Utilities
                 }
                 result.Add(row);
             }
-
             return result;
         }
 
@@ -106,14 +105,24 @@ namespace neismesk.Utilities
         /// <typeparam name="U">Type of parameter object</typeparam>
         /// <param name="sql">SQL statement to execute</param>
         /// <param name="parameters">Object containing parameter values</param>
-        public async Task SaveData<U>(string sql, U parameters)
+        public async Task<bool> SaveData<U>(string sql, U parameters)
         {
-            using MySqlConnection connection = GetConnection();
-            using MySqlCommand command = new MySqlCommand(sql, connection);
-            AddParameters(command, parameters);
-            
-            await connection.OpenAsync();
-            await command.ExecuteNonQueryAsync();
+            try
+            {
+                using MySqlConnection connection = GetConnection();
+                using MySqlCommand command = new MySqlCommand(sql, connection);
+                AddParameters(command, parameters);
+
+                await connection.OpenAsync();
+                await command.ExecuteNonQueryAsync();
+
+                return true;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+                return false;
+            }
         }
 
         /// <summary>
