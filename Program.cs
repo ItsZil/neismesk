@@ -9,6 +9,17 @@ namespace neismesk
 
             // Add services to the container.
 
+            //builder.Services.AddCors(options =>
+            //{
+            //    options.AddPolicy("MyPolicy",
+            //        builder =>
+            //        {
+            //            builder.WithOrigins("https://localhost:44486")
+            //                   .AllowAnyMethod()
+            //                   .AllowAnyHeader();
+            //        });
+            //});
+
             builder.Services.AddControllersWithViews();
 
             var app = builder.Build();
@@ -20,10 +31,10 @@ namespace neismesk
                 app.UseHsts();
             }
 
+            app.UseCors("MyPolicy");
             app.UseHttpsRedirection();
             app.UseStaticFiles();
             app.UseRouting();
-
 
             app.MapControllerRoute(
                 name: "default",

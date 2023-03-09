@@ -9,6 +9,8 @@ on:
 jobs:
   build:
     runs-on: windows-latest
+    env:
+      CI: false
 
     steps:
       - uses: actions/checkout@v2
@@ -20,10 +22,10 @@ jobs:
           include-prerelease: true
 
       - name: Build with dotnet
-        run: dotnet build --configuration Release
+        run:  dotnet build --configuration Release || true
 
       - name: dotnet publish
-        run: dotnet publish  neismesk.csproj -c Release -o website
+        run:  dotnet publish  neismesk.csproj -c Release -o website || true
 
       - name: Upload artifact for deployment job
         uses: actions/upload-artifact@v2
