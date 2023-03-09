@@ -3,6 +3,7 @@ import { FetchData } from "./components/FetchData";
 import { Home } from "./components/Home";
 import RegistrationPage from "./components/RegistrationPage/RegistrationPage";
 import { DatabaseDemo } from "./components/DatabaseDemo";
+import { LoginPage } from "./components/LoginPage/LoginPage";
 
 const AppRoutes = [
   {
@@ -16,7 +17,7 @@ const AppRoutes = [
   {
     path: '/fetch-data',
     element: <FetchData />
-    },
+  },
   {
     path: '/databasedemo',
     element: <DatabaseDemo />
@@ -24,6 +25,9 @@ const AppRoutes = [
   {
     path: '/registration',
     element: <RegistrationPage />
+  },
+    path: '/login',
+    element: <LoginPage />
   }
 ];
 
