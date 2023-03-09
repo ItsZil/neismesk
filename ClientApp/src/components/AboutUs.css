@@ -1,0 +1,49 @@
+.welcome
+{
+    margin-top: 40px;
+    font-family: serif;
+    font-size: 38px;
+    font-style: italic;
+}
+h1
+{
+    font-family: 'Times New Roman', Times, serif;
+    font-size: 70px;
+    font-style: italic;
+}
+.sentence1
+{
+    margin-top: 60px;
+    font-family: 'Times New Roman', Times, serif;
+    font-size: 25px;
+    font-style: italic;
+}
+.options
+{
+    margin-top: 60px;
+    display: flex;
+}
+.firstOption
+{
+    float: left;
+    height: auto;
+    flex: 1;
+    margin-right: 100px;
+}
+.secondOption
+{
+    float: left;
+    height: auto;
+    flex: 1;
+    margin-right: 100px;
+}
+.thirdOption
+{
+    float: right;
+    height: auto;
+    flex: 1;
+}
+.optionTitle
+{
+    font-style: italic;
+}

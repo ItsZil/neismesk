@@ -1,6 +1,7 @@
 import { Counter } from "./components/Counter";
 import { FetchData } from "./components/FetchData";
 import { Home } from "./components/Home";
+import { AboutUs } from "./components/AboutUs";
 import { DatabaseDemo } from "./components/DatabaseDemo";
 
 // User authentication
@@ -18,6 +19,10 @@ const AppRoutes = [
   {
     path: '/fetch-data',
     element: <FetchData />
+  },
+  {
+    path: '/about-us',
+    element: <AboutUs />
   },
   {
     path: '/databasedemo',
