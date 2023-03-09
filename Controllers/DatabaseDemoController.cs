@@ -10,19 +10,18 @@ namespace neismesk.Controllers
     [Route("[controller]")]
     public class DatabaseDemoController : ControllerBase
     {
-        private readonly DatabaseAccess _dataAccess;
+        private readonly DatabaseAccess _database;
 
         public DatabaseDemoController()
         {
-            string connectionString = Environment.GetEnvironmentVariable("DATABASE_CONN_STRING");
-            _dataAccess = new DatabaseAccess(connectionString);
+            _database = new DatabaseAccess();
         }
 
         [HttpGet]
         public async Task<JsonResult> Get()
         {
             string sql = "SELECT courier_id, delivery_price FROM Courier";
-            var dataTable = await _dataAccess.LoadData(sql);
+            var dataTable = await _database.LoadData(sql);
 
             var couriers = new List<object>();
             foreach (DataRow row in dataTable.Rows)
