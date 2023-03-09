@@ -1,6 +1,7 @@
 import { Counter } from "./components/Counter";
 import { FetchData } from "./components/FetchData";
 import { Home } from "./components/Home";
+import RegistrationPage from "./components/RegistrationPage/RegistrationPage";
 import { DatabaseDemo } from "./components/DatabaseDemo";
 import { LoginPage } from "./components/LoginPage/LoginPage";
 
@@ -22,6 +23,9 @@ const AppRoutes = [
     element: <DatabaseDemo />
   },
   {
+    path: '/registration',
+    element: <RegistrationPage />
+  },
     path: '/login',
     element: <LoginPage />
   }
