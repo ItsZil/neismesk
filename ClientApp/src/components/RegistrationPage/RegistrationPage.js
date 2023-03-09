@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router';
 import './RegistrationPage.css'
 
 const RegistrationPage = () => {
@@ -10,11 +11,12 @@ const RegistrationPage = () => {
     const [confirmPassword, setConfirmPassword] = useState('');
     const [message, setMessage] = useState('');
     const [matchMessage, setMatchMessage] = useState('');
+    const navigate = useNavigate();
 
     const onChange = (e) => {
         let password = e.target.value;
         setPassword(password);
-        if (password.length >= 8 && /^(?=.*\d)(?=.*[!@#$%^&*])(?=.*[a-z])(?=.*[A-Z]).{8,}$/.test(password)){
+        if (password.length >= 8 && /^(?=.*\d)(?=.*[!@#$%^&*])(?=.*[a-z])(?=.*[A-Z]).{8,}$/.test(password)) {
             setMessage("");
         }
         else {
@@ -23,8 +25,8 @@ const RegistrationPage = () => {
     }
 
     function checkFields() {
-        if (password == confirmPassword){
-            if (name == '' || surname == '' || email == ''){
+        if (password == confirmPassword) {
+            if (name == '' || surname == '' || email == '') {
                 setMessage('Reikia užpildyti visus laukus!');
                 return false;
             }
@@ -51,11 +53,17 @@ const RegistrationPage = () => {
                     email: email,
                 }),
             };
-            fetch("https://localhost:7185/registration/register", requestOptions)
-                .then((response) => response.text())
-                .then((data) => {
-                    console.log(data)
+            fetch("api/registration/register", requestOptions)
+                .then(response => {
+                    if (response.status == 200) {
+                        alert("Sėkmingai prisiregistravote!");
+                        navigate("/login");
+                    }
+                    else {
+                        alert("Įvyko klaida, susisiekite su administratoriumi!");
+                    }
                 })
+
         }
     }
 
@@ -84,7 +92,7 @@ const RegistrationPage = () => {
                     <button onClick={() => handleSubmit()} type='submit'>Registruotis</button>
                 </div>
                 <div className='returnToLogin'>
-                    <a href="/login" className='returnToLoginButton'>Grįžti į prisijungimą</a>
+                    <a href="/" className='returnToLoginButton'>Grįžti į prisijungimą</a>
                 </div>
             </div>
         </div>

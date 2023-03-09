@@ -65,3 +65,8 @@ hr {
     margin-bottom: 10%;
     border: white solid 1px;
 }
+
+.redirect, .redirect:hover {
+    text-decoration: none;
+    color:black;
+}

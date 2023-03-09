@@ -8,7 +8,7 @@ import { LoginPage } from "./components/LoginPage/LoginPage";
 import RegistrationPage from "./components/RegistrationPage/RegistrationPage";
 const AppRoutes = [
   {
-    index: true,
+    //index: true, //nustato startini page'a
     element: <Home />
   },
   {
@@ -25,6 +25,11 @@ const AppRoutes = [
   },
   {
     path: '/login',
+    element: <LoginPage />
+  },
+  ,
+  {
+    index: true,
     element: <LoginPage />
   },
   {

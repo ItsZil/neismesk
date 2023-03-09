@@ -6,8 +6,8 @@ using Microsoft.AspNetCore.Cors;
 namespace neismesk.Controllers
 {
     [ApiController]
-    [Route("[controller]")]
-    [EnableCors("MyPolicy")]
+    [Route("api/[controller]")]
+    //[EnableCors("MyPolicy")]
     public class RegistrationController : ControllerBase
     {
         private readonly DatabaseAccess _database;
@@ -17,13 +17,14 @@ namespace neismesk.Controllers
             _database = new DatabaseAccess();
         }
 
-        [HttpPost]
-        public async Task<IActionResult> Register([FromBody] RegistrationViewModel registration)
+        // TODO: make proper response
+        [HttpPost("register")]
+        public async Task<IActionResult> Register(RegistrationViewModel registration)
         {
-            Response.Headers.Add("Access-Control-Allow-Origin", "*");
-            Response.Headers.Add("Access-Control-Allow-Headers", "*");
-            Response.Headers.Add("Access-Control-Allow-Methods", "*");
-            Response.Headers.Add("Access-Control-Allow-Credentials", "true");
+            //Response.Headers.Add("Access-Control-Allow-Origin", "*");
+            //Response.Headers.Add("Access-Control-Allow-Headers", "*");
+            //Response.Headers.Add("Access-Control-Allow-Methods", "*");
+            //Response.Headers.Add("Access-Control-Allow-Credentials", "true");
             bool success = await _database.SaveData("INSERT INTO User (name, surname, email, encrypted_password) VALUES (@name, @surname, @email, @password)", registration);
 
             if (success)

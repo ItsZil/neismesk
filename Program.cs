@@ -9,16 +9,16 @@ namespace neismesk
 
             // Add services to the container.
 
-            builder.Services.AddCors(options =>
-            {
-                options.AddPolicy("MyPolicy",
-                    builder =>
-                    {
-                        builder.WithOrigins("https://localhost:44486")
-                               .AllowAnyMethod()
-                               .AllowAnyHeader();
-                    });
-            });
+            //builder.Services.AddCors(options =>
+            //{
+            //    options.AddPolicy("MyPolicy",
+            //        builder =>
+            //        {
+            //            builder.WithOrigins("https://localhost:44486")
+            //                   .AllowAnyMethod()
+            //                   .AllowAnyHeader();
+            //        });
+            //});
 
             builder.Services.AddControllersWithViews();
 

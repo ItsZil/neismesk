@@ -43,7 +43,7 @@ export const LoginPage = () => {
                 <hr></hr>
                 <div className='register'>
                     <p className='noAccount'>Neturite paskyros?</p>
-                    <button className='registerButton'>Registruotis</button>
+                    <button className='registerButton'><a className='redirect' href='\registration'>Registruotis</a></button>
                 </div>
             </div>
         </div>
