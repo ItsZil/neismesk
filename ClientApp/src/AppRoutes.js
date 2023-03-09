@@ -27,7 +27,6 @@ const AppRoutes = [
     path: '/login',
     element: <LoginPage />
   },
-  ,
   {
     index: true,
     element: <LoginPage />
