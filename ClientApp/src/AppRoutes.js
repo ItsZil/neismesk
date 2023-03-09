@@ -5,8 +5,7 @@ import { DatabaseDemo } from "./components/DatabaseDemo";
 
 // User authentication
 import { LoginPage } from "./components/LoginPage/LoginPage";
-import { RegistrationPage } from "./components/RegistrationPage/RegistrationPage";
-
+import RegistrationPage from "./components/RegistrationPage/RegistrationPage";
 const AppRoutes = [
   {
     index: true,
