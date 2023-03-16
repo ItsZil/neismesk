@@ -3,6 +3,7 @@ import { FetchData } from "./components/FetchData";
 import { Home } from "./components/Home";
 import { AboutUs } from "./components/AboutUs";
 import { DatabaseDemo } from "./components/DatabaseDemo";
+import ForgotPasswordPage from "./components/ForgotPasswordPage/ForgotPasswordPage";
 
 // User authentication
 import { LoginPage } from "./components/LoginPage/LoginPage";
@@ -39,6 +40,10 @@ const AppRoutes = [
   {
     path: '/registration',
     element: <RegistrationPage />
+  },
+   {
+    path: '/forgotpassword',
+    element: <ForgotPasswordPage />
   }
 ];
 
