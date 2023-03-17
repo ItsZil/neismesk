@@ -1,3 +1,7 @@
+using Microsoft.AspNetCore.Hosting;
+using Microsoft.Extensions.Hosting;
+using Serilog;
+
 
 namespace neismesk
 {
@@ -6,21 +10,12 @@ namespace neismesk
         public static void Main(string[] args)
         {
             var builder = WebApplication.CreateBuilder(args);
-
             // Add services to the container.
-
-            //builder.Services.AddCors(options =>
-            //{
-            //    options.AddPolicy("MyPolicy",
-            //        builder =>
-            //        {
-            //            builder.WithOrigins("https://localhost:44486")
-            //                   .AllowAnyMethod()
-            //                   .AllowAnyHeader();
-            //        });
-            //});
-
             builder.Services.AddControllersWithViews();
+            builder.Logging.AddSerilog(new LoggerConfiguration()
+                .MinimumLevel.Debug()
+                .WriteTo.Console()
+                .CreateLogger());
 
             var app = builder.Build();
 
@@ -44,5 +39,6 @@ namespace neismesk
 
             app.Run();
         }
+
     }
 }
