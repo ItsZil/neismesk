@@ -1,10 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Data;
-using System.Linq;
+﻿using System.Data;
 using System.Reflection;
-using System.Threading.Tasks;
 using MySql.Data.MySqlClient;
+using Serilog;
 
 namespace neismesk.Utilities
 {
@@ -13,28 +10,28 @@ namespace neismesk.Utilities
     /// </summary>
     public class DatabaseAccess
     {
-        /*  Example usage:
-        string connectionString = Environment.GetEnvironmentVariable("DATABASE_CONN_STRING");
-        DatabaseAccess dataAccess = new DatabaseAccess(connectionString);
-
-        // Load data
-        List<Courier> couriers = await dataAccess.LoadData<Courier, dynamic>("SELECT * FROM Courier", null);
-
-        // Save data
-        Courier newCourier = new Courier { delivery_price = 9.99 }
-        await dataAccess.SaveData("INSERT INTO Courier (delivery_price) VALUES (@delivery_price)", newCourier);
-        */
-
+        private Serilog.ILogger _logger;
         private readonly string _connectionString;
 
         public DatabaseAccess()
         {
+            CreateLogger();
+            
             _connectionString = Environment.GetEnvironmentVariable("DATABASE_CONN_STRING");
         }
 
         public DatabaseAccess(string connectionString)
         {
+            CreateLogger();
+            
             _connectionString = connectionString;
+        }
+
+        private void CreateLogger()
+        {
+            _logger = new LoggerConfiguration()
+                .WriteTo.Console()
+                .CreateLogger();
         }
 
         private MySqlConnection GetConnection()
@@ -120,7 +117,7 @@ namespace neismesk.Utilities
             }
             catch (Exception ex)
             {
-                Console.WriteLine(ex.Message);
+                _logger.Error(ex, "Error saving data to database!");
                 return false;
             }
         }
