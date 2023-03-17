@@ -13,7 +13,8 @@ namespace neismesk
             // Add services to the container.
             builder.Services.AddControllersWithViews();
             builder.Logging.AddSerilog(new LoggerConfiguration()
-                .MinimumLevel.Debug()
+                .MinimumLevel.Information()
+                .Enrich.FromLogContext()
                 .WriteTo.Console()
                 .CreateLogger());
 
@@ -26,7 +27,6 @@ namespace neismesk
                 app.UseHsts();
             }
 
-            app.UseCors("MyPolicy");
             app.UseHttpsRedirection();
             app.UseStaticFiles();
             app.UseRouting();
