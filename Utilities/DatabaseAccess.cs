@@ -75,7 +75,32 @@ namespace neismesk.Utilities
         }
 
         /// <summary>
-        /// Returns query results as a DataTable
+        /// Returns query results as a DataTable.
+        /// </summary>
+        /// <param name="sql">The SQL query to be executed</param>
+        /// <param name="parameters">List of parameters to append to the query</param>
+        /// <returns>DataTable containing the query results</returns>
+        public async Task<DataTable> LoadData<U>(string sql, U parameters)
+        {
+            using (var connection = new MySqlConnection(_connectionString))
+            {
+                using (var command = new MySqlCommand(sql, connection))
+                {
+                    AddParameters(command, parameters);
+                    
+                    await connection.OpenAsync();
+                    var dataTable = new DataTable();
+                    using (var dataAdapter = new MySqlDataAdapter(command))
+                    {
+                        dataAdapter.Fill(dataTable);
+                    }
+                    return dataTable;
+                }
+            }
+        }
+
+        /// <summary>
+        /// Returns query results as a DataTable.
         /// </summary>
         /// <param name="sql">The SQL query to be executed</param>
         /// <returns>DataTable containing the query results in plain form</returns>

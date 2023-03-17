@@ -54,9 +54,11 @@ namespace neismesk.Utilities
         /// <param name="hashed_password">The hashed password.</param>
         /// <param name="salt">The hashed password's salt.</param>
         /// <returns>True if the passwords match, false otherwise.</returns>
-        public static bool doesPasswordMatch(string plain_password, string hashed_password, byte[] salt)
+        public static bool doesPasswordMatch(string plain_password, string hashed_password, string password_salt)
         {
+            byte[] salt = Convert.FromBase64String(password_salt);
             string hashed_plain_password = hashPassword(plain_password, salt);
+            
             return hashed_plain_password == hashed_password;
         }
     }

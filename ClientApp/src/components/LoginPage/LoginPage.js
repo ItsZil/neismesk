@@ -1,10 +1,12 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router';
 import './LoginPage.css'
 
 export const LoginPage = () => {
 
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
+    const navigate = useNavigate();
 
     const handleSubmit = () => {
         const requestOptions = {
@@ -15,10 +17,14 @@ export const LoginPage = () => {
                 email: email
             }),
         };
-        fetch("LoginEndpointasCia", requestOptions)
-            .then((response) => response.text())
-            .then((data) => {
-               
+        fetch("api/login/login", requestOptions)
+            .then(response => {
+                if (response.status === 200) {
+                    navigate("/index");
+                }
+                else {
+                    alert("Nerastas vartotojas su pateiktais duomenimis!");
+                }
             })
     }
 
@@ -38,7 +44,7 @@ export const LoginPage = () => {
                     <button className='loginButton' onClick={() => handleSubmit()} type='submit'>Prisijungti</button>
                 </div>
                 <div className='forgotPassword'>
-                    <a href="" className='forgotPasswordButton' >Pamiršau slaptažodį</a>
+                    <a href="#" className='forgotPasswordButton' >Pamiršau slaptažodį</a>
                 </div>
                 <hr></hr>
                 <div className='register'>

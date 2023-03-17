@@ -25,7 +25,7 @@ namespace neismesk.Controllers
             string password_hash = PasswordHasher.hashPassword(registration.Password, out salt);
             string password_salt = Convert.ToBase64String(salt);
 
-            bool success = await _database.SaveData("INSERT INTO User (name, surname, email, password_hash, password_salt) VALUES (@name, @surname, @email, @password_hash, @password_salt)",
+            bool success = await _database.SaveData("INSERT INTO users (name, surname, email, password_hash, password_salt) VALUES (@name, @surname, @email, @password_hash, @password_salt)",
                     new { registration.Name, registration.Surname, registration.Email, password_hash, password_salt });
 
             if (success)
