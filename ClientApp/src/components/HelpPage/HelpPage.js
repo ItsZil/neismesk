@@ -1,11 +1,11 @@
 ﻿import React from 'react';
 import './HelpPage.css';
 
-const HelpPage = () => {
+export const HelpPage = () => {
     return (
         <div className="section">
             Jei iškilo problemų, su mumis galite susisiekti:<br />
-            <p style="color:blue; text-decoration-line: underline;">
+            <p style={{color:'blue', textDecoration: 'underline'}}>
                 roklau1@ktu.lt<br />
                 minrus@ktu.lt<br />
                 ostmac@ktu.lt<br />
@@ -15,4 +15,3 @@ const HelpPage = () => {
         </div>
     )
 }
-export default HelpPage
