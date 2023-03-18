@@ -89,7 +89,7 @@ const RegistrationPage = () => {
                 <label className='warningText'>{message}</label>
                 <label className='warningText'>{matchMessage}</label>
                 <div className='registration'>
-                    <button onClick={() => handleSubmit()} type='submit'>Registruotis</button>
+                    <button className='registrationButton' onClick={() => handleSubmit()} type='submit'>Registruotis</button>
                 </div>
                 <div className='returnToLogin'>
                     <a href="/" className='returnToLoginButton'>Grįžti į prisijungimą</a>

@@ -1,22 +1,22 @@
-.outerBox {
+.itemOuterBox {
     background-color: rgba(49, 131, 171, 0.9);
-    width: 50%;
+    width: 75%;
     padding: 2em;
     margin: auto;
     margin-top: 30px;
     border-radius: 20px;
 }
 
-.innerBox {
+.ItemInnerBox {
     padding: 20px 10px;
 }
 
-.inputWrapper {
+.itemInputWrapper {
     margin-bottom: 1.5em;
     display: flex;
 }
 
-input, input:focus {
+input, input:focus, #description, select {
     border: none;
     outline: none;
     border-radius: 5px;
@@ -33,19 +33,36 @@ button {
     border-radius: 5px;
 }
 
-.registrationButton:hover {
+.create, .cancel {
+    width: 40%;
+}
+
+.createButton, .cancelButton {
+    flex: 1;   
+    width: 20%;
+    display: flex;
+}
+
+.create:hover, .cancel:hover {
     background-color: rgb(229, 225, 225);
+}
+
+.cancelButton {
+    justify-content: flex-end;
 }
 
 .returnToLoginButton {
     color: rgb(240, 240, 240);
 }
 
-.boxLabel {
+.itemBoxLabel {
     color:white;
     margin-bottom: 10%;
+    font-size: 4vmin;
 }
 
 .warningText {
     color: rgb(255, 22, 22);
+    font-weight: bold;
+    
 }

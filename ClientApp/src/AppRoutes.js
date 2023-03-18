@@ -3,10 +3,10 @@ import { FetchData } from "./components/FetchData";
 import { Home } from "./components/Home";
 import { AboutUs } from "./components/AboutUs";
 import { DatabaseDemo } from "./components/DatabaseDemo";
-
 // User authentication
 import { LoginPage } from "./components/LoginPage/LoginPage";
 import RegistrationPage from "./components/RegistrationPage/RegistrationPage";
+import ItemCreationPage from "./components/ItemCreation/ItemCreationPage";
 const AppRoutes = [
   {
     //index: true, //nustato startini page'a
@@ -39,6 +39,10 @@ const AppRoutes = [
   {
     path: '/registration',
     element: <RegistrationPage />
+  },
+  {
+    path: '/item-creation',
+    element: <ItemCreationPage />
   }
 ];
 

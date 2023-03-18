@@ -60,6 +60,10 @@ button {
     margin-top: 5%;
 }
 
+.loginButton:hover, .registerButton:hover {
+    background-color: rgb(229, 225, 225);
+}
+
 hr {
     margin-top: 10%;
     margin-bottom: 10%;
