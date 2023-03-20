@@ -1,18 +1,103 @@
-﻿a.navbar-brand {
-  white-space: normal;
-  text-align: center;
-  word-break: break-all;
+﻿header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    height: 80px;
+    padding: 0;
+    background-color: #3183ab;
+    color: #222;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 100;
 }
 
-html {
-  font-size: 14px;
-}
-@media (min-width: 768px) {
-  html {
-    font-size: 16px;
-  }
+.navbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    height: 80px;
+    padding: 0;
+    background-color: #3183ab;
+    color: #222;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 100;
 }
 
-.box-shadow {
-  box-shadow: 0 .25rem .75rem rgba(0, 0, 0, .05);
+.navbar-brand {
+    width: 10%;
+    height: 100%;
+    display: inline-block;
+    vertical-align: middle
 }
+
+    .navbar-brand img {
+        width: 80px;
+        height: 100%;
+        display: inline-block;
+        vertical-align: middle
+    }
+
+.navbar-text {
+    display: inline-block;
+    font-size: 20px;
+}
+.toolbar {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    z-index: 1000;
+    background-color: #3183ab;
+    height: 83px;
+    width: 109px;
+}
+
+ul.no-bullets {
+    list-style-type: none; /* Remove bullets */
+    padding: 0; /* Remove padding */
+    margin: 0; /* Remove margins */
+}
+
+footer {
+    position: fixed;
+    bottom: 0;
+    width: 100%;
+    background-color: #3183ab;
+    padding: 20px;
+    text-align: center;
+}
+
+.links {
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+}
+
+    .links a {
+        text-decoration: none;
+        color: #FFFFFF;
+        margin-right: 20px;
+    }
+
+        .links a:last-child {
+            margin-right: 0;
+        }
+.profileContainer {
+    width: 10%;
+    height: 100%;
+    display: inline-block;
+    vertical-align: middle;
+    position: relative;
+}
+    .profileContainer img {
+        display: block;
+        width: 80px;
+        height: 80px;
+        object-fit: cover;
+        border-radius: 50%;
+    }
