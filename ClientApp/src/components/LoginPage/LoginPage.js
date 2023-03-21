@@ -44,7 +44,7 @@ export const LoginPage = () => {
                     <button className='loginButton' onClick={() => handleSubmit()} type='submit'>Prisijungti</button>
                 </div>
                 <div className='forgotPassword'>
-                    <a href="#" className='forgotPasswordButton' >Pamiršau slaptažodį</a>
+                    <a href='\forgotpassword' className='forgotPasswordButton' >Pamiršau slaptažodį</a>
                 </div>
                 <hr></hr>
                 <div className='register'>
