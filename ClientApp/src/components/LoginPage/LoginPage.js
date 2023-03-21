@@ -20,10 +20,13 @@ export const LoginPage = () => {
         fetch("api/login/login", requestOptions)
             .then(response => {
                 if (response.status === 200) {
-                    navigate("/index");
+                    alert('Sėkmingai prisijungėte!');
+                }
+                else if (response.status === 400) {
+                    alert("Nerastas vartotojas su pateiktais duomenimis!");
                 }
                 else {
-                    alert("Nerastas vartotojas su pateiktais duomenimis!");
+                    alert("Įvyko klaida, susisiekite su administratoriumi!");
                 }
             })
     }
@@ -33,17 +36,38 @@ export const LoginPage = () => {
             method: "GET"
         };
         
-        fetch("api/login/protected", requestOptions)
+        fetch("api/login/isloggedin", requestOptions)
             .then(response => {
                 if (response.status === 200) {
                     alert('Logged in');
                 }
+                else if (response.status === 401) {
+                    alert('Not logged in');
+                }
                 else {
-                    alert("Not logged in");
+                    alert('Unexpected response, check console logs');
                 }
             })
     }
 
+    const testLogout = () => {
+        const requestOptions = {
+            method: "GET"
+        };
+
+        fetch("api/login/logout", requestOptions)
+            .then(response => {
+                if (response.status === 200) {
+                    alert('Logged out');
+                }
+                else if (response.status === 401) {
+                    alert('Already logged out');
+                }
+                else {
+                    alert('Unexpected response, check console logs');
+                }
+            })
+    }
 
 
     return (
@@ -59,9 +83,6 @@ export const LoginPage = () => {
                 <div className='login'>
                     <button className='loginButton' onClick={() => handleSubmit()} type='submit'>Prisijungti</button>
                 </div>
-                <div className='test_login'>
-                    <button className='loginButton' onClick={() => testLogin()} type='submit'>Test if logged in</button>
-                </div>
                 <div className='forgotPassword'>
                     <a href="#" className='forgotPasswordButton' >Pamiršau slaptažodį</a>
                 </div>
@@ -70,6 +91,16 @@ export const LoginPage = () => {
                     <p className='noAccount'>Neturite paskyros?</p>
                     <button className='registerButton'><a className='redirect' href='\registration'>Registruotis</a></button>
                 </div>
+            </div>
+
+            <div className='innerBox'>
+                <center>
+                    <p style={{ color: "yellow" }}>Development buttons</p>
+                    <button className='loginButton' onClick={() => testLogin()} type='submit'>Test if logged in</button>
+                    <button className='loginButton' onClick={() => navigate('/testaccesscontrol')} type='submit'>Enter restricted page</button>
+                    <button className='loginButton' onClick={() => testLogout()} type='submit'>Test logging out</button>
+                    <i><small style={{ color: "yellow" }}>logout has [Authorize], so the endpoint won't be accessed if not logged in.</small></i>
+                </center>
             </div>
         </div>
     )
