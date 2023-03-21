@@ -25,8 +25,8 @@ const RegistrationPage = () => {
     }
 
     function checkFields() {
-        if (password == confirmPassword) {
-            if (name == '' || surname == '' || email == '') {
+        if (password === confirmPassword) {
+            if (name === '' || surname === '' || email === '') {
                 setMessage('Reikia užpildyti visus laukus!');
                 return false;
             }
@@ -42,7 +42,6 @@ const RegistrationPage = () => {
 
     const handleSubmit = () => {
         if (checkFields()) {
-            console.log(name, surname, email, password, confirmPassword);
             const requestOptions = {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
@@ -55,7 +54,7 @@ const RegistrationPage = () => {
             };
             fetch("api/registration/register", requestOptions)
                 .then(response => {
-                    if (response.status == 200) {
+                    if (response.status === 200) {
                         alert("Sėkmingai prisiregistravote!");
                         navigate("/login");
                     }

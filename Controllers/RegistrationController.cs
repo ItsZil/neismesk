@@ -1,31 +1,32 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using neismesk.ViewModels.UserAuthentication;
 using neismesk.Utilities;
-using Microsoft.AspNetCore.Cors;
 
 namespace neismesk.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
-    //[EnableCors("MyPolicy")]
     public class RegistrationController : ControllerBase
     {
+        private readonly ILogger<RegistrationController> _logger;
         private readonly DatabaseAccess _database;
 
-        public RegistrationController()
+        public RegistrationController(ILogger<RegistrationController> logger)
         {
+            _logger = logger;
             _database = new DatabaseAccess();
         }
 
-        // TODO: make proper response
         [HttpPost("register")]
         public async Task<IActionResult> Register(RegistrationViewModel registration)
         {
-            //Response.Headers.Add("Access-Control-Allow-Origin", "*");
-            //Response.Headers.Add("Access-Control-Allow-Headers", "*");
-            //Response.Headers.Add("Access-Control-Allow-Methods", "*");
-            //Response.Headers.Add("Access-Control-Allow-Credentials", "true");
-            bool success = await _database.SaveData("INSERT INTO User (name, surname, email, encrypted_password) VALUES (@name, @surname, @email, @password)", registration);
+            // Retrieve a hashed version of the user's plain text password.
+            byte[] salt;
+            string password_hash = PasswordHasher.hashPassword(registration.Password, out salt);
+            string password_salt = Convert.ToBase64String(salt);
+
+            bool success = await _database.SaveData("INSERT INTO users (name, surname, email, password_hash, password_salt) VALUES (@name, @surname, @email, @password_hash, @password_salt)",
+                    new { registration.Name, registration.Surname, registration.Email, password_hash, password_salt });
 
             if (success)
             {
