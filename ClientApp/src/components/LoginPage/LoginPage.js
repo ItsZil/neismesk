@@ -28,6 +28,22 @@ export const LoginPage = () => {
             })
     }
 
+    const testLogin = () => {
+        const requestOptions = {
+            method: "GET"
+        };
+        
+        fetch("api/login/protected", requestOptions)
+            .then(response => {
+                if (response.status === 200) {
+                    alert('Logged in');
+                }
+                else {
+                    alert("Not logged in");
+                }
+            })
+    }
+
 
 
     return (
@@ -42,6 +58,9 @@ export const LoginPage = () => {
                 </div>
                 <div className='login'>
                     <button className='loginButton' onClick={() => handleSubmit()} type='submit'>Prisijungti</button>
+                </div>
+                <div className='test_login'>
+                    <button className='loginButton' onClick={() => testLogin()} type='submit'>Test if logged in</button>
                 </div>
                 <div className='forgotPassword'>
                     <a href="#" className='forgotPasswordButton' >Pamiršau slaptažodį</a>

@@ -2,7 +2,7 @@
 using neismesk.ViewModels.UserAuthentication;
 using neismesk.Utilities;
 
-namespace neismesk.Controllers
+namespace neismesk.Controllers.UserAuthentication
 {
     [ApiController]
     [Route("api/[controller]")]

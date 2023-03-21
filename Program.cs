@@ -1,7 +1,9 @@
-using Microsoft.AspNetCore.Hosting;
-using Microsoft.Extensions.Hosting;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.IdentityModel.Tokens;
+using neismesk.Utilities;
 using Serilog;
-
+using System.Text;
 
 namespace neismesk
 {
@@ -18,6 +20,51 @@ namespace neismesk
                 .WriteTo.Console()
                 .CreateLogger());
 
+            bool is_prod = false;
+            if (Convert.ToBoolean(Environment.GetEnvironmentVariable("IS_PRODUCTION")))
+            {
+                is_prod = true;
+            }
+
+
+            /*
+            if (is_prod)
+            {
+                builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+                .AddJwtBearer(options =>
+                {
+                    options.TokenValidationParameters = new TokenValidationParameters
+                    {
+                        ValidateIssuer = true,
+                        ValidateAudience = true,
+                        ValidateLifetime = true,
+                        ValidateIssuerSigningKey = true,
+                        ValidIssuer = "https://neismesk.azurewebsites.net/",
+                        ValidAudience = "https://neismesk.azurewebsites.net/",
+                        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(Environment.GetEnvironmentVariable("JWT_SECRET")))
+                    };
+                });
+            }
+            else
+            {
+                builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+                .AddJwtBearer(options =>
+                {
+                    options.TokenValidationParameters = new TokenValidationParameters
+                    {
+                        ValidateIssuer = true,
+                        ValidateAudience = true,
+                        ValidateLifetime = true,
+                        ValidateIssuerSigningKey = true,
+                        ValidIssuer = "https://localhost:44486",
+                        ValidAudience = "https://localhost:44486",
+                        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes("development_secret"))
+                    };
+                });
+            }*/
+            builder.Services.AddAuthentication("Cookies")
+                .AddCookie("Cookies");
+
             var app = builder.Build();
 
             // Configure the HTTP request pipeline.
@@ -30,6 +77,9 @@ namespace neismesk
             app.UseHttpsRedirection();
             app.UseStaticFiles();
             app.UseRouting();
+
+            app.UseAuthentication();
+            app.UseAuthorization();
 
             app.MapControllerRoute(
                 name: "default",
