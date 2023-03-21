@@ -1,6 +1,7 @@
 import { Counter } from "./components/Counter";
 import { Home } from "./components/Home";
 import { AboutUs } from "./components/AboutUs";
+import { TestAccessControl } from "./components/TestAccessControl";
 
 // User authentication
 import { LoginPage } from "./components/LoginPage/LoginPage";
@@ -30,6 +31,10 @@ const AppRoutes = [
   {
     path: '/registration',
     element: <RegistrationPage />
+  },
+  {
+    path: '/testaccesscontrol',
+    element: <TestAccessControl />
   }
 ];
 
