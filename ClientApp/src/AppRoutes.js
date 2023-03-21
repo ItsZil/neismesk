@@ -2,6 +2,7 @@ import { Counter } from "./components/Counter";
 import { Home } from "./components/Home";
 import { AboutUs } from "./components/AboutUs";
 import { TestAccessControl } from "./components/TestAccessControl";
+import ForgotPasswordPage from "./components/ForgotPasswordPage/ForgotPasswordPage";
 
 // User authentication
 import { LoginPage } from "./components/LoginPage/LoginPage";
@@ -35,6 +36,10 @@ const AppRoutes = [
   {
     path: '/testaccesscontrol',
     element: <TestAccessControl />
+  },
+  {
+    path: '/forgotpassword',
+    element: <ForgotPasswordPage />
   }
 ];
 
