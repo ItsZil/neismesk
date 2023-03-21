@@ -20,50 +20,13 @@ namespace neismesk
                 .WriteTo.Console()
                 .CreateLogger());
 
-            bool is_prod = false;
-            if (Convert.ToBoolean(Environment.GetEnvironmentVariable("IS_PRODUCTION")))
-            {
-                is_prod = true;
-            }
-
-
-            /*
-            if (is_prod)
-            {
-                builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
-                .AddJwtBearer(options =>
-                {
-                    options.TokenValidationParameters = new TokenValidationParameters
-                    {
-                        ValidateIssuer = true,
-                        ValidateAudience = true,
-                        ValidateLifetime = true,
-                        ValidateIssuerSigningKey = true,
-                        ValidIssuer = "https://neismesk.azurewebsites.net/",
-                        ValidAudience = "https://neismesk.azurewebsites.net/",
-                        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(Environment.GetEnvironmentVariable("JWT_SECRET")))
-                    };
-                });
-            }
-            else
-            {
-                builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
-                .AddJwtBearer(options =>
-                {
-                    options.TokenValidationParameters = new TokenValidationParameters
-                    {
-                        ValidateIssuer = true,
-                        ValidateAudience = true,
-                        ValidateLifetime = true,
-                        ValidateIssuerSigningKey = true,
-                        ValidIssuer = "https://localhost:44486",
-                        ValidAudience = "https://localhost:44486",
-                        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes("development_secret"))
-                    };
-                });
-            }*/
             builder.Services.AddAuthentication("Cookies")
-                .AddCookie("Cookies");
+                .AddCookie("Cookies", options =>
+                {
+                    // Log the user out if they are inactive for 30 minutes.
+                    options.ExpireTimeSpan = TimeSpan.FromMinutes(30);
+                    options.SlidingExpiration = true;
+                });
 
             var app = builder.Build();
 
