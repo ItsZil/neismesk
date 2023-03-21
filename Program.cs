@@ -18,6 +18,8 @@ namespace neismesk
                 .WriteTo.Console()
                 .CreateLogger());
 
+            builder.WebHost.UseUrls("https://localhost:7185");
+
             var app = builder.Build();
 
             // Configure the HTTP request pipeline.
