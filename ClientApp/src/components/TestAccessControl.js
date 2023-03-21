@@ -11,14 +11,14 @@ export const TestAccessControl = () => {
 
     useEffect(() => {
         // Endpoint to check if the user is logged in. Located in LoginController.cs
-        fetch("api/login/isloggedin", requestOptions)
+        fetch("api/login/isloggedin/1", requestOptions) // 1 is the minimum required role. 0 - client, 1 - admin.
             .then(response => {
-                if (response.status == 200) { // 200 - Ok, we are logged in.{
+                if (response.status == 200) { // 200 - Ok, we are logged in.
                     setIsLoggedIn(true);
                 }
                 else if (response.status === 401) { // 401 - Unauthorized, we are not logged in.
                     // Do not render the page and rediret to login.
-                    alert('Not logged in, redirecting to login'); // Only for testing.
+                    alert('Not logged in or incorrect role, redirecting to login'); // Only for testing.
                     navigate("/login");
                 }
                 else { // 500 - Internal server error

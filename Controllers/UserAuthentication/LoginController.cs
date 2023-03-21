@@ -57,7 +57,7 @@ namespace neismesk.Controllers.UserAuthentication
                 int userId = Convert.ToInt32(result.Rows[0]["user_id"]);
                 string name = result.Rows[0]["name"].ToString();
                 string surname = result.Rows[0]["surname"].ToString();
-                string user_role = Convert.ToString(result.Rows[0]["user_role"]);
+                int user_role = Convert.ToInt32(result.Rows[0]["user_role"]);
 
                 var claims = new List<Claim>
                 {
@@ -65,7 +65,7 @@ namespace neismesk.Controllers.UserAuthentication
                     new Claim(ClaimTypes.Name, name),
                     new Claim(ClaimTypes.Surname, surname),
                     new Claim(ClaimTypes.Email, login.Email),
-                    new Claim(ClaimTypes.Role, user_role)
+                    new Claim(ClaimTypes.Role, user_role.ToString())
 
                 };
                 var identity = new ClaimsIdentity(claims, "login");
@@ -80,16 +80,25 @@ namespace neismesk.Controllers.UserAuthentication
             }
         }
 
-        [HttpGet("isloggedin")]
-        public IActionResult IsLoggedIn()
+        [HttpGet("isloggedin/{requiredRole?}")]
+        public IActionResult IsLoggedIn(int requiredRole = 0)
         {
             if (HttpContext.User.Identity.IsAuthenticated)
-            {
-                var userIdClaim = HttpContext.User.FindFirst("user_id");
-                int userId = Convert.ToInt32(userIdClaim.Value);
+            {                
+                int userId = Convert.ToInt32(HttpContext.User.FindFirst("user_id").Value);
+                int userRole = Convert.ToInt32(HttpContext.User.FindFirst(ClaimTypes.Role).Value);
                 string userEmail = HttpContext.User.FindFirst(ClaimTypes.Email).Value;
-                _logger.LogInformation($"User #{userId} with email {userEmail} is logged in.");
-                return Ok();
+
+                if (userRole >= requiredRole)
+                {
+                    _logger.LogInformation($"User #{userId} with email {userEmail} is logged in and is the required role.");
+                    return Ok();
+                }
+                else
+                {
+                    _logger.LogInformation($"User #{userId} with email {userEmail} is logged in but is not the required role.");
+                    return Unauthorized();
+                }
             }
             else
             {
