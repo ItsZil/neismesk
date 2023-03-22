@@ -1,4 +1,4 @@
-﻿using neismesk.ViewModels.Device;
+﻿using neismesk.ViewModels.Ad;
 
 namespace neismesk.Response
 {

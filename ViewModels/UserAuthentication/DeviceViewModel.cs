@@ -18,5 +18,8 @@ namespace neismesk.ViewModels.UserAuthentication
 
 		[JsonProperty("fk_category")]
 		public int fk_Category { get; set; }
+
+		[JsonProperty("images")]
+		public List<byte[]> Images { get; set; }
 	}
 }

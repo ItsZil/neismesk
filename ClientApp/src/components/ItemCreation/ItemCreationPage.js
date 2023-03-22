@@ -86,7 +86,8 @@ const ItemCreationPage = () => {
                     description: description,
                     category: category,
                     fk_user: 19,
-                    fk_category: 2
+                    fk_category: 2,
+                    images: imageURLs
                 })
                     .then(response => {
                         if (response.status === 200) {

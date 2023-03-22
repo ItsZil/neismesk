@@ -12,11 +12,11 @@ namespace neismesk.Controllers
 	[ApiController]
     [Route("api/[controller]")]
     //[EnableCors("MyPolicy")]
-    public class AdController : ControllerBase
+    public class DeviceController : ControllerBase
     {
         private readonly DatabaseAccess _database;
 
-        public AdController()
+        public DeviceController()
         {
             _database = new DatabaseAccess();
         }
