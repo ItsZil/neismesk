@@ -1,3 +1,8 @@
+.outerBoxWrapper {
+    padding-top: 80px;
+    padding-bottom: 80px;
+}
+
 .outerBox {
     background-color: rgba(49, 131, 171, 0.9);
     width: 50%;
