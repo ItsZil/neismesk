@@ -60,15 +60,17 @@ export const TestAccessControl = () => {
 
     // Check if the user is logged in. If they are, render the page.
     return isLoggedIn ? (
-        <div className='outerBox'>
-            <div className='innerBox'>
-                <center>
-                    <p style={{ color: "yellow" }}>Development buttons</p>
-                    <p style={{ color: "yellow" }}>If you're here, you should already be logged in.</p>
-                    <button className='loginButton' onClick={() => testLogin()} type='submit'>Test if logged in</button>
-                    <button className='loginButton' onClick={() => testLogout()} type='submit'>Test logging out</button>
-                    <i><small style={{ color: "yellow" }}>logout has [Authorize], so the endpoint won't be accessed if not logged in.</small></i>
-                </center>
+        <div className='outerBoxWrapper'>
+            <div className='outerBox'>
+                <div className='innerBox'>
+                    <center>
+                        <p style={{ color: "yellow" }}>Development buttons</p>
+                        <p style={{ color: "yellow" }}>If you're here, you should already be logged in.</p>
+                        <button className='loginButton' onClick={() => testLogin()} type='submit'>Test if logged in</button>
+                        <button className='loginButton' onClick={() => testLogout()} type='submit'>Test logging out</button>
+                        <i><small style={{ color: "yellow" }}>logout has [Authorize], so the endpoint won't be accessed if not logged in.</small></i>
+                    </center>
+                </div>
             </div>
         </div>
     ) : null; // null - don't render anything.

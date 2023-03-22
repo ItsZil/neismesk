@@ -95,14 +95,18 @@ export const LoginPage = () => {
                 </div>
             </div>
 
-            <div className='innerBox'>
-                <center>
-                    <p style={{ color: "yellow" }}>Development buttons</p>
-                    <button className='loginButton' onClick={() => testLogin()} type='submit'>Test if logged in</button>
-                    <button className='loginButton' onClick={() => navigate('/testaccesscontrol')} type='submit'>Enter restricted page</button>
-                    <button className='loginButton' onClick={() => testLogout()} type='submit'>Test logging out</button>
-                    <i><small style={{ color: "yellow" }}>logout has [Authorize], so the endpoint won't be accessed if not logged in.</small></i>
-                </center>
+            <div className='outerBoxWrapper'>
+                <div className='outerBox'>
+                    <div className='innerBox'>
+                        <center>
+                            <p style={{ color: "yellow" }}>Development buttons</p>
+                            <button className='loginButton' onClick={() => testLogin()} type='submit'>Test if logged in</button>
+                            <button className='loginButton' onClick={() => navigate('/testaccesscontrol')} type='submit'>Enter restricted page</button>
+                            <button className='loginButton' onClick={() => testLogout()} type='submit'>Test logging out</button>
+                            <i><small style={{ color: "yellow" }}>logout has [Authorize], so the endpoint won't be accessed if not logged in.</small></i>
+                        </center>
+                    </div>
+                </div>
             </div>
         </div>
     )
