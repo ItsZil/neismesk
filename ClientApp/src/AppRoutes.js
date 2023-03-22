@@ -1,14 +1,14 @@
 import { Counter } from "./components/Counter";
-import { FetchData } from "./components/FetchData";
 import { Home } from "./components/Home";
 import { AboutUs } from "./components/AboutUs";
-import { DatabaseDemo } from "./components/DatabaseDemo";
+import { TestAccessControl } from "./components/TestAccessControl";
 import ForgotPasswordPage from "./components/ForgotPasswordPage/ForgotPasswordPage";
 import HelpPage from "./components/HelpPage/HelpPage";
 
 // User authentication
 import { LoginPage } from "./components/LoginPage/LoginPage";
 import RegistrationPage from "./components/RegistrationPage/RegistrationPage";
+
 const AppRoutes = [
   {
     //index: true, //nustato startini page'a
@@ -19,16 +19,8 @@ const AppRoutes = [
     element: <Counter />
   },
   {
-    path: '/fetch-data',
-    element: <FetchData />
-  },
-  {
     path: '/about-us',
     element: <AboutUs />
-  },
-  {
-    path: '/databasedemo',
-    element: <DatabaseDemo />
   },
   {
     path: '/login',
@@ -49,6 +41,14 @@ const AppRoutes = [
   {
   path: '/help',
   element: <HelpPage />
+  },
+  {
+    path: '/testaccesscontrol',
+    element: <TestAccessControl />
+  },
+  {
+    path: '/forgotpassword',
+    element: <ForgotPasswordPage />
   }
 ];
 
