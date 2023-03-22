@@ -36,7 +36,7 @@
 }
 
     .navbar-brand img {
-        width: 80px;
+        width: 150px;
         height: 100%;
         display: inline-block;
         vertical-align: middle
@@ -44,7 +44,21 @@
 
 .navbar-text {
     display: inline-block;
-    font-size: 20px;
+    font-size: 70px;
+    font-family: 'Gambetta', serif;
+    letter-spacing: -3px;
+    transition: 700ms ease;
+    font-variation-settings: "wght" 311;
+    margin-bottom: 0.8rem;
+    color: white;
+    outline: none;
+    text-align: center;
+}
+
+.navbar-text:hover{
+    font-variation-settings: "wght" 582;
+    letter-spacing: 1px;
+
 }
 .toolbar {
     position: absolute;
