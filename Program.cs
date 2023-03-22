@@ -1,7 +1,9 @@
-using Microsoft.AspNetCore.Hosting;
-using Microsoft.Extensions.Hosting;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.IdentityModel.Tokens;
+using neismesk.Utilities;
 using Serilog;
-
+using System.Text;
 
 namespace neismesk
 {
@@ -18,6 +20,16 @@ namespace neismesk
                 .WriteTo.Console()
                 .CreateLogger());
 
+            builder.Services.AddAuthentication("Cookies")
+                .AddCookie("Cookies", options =>
+                {
+                    // Log the user out if they are inactive for 30 minutes.
+                    options.ExpireTimeSpan = TimeSpan.FromMinutes(30);
+                    options.SlidingExpiration = true;
+                });
+
+            builder.WebHost.UseUrls("https://localhost:7185");
+
             var app = builder.Build();
 
             // Configure the HTTP request pipeline.
@@ -30,6 +42,9 @@ namespace neismesk
             app.UseHttpsRedirection();
             app.UseStaticFiles();
             app.UseRouting();
+
+            app.UseAuthentication();
+            app.UseAuthorization();
 
             app.MapControllerRoute(
                 name: "default",
