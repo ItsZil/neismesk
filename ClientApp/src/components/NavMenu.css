@@ -35,20 +35,20 @@
     vertical-align: middle
 }
 
-    .navbar-brand img {
-        width: 150px;
-        height: 100%;
-        display: inline-block;
-        vertical-align: middle
-    }
+.navbar-brand img {
+    width: 150px;
+    height: 100%;
+    display: inline-block;
+    vertical-align: middle
+}
 
 .navbar-text {
     display: inline-block;
-    font-size: 70px;
+    font-size: 50px;
     font-family: 'Gambetta', serif;
-    letter-spacing: -3px;
+    letter-spacing: -2px;
     transition: 700ms ease;
-    font-variation-settings: "wght" 311;
+    font-variation-settings: "wght";
     margin-bottom: 0.8rem;
     color: white;
     outline: none;
