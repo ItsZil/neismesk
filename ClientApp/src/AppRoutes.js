@@ -3,6 +3,7 @@ import { Home } from "./components/Home";
 import { AboutUs } from "./components/AboutUs";
 import { TestAccessControl } from "./components/TestAccessControl";
 import ForgotPasswordPage from "./components/ForgotPasswordPage/ForgotPasswordPage";
+import HelpPage from "./components/HelpPage/HelpPage";
 
 // User authentication
 import { LoginPage } from "./components/LoginPage/LoginPage";
@@ -32,6 +33,14 @@ const AppRoutes = [
   {
     path: '/registration',
     element: <RegistrationPage />
+  },
+  {
+  path: '/forgotpassword',
+  element: <ForgotPasswordPage />
+  },
+  {
+  path: '/help',
+  element: <HelpPage />
   },
   {
     path: '/testaccesscontrol',
