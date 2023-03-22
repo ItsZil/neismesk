@@ -28,6 +28,8 @@ namespace neismesk
                     options.SlidingExpiration = true;
                 });
 
+            builder.WebHost.UseUrls("https://localhost:7185");
+
             var app = builder.Build();
 
             // Configure the HTTP request pipeline.
