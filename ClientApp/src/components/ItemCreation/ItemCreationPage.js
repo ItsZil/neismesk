@@ -15,7 +15,6 @@ const ItemCreationPage = () => {
     //const [categoryId, setCategoryId] = useState('');
     const [categories, setCategories] = useState([]);
     const navigate = useNavigate();
-    const formData = new FormData();
 
     useEffect(() => {
         axios.get("api/device/getCategories")
@@ -41,12 +40,6 @@ const ItemCreationPage = () => {
         }
         const newImageUrls = [];
         images.forEach(image => newImageUrls.push(URL.createObjectURL(image)));
-        //formData.append('images', images);
-        images.forEach((image, index) => {
-            formData.append(`image${index}`, image);
-        });
-        console.log(images);
-        console.log(formData);
         setImageUrls(newImageUrls);
     }, [images]);
 
@@ -88,16 +81,26 @@ const ItemCreationPage = () => {
     const handleCreate = () => {
         if (checkFields()) {
             try {
-                const config = {
-                    headers: {
-                        'Content-Type': 'multipart/form-data',
-                        'name': name,
-                        'description': description,
-                        'category': category,
-                        'fk_user': 19,
-                        'fk_category': 2,
-                    }
-                }
+                //const config = {
+                //    headers: {
+                //        'Content-Type': 'multipart/form-data',
+                //        'name': name,
+                //        'description': description,
+                //        'category': category,
+                //        'fk_user': 19,
+                //        'fk_category': 2,
+                //    }
+                //}
+                const formData = new FormData();
+                formData.append('name', name);
+                formData.append('description', description);
+                formData.append('category', category);
+                formData.append('fk_user', 19);
+                formData.append('fk_category', 2);
+                formData.append('images', imageURLs)
+                //images.forEach((image, index) => {
+                //    formData.append(`image${index}`, image);
+                //});
                 //axios.post("api/device/create", {
                 //    name: name,
                 //    description: description,
@@ -106,7 +109,7 @@ const ItemCreationPage = () => {
                 //    fk_category: 2,
                 //    images: formData
                 //})
-                axios.post("api/device/create", formData, config)
+                axios.post("api/device/create", formData)
                     .then(response => {
                         if (response.status === 200) {
                             toast('Sėkmingai sukūrėtė skelbimą!', {
@@ -115,7 +118,6 @@ const ItemCreationPage = () => {
                                     color: 'white',
                                 },
                             });
-                            //alert("Sėkmingai sukūrėtė skelbimą!");
                         }
                         else {
                             toast("Įvyko klaida, susisiekite su administratoriumi!");
@@ -129,9 +131,7 @@ const ItemCreationPage = () => {
     }
 
     const handleCancel = () => {
-        console.log(images);
-        console.log(images.length);
-        //navigate("/index");
+        navigate("/index");
     }
 
     return (

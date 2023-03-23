@@ -20,6 +20,6 @@ namespace neismesk.ViewModels.Ad
         public int fk_Category { get; set; }
 
         [JsonProperty("images")]
-        public List<byte[]> Images { get; set; }
+        public IFormFile Images { get; set; }
     }
 }

@@ -22,7 +22,7 @@ namespace neismesk.Controllers
 
         // TODO: make proper response
         [HttpPost("create")]
-        public async Task<IActionResult> Create()
+        public async Task<IActionResult> Create([FromForm] DeviceViewModel ad)
         {
             var files = Request.Form.Files;
             return Ok();

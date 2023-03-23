@@ -25,8 +25,8 @@ const RegistrationPage = () => {
     }
 
     function checkFields() {
-        if (password == confirmPassword) {
-            if (name == '' || surname == '' || email == '') {
+        if (password === confirmPassword) {
+            if (name === '' || surname === '' || email === '') {
                 setMessage('Reikia užpildyti visus laukus!');
                 return false;
             }
