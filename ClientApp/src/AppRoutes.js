@@ -4,6 +4,8 @@ import { AboutUs } from "./components/AboutUs";
 import { TestAccessControl } from "./components/TestAccessControl";
 import ForgotPasswordPage from "./components/ForgotPasswordPage/ForgotPasswordPage";
 import HelpPage from "./components/HelpPage/HelpPage";
+import ProfilePage from "./components/ProfilePage/ProfilePage";
+import HomePage from "./components/HomePage/HomePage";
 
 // User authentication
 import { LoginPage } from "./components/LoginPage/LoginPage";
@@ -45,6 +47,14 @@ const AppRoutes = [
   {
     path: '/testaccesscontrol',
     element: <TestAccessControl />
+  },
+  {
+    path: '/profilepage',
+    element: <ProfilePage />
+  },
+  {
+    path: '/homepage',
+    element: <HomePage />
   },
   {
     path: '/forgotpassword',
