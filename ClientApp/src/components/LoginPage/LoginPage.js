@@ -21,6 +21,7 @@ export const LoginPage = () => {
             .then(response => {
                 if (response.status === 200) {
                     alert('Sėkmingai prisijungėte!');
+                    navigate("/");
                 }
                 else if (response.status === 400) {
                     alert("Nerastas vartotojas su pateiktais duomenimis!");

@@ -24,43 +24,43 @@ function HomePage() {
                     <li className="li">
                         <img src="./images/phone.png" alt="" />
                         <h4>Samsung A8 telefonas</h4>
-                        <p>Atidavimo būdas : Keitimas</p>
+                        <p>Keitimas</p>
                         <button>Noriu!</button>
                     </li>
                     <li className="li">
                         <img src="./images/washing_machine.png" alt="" />
                         <h4>Skalbimo mašina Ultra max Pro</h4>
-                        <p>Atidavimo būdas : Loterija</p>
+                        <p>Loterija</p>
                         <button>Noriu!</button>
                     </li>
                     <li className="li">
                         <img src="./images/headphones.png" alt=""  />
                         <h4>Ausinės "Razor Extreme"</h4>
-                        <p>Atidavimo būdas : Klausimynas</p>
+                        <p>Klausimynas</p>
                         <button>Noriu!</button>
                     </li>
                     <li className="li">
                         <img src="./images/phone.png" alt="" />
                         <h4>Samsung A8 telefonas</h4>
-                        <p>Atidavimo būdas : Keitimas</p>
+                        <p>Keitimas</p>
                         <button>Noriu!</button>
                     </li>
                     <li className="li">
                         <img src="./images/washing_machine.png" alt="" />
-                        <h4>Skalbimo mašina</h4>
-                        <p>Atidavimo būdas : Loterija</p>
+                        <h4>Skalbimo mašina Ultra max Pro</h4>
+                        <p>Loterija</p>
                         <button>Noriu!</button>
                     </li>
                     <li className="li">
                         <img src="./images/headphones.png" alt="" />
                         <h4>Ausinės "Razor Extreme"</h4>
-                        <p>Atidavimo būdas : Klausimynas</p>
+                        <p>Klausimynas</p>
                         <button>Noriu!</button>
                     </li>
                     <li className="li">
                         <img src="./images/headphones.png" alt="" />
                         <h4>Ausinės "Razor Extreme"</h4>
-                        <p>Atidavimo būdas : Klausimynas</p>
+                        <p>Klausimynas</p>
                         <button>Noriu!</button>
                     </li>
                 </ul>
