@@ -40,7 +40,8 @@
     "eslint-plugin-jsx-a11y": "^6.6.1",
     "eslint-plugin-react": "^7.30.1",
     "nan": "^2.16.0",
-    "typescript": "^4.7.4"
+    "typescript": "^4.7.4",
+    "webpack-dev-server": "^4.13.1"
   },
   "overrides": {
     "autoprefixer": "10.4.5"
@@ -74,5 +75,5 @@
       "last 1 safari version"
     ]
   },
-  "proxy": "https://localhost:7185"
+  "proxy": "http://localhost:7185"
 }

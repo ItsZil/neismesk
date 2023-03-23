@@ -28,7 +28,7 @@ namespace neismesk
                     options.SlidingExpiration = true;
                 });
 
-            builder.WebHost.UseUrls("https://localhost:7185");
+            builder.WebHost.UseUrls("https://localhost:44486");
 
             var app = builder.Build();
 
