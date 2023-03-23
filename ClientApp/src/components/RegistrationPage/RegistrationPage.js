@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router';
 import './RegistrationPage.css'
+import toast, { Toaster } from 'react-hot-toast';
 
 const RegistrationPage = () => {
 
@@ -55,11 +56,16 @@ const RegistrationPage = () => {
             fetch("api/registration/register", requestOptions)
                 .then(response => {
                     if (response.status === 200) {
-                        alert("Sėkmingai prisiregistravote!");
+                        toast('Sėkmingai prisiregistravote!');
                         navigate("/login");
                     }
                     else {
-                        alert("Įvyko klaida, susisiekite su administratoriumi!");
+                        toast("Įvyko klaida, susisiekite su administratoriumi!", {
+                            style: {
+                                backgroundColor: 'red',
+                                color: 'white',
+                            },
+                        });
                     }
                 })
 
@@ -68,6 +74,7 @@ const RegistrationPage = () => {
 
     return (
         <div className='outerBoxWrapper'>
+            <Toaster />
             <div className='outerBox'>
                 <div className='innerBox'>
                     <h2 className='boxLabel'>Registracija</h2>
