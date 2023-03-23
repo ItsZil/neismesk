@@ -1,5 +1,4 @@
 import { Counter } from "./components/Counter";
-import { Home } from "./components/Home";
 import { AboutUs } from "./components/AboutUs";
 import { TestAccessControl } from "./components/TestAccessControl";
 import ForgotPasswordPage from "./components/ForgotPasswordPage/ForgotPasswordPage";
@@ -12,10 +11,6 @@ import { LoginPage } from "./components/LoginPage/LoginPage";
 import RegistrationPage from "./components/RegistrationPage/RegistrationPage";
 
 const AppRoutes = [
-  {
-    //index: true, //nustato startini page'a
-    element: <Home />
-  },
   {
     path: '/counter',
     element: <Counter />
@@ -30,7 +25,7 @@ const AppRoutes = [
   },
   {
     index: true,
-    element: <LoginPage />
+    element: <HomePage />
   },
   {
     path: '/registration',
@@ -51,10 +46,6 @@ const AppRoutes = [
   {
     path: '/profilepage',
     element: <ProfilePage />
-  },
-  {
-    path: '/homepage',
-    element: <HomePage />
   },
   {
     path: '/forgotpassword',
