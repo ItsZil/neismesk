@@ -15,6 +15,7 @@ const ItemCreationPage = () => {
     //const [categoryId, setCategoryId] = useState('');
     const [categories, setCategories] = useState([]);
     const navigate = useNavigate();
+    const formData = new FormData();
 
     useEffect(() => {
         axios.get("api/device/getCategories")
@@ -40,6 +41,12 @@ const ItemCreationPage = () => {
         }
         const newImageUrls = [];
         images.forEach(image => newImageUrls.push(URL.createObjectURL(image)));
+        //formData.append('images', images);
+        images.forEach((image, index) => {
+            formData.append(`image${index}`, image);
+        });
+        console.log(images);
+        console.log(formData);
         setImageUrls(newImageUrls);
     }, [images]);
 
@@ -58,7 +65,7 @@ const ItemCreationPage = () => {
     const getAllImages = () => {
         if (imageURLs.length > 0) {
             return imageURLs.map((image) => {
-                return <img src={image} style={{maxWidth: '15%', height: 'auto', marginRight: '10px', border:'1px solid white'}}></img>;
+                return <img src={image} style={{ maxWidth: '15%', height: 'auto', marginRight: '10px', border: '1px solid white' }}></img>;
             })
         }
     }
@@ -81,14 +88,25 @@ const ItemCreationPage = () => {
     const handleCreate = () => {
         if (checkFields()) {
             try {
-                axios.post("api/device/create", {
-                    name: name,
-                    description: description,
-                    category: category,
-                    fk_user: 19,
-                    fk_category: 2,
-                    images: imageURLs
-                })
+                const config = {
+                    headers: {
+                        'Content-Type': 'multipart/form-data',
+                        'name': name,
+                        'description': description,
+                        'category': category,
+                        'fk_user': 19,
+                        'fk_category': 2,
+                    }
+                }
+                //axios.post("api/device/create", {
+                //    name: name,
+                //    description: description,
+                //    category: category,
+                //    fk_user: 19,
+                //    fk_category: 2,
+                //    images: formData
+                //})
+                axios.post("api/device/create", formData, config)
                     .then(response => {
                         if (response.status === 200) {
                             toast('Sėkmingai sukūrėtė skelbimą!', {

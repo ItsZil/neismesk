@@ -4,12 +4,11 @@ using neismesk.ViewModels.Ad;
 using neismesk.Models;
 using System.Data;
 using neismesk.Response;
-using neismesk.ViewModels.UserAuthentication;
 using System.Web.Http.Results;
 
 namespace neismesk.Controllers
 {
-	[ApiController]
+    [ApiController]
     [Route("api/[controller]")]
     //[EnableCors("MyPolicy")]
     public class DeviceController : ControllerBase
@@ -23,24 +22,26 @@ namespace neismesk.Controllers
 
         // TODO: make proper response
         [HttpPost("create")]
-        public async Task<IActionResult> Create(DeviceViewModel ad)
+        public async Task<IActionResult> Create()
         {
-            try
-            {
-                bool success = await _database.SaveData("INSERT INTO ads (name, description, category, fk_category, fk_user) VALUES (@name, @description, @category, @fk_Category, @fk_User)", ad);
-				if (success)
-				{
-					return Ok();
-				}
-				else
-				{
-					return BadRequest();
-				}
-			}
-            catch (Exception ex)
-            {
-                return BadRequest();
-			}
+            var files = Request.Form.Files;
+            return Ok();
+            //try
+            //{
+            //    bool success = await _database.SaveData("INSERT INTO ads (name, description, category, fk_category, fk_user) VALUES (@name, @description, @category, @fk_Category, @fk_User)", ad);
+			//	if (success)
+			//	{
+			//		return Ok();
+			//	}
+			//	else
+			//	{
+			//		return BadRequest();
+			//	}
+			//}
+            //catch (Exception ex)
+            //{
+            //    return BadRequest();
+			//}
             
         }
 
