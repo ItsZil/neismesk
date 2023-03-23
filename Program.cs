@@ -1,3 +1,9 @@
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.IdentityModel.Tokens;
+using neismesk.Utilities;
+using Serilog;
+using System.Text;
 
 namespace neismesk
 {
@@ -6,21 +12,23 @@ namespace neismesk
         public static void Main(string[] args)
         {
             var builder = WebApplication.CreateBuilder(args);
-
             // Add services to the container.
-
-            //builder.Services.AddCors(options =>
-            //{
-            //    options.AddPolicy("MyPolicy",
-            //        builder =>
-            //        {
-            //            builder.WithOrigins("https://localhost:44486")
-            //                   .AllowAnyMethod()
-            //                   .AllowAnyHeader();
-            //        });
-            //});
-
             builder.Services.AddControllersWithViews();
+            builder.Logging.AddSerilog(new LoggerConfiguration()
+                .MinimumLevel.Information()
+                .Enrich.FromLogContext()
+                .WriteTo.Console()
+                .CreateLogger());
+
+            builder.Services.AddAuthentication("Cookies")
+                .AddCookie("Cookies", options =>
+                {
+                    // Log the user out if they are inactive for 30 minutes.
+                    options.ExpireTimeSpan = TimeSpan.FromMinutes(30);
+                    options.SlidingExpiration = true;
+                });
+
+            builder.WebHost.UseUrls("https://localhost:7185");
 
             var app = builder.Build();
 
@@ -31,10 +39,12 @@ namespace neismesk
                 app.UseHsts();
             }
 
-            app.UseCors("MyPolicy");
             app.UseHttpsRedirection();
             app.UseStaticFiles();
             app.UseRouting();
+
+            app.UseAuthentication();
+            app.UseAuthorization();
 
             app.MapControllerRoute(
                 name: "default",
@@ -44,5 +54,6 @@ namespace neismesk
 
             app.Run();
         }
+
     }
 }
