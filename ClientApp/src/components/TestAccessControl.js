@@ -1,6 +1,7 @@
 ﻿import React, { useState, useEffect } from "react";
 import { useNavigate } from 'react-router';
 import './LoginPage/LoginPage.css'
+import toast, { Toaster } from 'react-hot-toast';
 
 export const TestAccessControl = () => {
     const [isLoggedIn, setIsLoggedIn] = useState(false); // Variable that allows us to only render the page once it is true.
@@ -18,11 +19,11 @@ export const TestAccessControl = () => {
                 }
                 else if (response.status === 401) { // 401 - Unauthorized, we are not logged in.
                     // Do not render the page and rediret to login.
-                    alert('Not logged in or incorrect role, redirecting to login'); // Only for testing.
+                    toast('Not logged in or incorrect role, redirecting to login'); // Only for testing.
                     navigate("/login");
                 }
                 else { // 500 - Internal server error
-                    alert('Unexpected response, check console logs');
+                    toast('Unexpected response, check console logs');
                 }
             })
     }, []);
@@ -31,13 +32,13 @@ export const TestAccessControl = () => {
         fetch("api/login/isloggedin", requestOptions)
             .then(response => {
                 if (response.status === 200) { // 200 - Ok
-                    alert('Logged in');
+                    toast('Logged in');
                 }
                 else if (response.status === 401) { // 401 - Unauthorized
-                    alert('Not logged in');
+                    toast('Not logged in');
                 }
                 else { // 500 - Internal server error
-                    alert('Unexpected response, check console logs');
+                    toast('Unexpected response, check console logs');
                 }
             })
     }
@@ -46,14 +47,14 @@ export const TestAccessControl = () => {
         fetch("api/login/logout", requestOptions)
             .then(response => {
                 if (response.status === 200) { // 200 - Ok
-                    alert('Logged out');
+                    toast('Logged out');
                     navigate('/login')
                 }
                 else if (response.status === 401) { // 401 - Unauthorized
-                    alert('Already logged out');
+                    toast('Already logged out');
                 }
                 else { // 500 - Internal server error
-                    alert('Unexpected response, check console logs');
+                    toast('Unexpected response, check console logs');
                 }
             })
     }
@@ -61,6 +62,7 @@ export const TestAccessControl = () => {
     // Check if the user is logged in. If they are, render the page.
     return isLoggedIn ? (
         <div className='outerBoxWrapper'>
+            <Toaster />
             <div className='outerBox'>
                 <div className='innerBox'>
                     <center>
