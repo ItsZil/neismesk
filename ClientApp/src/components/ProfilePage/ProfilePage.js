@@ -16,7 +16,7 @@ const ProfilePage = () => {
         fetchUser();
     }, []);
     */
-
+   
    // Šita informacija statinė ir vėliau ją reiktų ištrint bei atkomentuot viską aukščiau
     const [user, setUser] = useState({
         name: "John",
