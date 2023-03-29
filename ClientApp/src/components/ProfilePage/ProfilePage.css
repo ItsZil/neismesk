@@ -15,11 +15,11 @@
     justify-content: center;
     align-items: center;
     width: 150px;
-    height: 150px;
-    border-radius: 50%;
+    height: auto;
     background-color: #f0f8ff;
     margin-right: 20px;
     overflow: hidden;
+    flex-direction: column;
 }
 
 .avatar {
@@ -33,32 +33,27 @@
     justify-content: center;
 }
 
-h1 {
-    font-size: 32px;
-    margin: 0 0 10px 0;
-}
-
 p {
-    font-size: 18px;
+    font-size: 15px;
     margin: 0;
-    line-height: 1.5;
+    line-height: 2;
 }
 
 strong {
     font-weight: bold;
 }
 
-.edit-button {
+.save-button {
     background-color: rgba(49, 131, 171, 0.9);
     color: white;
     font-size: 16px;
     border: none;
     border-radius: 5px;
-    padding: 10px;
+    padding: 5px;
     cursor: pointer;
     margin-top: 20px;
 }
 
-    .edit-button:hover {
-        background-color: #0058a6;
-    }
+.edit-button:hover {
+    background-color: #0058a6;
+}
