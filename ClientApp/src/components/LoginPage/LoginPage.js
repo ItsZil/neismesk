@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router';
 import './LoginPage.css'
+import toast, { Toaster } from 'react-hot-toast';
 
 export const LoginPage = () => {
 
@@ -24,10 +25,20 @@ export const LoginPage = () => {
                     navigate("/");
                 }
                 else if (response.status === 400) {
-                    alert("Nerastas vartotojas su pateiktais duomenimis!");
+                    toast("Nerastas vartotojas su pateiktais duomenimis!", {
+                        style: {
+                            backgroundColor: 'red',
+                            color: 'white',
+                        },
+                    });
                 }
                 else {
-                    alert("Įvyko klaida, susisiekite su administratoriumi!");
+                    toast("Įvyko klaida, susisiekite su administratoriumi!", {
+                        style: {
+                            backgroundColor: 'red',
+                            color: 'white',
+                        },
+                    });
                 }
             })
     }
@@ -36,17 +47,27 @@ export const LoginPage = () => {
         const requestOptions = {
             method: "GET"
         };
-        
+
         fetch("api/login/isloggedin", requestOptions)
             .then(response => {
                 if (response.status === 200) {
-                    alert('Logged in');
+                    toast("Logged in");
                 }
                 else if (response.status === 401) {
-                    alert('Not logged in');
+                    toast("Not logged in", {
+                        style: {
+                            backgroundColor: 'red',
+                            color: 'white',
+                        },
+                    });
                 }
                 else {
-                    alert('Unexpected response, check console logs');
+                    toast("Unexpected response, check console logs", {
+                        style: {
+                            backgroundColor: 'red',
+                            color: 'white',
+                        },
+                    });
                 }
             })
     }
@@ -59,13 +80,23 @@ export const LoginPage = () => {
         fetch("api/login/logout", requestOptions)
             .then(response => {
                 if (response.status === 200) {
-                    alert('Logged out');
+                    toast("Logged out");
                 }
                 else if (response.status === 401) {
-                    alert('Already logged out');
+                    toast("Already logged out", {
+                        style: {
+                            backgroundColor: 'red',
+                            color: 'white',
+                        },
+                    });
                 }
                 else {
-                    alert('Unexpected response, check console logs');
+                    toast("Unexpected response, check console logs", {
+                        style: {
+                            backgroundColor: 'red',
+                            color: 'white',
+                        },
+                    });
                 }
             })
     }
@@ -73,6 +104,7 @@ export const LoginPage = () => {
 
     return (
         <div className='outerBoxWrapper'>
+            <Toaster />
             <div className='outerBox'>
                 <div className='innerBox'>
                     <h2 className='boxLabel'>Prisijungimas</h2>

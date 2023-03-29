@@ -1,21 +1,14 @@
-﻿{
-  "iisSettings": {
-    "windowsAuthentication": false,
-    "anonymousAuthentication": true,
-    "iisExpress": {
-      "applicationUrl": "http://localhost:53256",
-      "sslPort": 44374
-    }
-  },
+{
   "profiles": {
     "neismesk": {
       "commandName": "Project",
       "launchBrowser": true,
-      "applicationUrl": "https://localhost:7185;http://localhost:5278",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development",
-        "ASPNETCORE_HOSTINGSTARTUPASSEMBLIES": "Microsoft.AspNetCore.SpaProxy"
-      }
+        "ASPNETCORE_HOSTINGSTARTUPASSEMBLIES": "Microsoft.AspNetCore.SpaProxy",
+        "DATABASE_CONN_STRING": "server=74.234.32.45;user=neismesk;password=hfhAh$h#sa23v2;database=neismesk-dev;port=3306"
+      },
+      "applicationUrl": "https://localhost:7185;http://localhost:5278"
     },
     "IIS Express": {
       "commandName": "IISExpress",
@@ -24,6 +17,14 @@
         "ASPNETCORE_ENVIRONMENT": "Development",
         "ASPNETCORE_HOSTINGSTARTUPASSEMBLIES": "Microsoft.AspNetCore.SpaProxy"
       }
+    }
+  },
+  "iisSettings": {
+    "windowsAuthentication": false,
+    "anonymousAuthentication": true,
+    "iisExpress": {
+      "applicationUrl": "http://localhost:53256",
+      "sslPort": 44374
     }
   }
 }
