@@ -2,6 +2,7 @@
 
 namespace neismesk.ViewModels.Ad
 {
+    //Might be unnecessary if we are getting data from a form
     public class DeviceViewModel
     {
         [JsonProperty("name")]
@@ -9,12 +10,6 @@ namespace neismesk.ViewModels.Ad
 
         [JsonProperty("description")]
         public string Description { get; set; }
-
-        [JsonProperty("category")]
-        public string Category { get; set; }
-
-        [JsonProperty("fk_user")]
-        public int fk_User { get; set; }
 
         [JsonProperty("fk_category")]
         public int fk_Category { get; set; }

@@ -147,13 +147,43 @@ namespace neismesk.Utilities
             }
         }
 
-        /// <summary>
-        /// Adds parameters to a database command object.
-        /// </summary>
-        /// <typeparam name="U">Type of parameter object</typeparam>
-        /// <param name="command">Command object to add parameters to</param>
-        /// <param name="parameters">Object containing parameter values</param>
-        private void AddParameters<U>(IDbCommand command, U parameters)
+		/// <summary>
+		/// Executes a query that modifies data in the database and return the id of the modified entry.
+		/// </summary>
+		/// <typeparam name="U">Type of parameter object</typeparam>
+		/// <param name="sqlForInsert">SQL statement to execute</param>
+		/// <param name="parameters">Object containing parameter values</param>
+		public async Task<int> SaveDataGetId<U>(string sqlForInsert, string sqlForId, U parameters)
+		{
+			try
+			{
+				using MySqlConnection connection = GetConnection();
+				using MySqlCommand command = new MySqlCommand(sqlForInsert, connection);
+				AddParameters(command, parameters);
+
+				await connection.OpenAsync();
+				await command.ExecuteNonQueryAsync();
+
+                command.CommandText = sqlForId;
+
+                int id = Convert.ToInt32(await command.ExecuteScalarAsync());
+
+				return id;
+			}
+			catch (Exception ex)
+			{
+				_logger.Error(ex, "Error saving data to database!");
+				return -1;
+			}
+		}
+
+		/// <summary>
+		/// Adds parameters to a database command object.
+		/// </summary>
+		/// <typeparam name="U">Type of parameter object</typeparam>
+		/// <param name="command">Command object to add parameters to</param>
+		/// <param name="parameters">Object containing parameter values</param>
+		private void AddParameters<U>(IDbCommand command, U parameters)
         {
             if (parameters != null)
             {
@@ -167,7 +197,33 @@ namespace neismesk.Utilities
             }
         }
 
-        public bool TestConnection()
+		/// <summary>
+		/// Executes a query that modifies data in the database.
+		/// </summary>
+		/// <typeparam name="U">Type of parameter object</typeparam>
+		/// <param name="sql">SQL statement to execute</param>
+		/// <param name="parameters">Object containing parameter values</param>
+		//public async Task<bool> InsertImages<U>(List<IFormFile> images, int adId)
+		//{
+		//	try
+		//	{
+		//		using MySqlConnection connection = GetConnection();
+		//		using MySqlCommand command = new MySqlCommand("", connection);
+		//		AddParameters(command, parameters);
+        //
+		//		await connection.OpenAsync();
+		//		await command.ExecuteNonQueryAsync();
+        //
+		//		return true;
+		//	}
+		//	catch (Exception ex)
+		//	{
+		//		_logger.Error(ex, "Error saving data to database!");
+		//		return false;
+		//	}
+		//}
+
+		public bool TestConnection()
         {
             // Return true if the connection is successful
             using MySqlConnection connection = GetConnection();

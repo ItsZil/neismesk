@@ -3,16 +3,12 @@ import toast, { Toaster } from 'react-hot-toast';
 import axios from 'axios';
 import { useNavigate } from 'react-router';
 import './ItemCreationPage.css'
-import { category } from '../../props/props';
-import { getCategories } from '../../apiCalls/apiCalls';
 
 const ItemCreationPage = () => {
     const [name, setName] = useState('');
     const [images, setImages] = useState([]);
-    const [imageURLs, setImageUrls] = useState([]);
     const [description, setDescription] = useState('');
     const [category, setCategory] = useState('Pasirinkite kategoriją');
-    //const [categoryId, setCategoryId] = useState('');
     const [categories, setCategories] = useState([]);
     const navigate = useNavigate();
 
@@ -38,15 +34,12 @@ const ItemCreationPage = () => {
             });
             return;
         }
-        const newImageUrls = [];
-        images.forEach(image => newImageUrls.push(URL.createObjectURL(image)));
-        setImageUrls(newImageUrls);
     }, [images]);
 
     const getAllCategories = () => {
         try {
             return categories.map((category) => {
-                return <option value={category.name}>{category.name}</option>;
+                return <option value={category.id}>{category.name}</option>;
             });
         }
         catch (error) {
@@ -56,9 +49,10 @@ const ItemCreationPage = () => {
     }
 
     const getAllImages = () => {
-        if (imageURLs.length > 0) {
-            return imageURLs.map((image) => {
-                return <img src={image} style={{ maxWidth: '15%', height: 'auto', marginRight: '10px', border: '1px solid white' }}></img>;
+        if (images.length > 0) {
+            return images.map((image) => {
+                const imageUrl = URL.createObjectURL(image);
+                return <img src={imageUrl} style={{ maxWidth: '15%', height: 'auto', marginRight: '10px', border: '1px solid white' }}></img>;
             })
         }
     }
@@ -81,34 +75,11 @@ const ItemCreationPage = () => {
     const handleCreate = () => {
         if (checkFields()) {
             try {
-                //const config = {
-                //    headers: {
-                //        'Content-Type': 'multipart/form-data',
-                //        'name': name,
-                //        'description': description,
-                //        'category': category,
-                //        'fk_user': 19,
-                //        'fk_category': 2,
-                //    }
-                //}
                 const formData = new FormData();
                 formData.append('name', name);
                 formData.append('description', description);
-                formData.append('category', category);
-                formData.append('fk_user', 19);
-                formData.append('fk_category', 2);
-                formData.append('images', imageURLs)
-                //images.forEach((image, index) => {
-                //    formData.append(`image${index}`, image);
-                //});
-                //axios.post("api/device/create", {
-                //    name: name,
-                //    description: description,
-                //    category: category,
-                //    fk_user: 19,
-                //    fk_category: 2,
-                //    images: formData
-                //})
+                formData.append('fk_category', category);
+                formData.append('images', images)
                 axios.post("api/device/create", formData)
                     .then(response => {
                         if (response.status === 200) {
@@ -140,7 +111,7 @@ const ItemCreationPage = () => {
             <div className='itemInnerBox'>
                 <h2 className='itemBoxLabel'>Skelbimo sukūrimas</h2>
                 <div className='itemInputWrapper'>
-                    <input type='file' multiple accept='image/*' onChange={(e) => setImages([...e.target.files])}></input>
+                    <input type='file' name='images' multiple accept='image/*' onChange={(e) => setImages([...e.target.files])}></input>
                 </div>
                 <div className='itemInputWrapper'>
                     {getAllImages()}

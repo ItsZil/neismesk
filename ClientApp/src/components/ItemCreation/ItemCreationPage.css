@@ -3,7 +3,8 @@
     width: 75%;
     padding: 2em;
     margin: auto;
-    margin-top: 30px;
+    margin-top: 8em;
+    margin-bottom: 10em;
     border-radius: 20px;
 }
 
@@ -51,18 +52,8 @@ button {
     justify-content: flex-end;
 }
 
-.returnToLoginButton {
-    color: rgb(240, 240, 240);
-}
-
 .itemBoxLabel {
     color:white;
     margin-bottom: 10%;
     font-size: 4vmin;
-}
-
-.warningText {
-    color: rgb(255, 22, 22);
-    font-weight: bold;
-    
 }
