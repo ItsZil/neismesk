@@ -7,22 +7,41 @@ export const ItemViewPage = () => {;
     const [selectedPosting, setSelectedPosting] = useState(null);
     const [message, setMessage] = useState('');
     const [answers, setAnswers] = useState({});
-    //const [posting, setPosting] = useState(null);
+    const [posting, setPosting] = useState(null);
+    const [userPostings, setUserPostings] = useState(null);
+    const [currentTime, setCurrentTime] = useState(new Date());
+    const [isPastEndTime, setIsPastEndTime] = useState(true);
 
-    /*useEffect(() => {
+    useEffect(() => {
         const fetchPosting = async () => {
             try {
                 const response = await axios.get('api/item/endpoint');
                 setPosting(response.data);
+
+                setInterval(() => {
+                    setCurrentTime(new Date());
+                }, 1000);
+                setIsPastEndTime(currentTime.getTime() > new Date(posting.end_datetime).getTime());
             } catch (error) {
-                console.error(error);
-            } finally {
-                setIsLoading(false);
+                toast('Įvyko klaida, susisiekite su administratoriumi!');
             }
         };
 
         fetchPosting();
-    }, []);*/
+    }, []);
+
+    useEffect(() => {
+        const fetchUserPostings = async () => {
+            try {
+                const response = await axios.get('api/item/endpoint');
+                setUserPostings(response.data);
+            } catch (error) {
+                toast('Įvyko klaida, susisiekite su administratoriumi!');
+            }
+        };
+
+        fetchUserPostings();
+    }, []);
 
     const handlePostingSelect = (event) => {
         setSelectedPosting(event.target.value);
@@ -70,16 +89,16 @@ export const ItemViewPage = () => {;
             });
     };
 
-    // Hardcoded temporary
+    /* Hardcoded temporary
     const posting = {
         title: 'Pavadinimas',
         description: 'Aprasymas',
-        type: 'lottery',
+        type: 'exchange',
         participants: 53,
         location: 'Vilnius',
         category: 'Stambi buitinė technika',
         creation_date: '2023-03-30',
-        end_datetime: '2023-04-05 12:50',
+        end_datetime: '2023-04-04 12:50',
         photos: [
             {
                 id: 1,
@@ -100,9 +119,9 @@ export const ItemViewPage = () => {;
                 question: 'Kiek jums metų?',
             }
         ],
-    };
+    };*/
 
-    return posting ? (
+    return posting && userPostings ? (
         <div className='outerBoxWrapper'>
             <Toaster />
             <Container className="my-5">
@@ -129,16 +148,16 @@ export const ItemViewPage = () => {;
                                             <Form.Label>Pasirinkite savo prietaisą, kurį norite pasiūlyti:</Form.Label>
                                             <Form.Control as="select" onChange={handlePostingSelect}>
                                                 <option value="">Pasirinkti skelbimą</option>
-                                                <option value="posting1">Samsung Galaxy S23</option>
-                                                <option value="posting2">Apple Macbook Pro 2019</option>
-                                                <option value="posting3">Dell XPS 9310</option>
+                                                {userPostings && userPostings.map(posting => (
+                                                    <option key={posting.id} value={posting.id}>{posting.title}</option>
+                                                ))}
                                             </Form.Control>
                                         </Form.Group>
                                         <Form.Group>
                                             <Form.Label>Žinutė:</Form.Label>
                                             <Form.Control as="textarea" rows={3} onChange={handleMessageChange} />
                                         </Form.Group>
-                                        <Button variant="primary" type="submit">Siūlyti</Button>
+                                        <Button variant="primary" type="submit" disabled={isPastEndTime}>Siūlyti</Button>
                                     </Form>
                                 )}
                                 {posting.type === 'questionnaire' && (
@@ -149,14 +168,14 @@ export const ItemViewPage = () => {;
                                                 <Form.Control type="text" onChange={(event) => handleAnswerChange(event, question.id)} />
                                             </Form.Group>
                                         ))}
-                                        <Button variant="primary" type="submit">Atsakyti</Button>
+                                        <Button variant="primary" type="submit" disabled={isPastEndTime}>Atsakyti</Button>
                                     </Form>
                                 )}
                                 {posting.type === 'lottery' && (
                                     <Form onSubmit={handleSubmit}>
                                         <p>Dalyvių skaičius: {posting.participants}</p>
                                         <p>Laimėtojas bus išrinktas {posting.end_datetime}</p>
-                                        <Button variant="primary" type="submit">Dalyvauti</Button>
+                                        <Button variant="primary" type="submit" disabled={isPastEndTime}>Dalyvauti</Button>
                                     </Form>
                                 )}
                             </Card.Body>
