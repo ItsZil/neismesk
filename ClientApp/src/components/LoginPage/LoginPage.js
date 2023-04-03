@@ -21,7 +21,7 @@ export const LoginPage = () => {
         fetch("api/login/login", requestOptions)
             .then(response => {
                 if (response.status === 200) {
-                    alert('Sėkmingai prisijungėte!');
+                    toast('Sėkmingai prisijungėte!');
                     navigate("/");
                 }
                 else if (response.status === 400) {
