@@ -136,12 +136,12 @@ footer {
     cursor: pointer;
     font-size: 16px;
     margin-top: 10px;
-    margin-left: 40px;
+    margin-left: -180px;
 }
 
 .buttongive {
-    position: relative;
-    left: 450px;
+    position: absolute;
+    left: 1550px;
     padding: 10px 10px;
     background-color: rgba(49, 160, 171, 0.9);
     color: white;
