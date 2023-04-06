@@ -103,9 +103,9 @@ const ProfilePage = () => {
                 <input type="file" accept="image/png, image/jpeg" onChange={(e) => setImage([...e.target.files])}></input>
             </div>
             <div className="info">
-                <p><strong>Vardas:</strong></p> <input type="name" id="name" value="{user.name}"></input>
-                <p><strong>Pavardė:</strong></p> <input type="surname" id="surname" value="{user.surname}"></input>
-                <p><strong>Email:</strong></p> <input type="email" id="email" value="{user.email}"></input>
+                <p><strong>Vardas:</strong></p> <input type="name" id="name" value={user.name}></input>
+                <p><strong>Pavardė:</strong></p> <input type="surname" id="surname" value={user.surname}></input>
+                <p><strong>Email:</strong></p> <input type="email" id="email" value={user.email}></input>
 
                 <hr></hr>
                 <p><strong>Senas slaptažodis:</strong></p> <input type="password" id="old_password"></input>
