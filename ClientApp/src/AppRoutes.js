@@ -9,6 +9,7 @@ import HomePage from "./components/HomePage/HomePage";
 // User authentication
 import { LoginPage } from "./components/LoginPage/LoginPage";
 import RegistrationPage from "./components/RegistrationPage/RegistrationPage";
+import { ItemViewPage } from "./components/ItemViewPage/ItemViewPage";
 
 const AppRoutes = [
   {
@@ -50,6 +51,10 @@ const AppRoutes = [
   {
     path: '/forgotpassword',
     element: <ForgotPasswordPage />
+  },
+  {
+      path: '/skelbimas',
+      element: <ItemViewPage />
   }
 ];
 
