@@ -115,3 +115,58 @@ footer {
         object-fit: cover;
         border-radius: 50%;
     }
+
+.search-container {
+    position: fixed;
+    top: -20px;
+    left: 200px;
+    text-align: left;
+    display: inline-flex;
+    padding: 30px;
+    margin: 10px 0;
+}
+
+
+.buttonsearch {
+    padding: 10px 10px;
+    background-color: rgba(49, 160, 171, 0.9);
+    color: white;
+    border: thick;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 16px;
+    margin-top: 10px;
+    margin-left: -180px;
+}
+
+.buttongive {
+    position: absolute;
+    left: 1550px;
+    padding: 10px 10px;
+    background-color: rgba(49, 160, 171, 0.9);
+    color: white;
+    border: thick;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 16px;
+    margin-top: 10px;
+}
+
+.buttonsearch:hover {
+    background: rgba(49, 100, 171, 0.9);
+    color: white;
+}
+
+.buttongive:hover {
+    background: rgba(49, 100, 171, 0.9);
+    color: white;
+}
+
+.categories {
+    width: 150px;
+    border: thick;
+    border-radius: 4px;
+    margin-left: 10px;
+    background: rgba(49, 160, 171, 0.9);
+    color: white;
+}
