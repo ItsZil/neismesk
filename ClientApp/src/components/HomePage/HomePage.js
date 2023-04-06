@@ -1,55 +1,32 @@
-﻿import React from 'react';
+﻿import React, { useEffect, useState } from 'react';
+import axios from 'axios';
 import './HomePage.css';
 
 
 function HomePage() {
+    const [items, setItems] = useState([]);
+
+    useEffect(() => {
+        async function fetchItems() {
+            const response = await axios.get('/api/device/getDevices');
+            setItems(response.data);
+        }
+
+        fetchItems();
+    }, []);
     return (
         <div className="home">
             <section className="product-list">
                 <h3>Naujausi prietaisų skelbimai</h3>
                 <ul className="ul">
-                    <li className="li">
-                        <img src="./images/phone.png" alt="" />
-                        <h4>Samsung A8 telefonas</h4>
-                        <p>Keitimas</p>
+                {items.map(item => (
+                    <li className="li" key={item.id}>
+                        <img src="./images/phone.png" alt="{item.name}" />
+                        <h4>{item.name}</h4>
+                        <p>{item.description}</p>
                         <button>Noriu!</button>
                     </li>
-                    <li className="li">
-                        <img src="./images/washing_machine.png" alt="" />
-                        <h4>Skalbimo mašina Ultra max Pro</h4>
-                        <p>Loterija</p>
-                        <button>Noriu!</button>
-                    </li>
-                    <li className="li">
-                        <img src="./images/headphones.png" alt=""  />
-                        <h4>Ausinės "Razor Extreme"</h4>
-                        <p>Klausimynas</p>
-                        <button>Noriu!</button>
-                    </li>
-                    <li className="li">
-                        <img src="./images/phone.png" alt="" />
-                        <h4>Samsung A8 telefonas</h4>
-                        <p>Keitimas</p>
-                        <button>Noriu!</button>
-                    </li>
-                    <li className="li">
-                        <img src="./images/washing_machine.png" alt="" />
-                        <h4>Skalbimo mašina Ultra max Pro</h4>
-                        <p>Loterija</p>
-                        <button>Noriu!</button>
-                    </li>
-                    <li className="li">
-                        <img src="./images/headphones.png" alt="" />
-                        <h4>Ausinės "Razor Extreme"</h4>
-                        <p>Klausimynas</p>
-                        <button>Noriu!</button>
-                    </li>
-                    <li className="li">
-                        <img src="./images/headphones.png" alt="" />
-                        <h4>Ausinės "Razor Extreme"</h4>
-                        <p>Klausimynas</p>
-                        <button>Noriu!</button>
-                    </li>
+                ))}
                 </ul>
             </section>
         </div>
@@ -57,3 +34,4 @@ function HomePage() {
 }
 
 export default HomePage;
+
