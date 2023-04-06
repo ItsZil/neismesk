@@ -1,9 +1,10 @@
 import { Counter } from "./components/Counter";
-import { Home } from "./components/Home";
 import { AboutUs } from "./components/AboutUs";
 import { TestAccessControl } from "./components/TestAccessControl";
 import ForgotPasswordPage from "./components/ForgotPasswordPage/ForgotPasswordPage";
 import HelpPage from "./components/HelpPage/HelpPage";
+import ProfilePage from "./components/ProfilePage/ProfilePage";
+import HomePage from "./components/HomePage/HomePage";
 
 // User authentication
 import { LoginPage } from "./components/LoginPage/LoginPage";
@@ -11,10 +12,6 @@ import RegistrationPage from "./components/RegistrationPage/RegistrationPage";
 import { ItemViewPage } from "./components/ItemViewPage/ItemViewPage";
 
 const AppRoutes = [
-  {
-    //index: true, //nustato startini page'a
-    element: <Home />
-  },
   {
     path: '/counter',
     element: <Counter />
@@ -29,7 +26,7 @@ const AppRoutes = [
   },
   {
     index: true,
-    element: <LoginPage />
+    element: <HomePage />
   },
   {
     path: '/registration',
@@ -46,6 +43,10 @@ const AppRoutes = [
   {
     path: '/testaccesscontrol',
     element: <TestAccessControl />
+  },
+  {
+    path: '/profile',
+    element: <ProfilePage />
   },
   {
     path: '/forgotpassword',
