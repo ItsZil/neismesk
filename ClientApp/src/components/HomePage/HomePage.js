@@ -1,6 +1,7 @@
 ﻿import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import './HomePage.css';
+import  { Link, useNavigate } from 'react-router-dom';
 
 
 function HomePage() {
@@ -29,6 +30,9 @@ function HomePage() {
                         <img src="./images/phone.png" alt="{item.name}" />
                         <h4>{item.name}</h4>
                         <p>{item.description}</p>
+                        <Link to={`/items/${item.id}`}>
+                        <button className='update' onClick='' type='submit'>Redaguoti</button>
+                        </Link>
                         <button className="wish">Noriu!</button>
                         <button className="delete" onClick={() => handleDelete(item.id)}>
                         Ištrinti

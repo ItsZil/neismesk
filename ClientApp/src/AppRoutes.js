@@ -3,6 +3,7 @@ import { AboutUs } from "./components/AboutUs";
 import { TestAccessControl } from "./components/TestAccessControl";
 import ForgotPasswordPage from "./components/ForgotPasswordPage/ForgotPasswordPage";
 import HelpPage from "./components/HelpPage/HelpPage";
+import ItemUpdatePage from './components/ItemUpdatePage/ItemUpdatePage';
 import ProfilePage from "./components/ProfilePage/ProfilePage";
 import HomePage from "./components/HomePage/HomePage";
 
@@ -55,6 +56,10 @@ const AppRoutes = [
   {
       path: '/skelbimas',
       element: <ItemViewPage />
+  },
+  {
+    path: '/items/:id',
+    element: <ItemUpdatePage />
   }
 ];
 
