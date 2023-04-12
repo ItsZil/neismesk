@@ -45,5 +45,27 @@ namespace neismesk.Controllers
                 return BadRequest(ex.Message);
             }
         }
+        [HttpDelete("delete/{id}")]
+public async Task<IActionResult> DeleteItem(int id)
+{
+    try
+    {
+        // Check if item exists
+        var item = await _database.LoadData($"SELECT * FROM ads WHERE id={id}");
+        if (item == null || item.Rows.Count == 0)
+        {
+            return BadRequest();
+        }
+
+        // Delete item from database
+        await _database.SaveData($"DELETE FROM ads WHERE id={id}", id);
+
+        return Ok();
+    }
+    catch (Exception ex)
+    {
+        return BadRequest(ex.Message);
+    }
+}
     }
 }
