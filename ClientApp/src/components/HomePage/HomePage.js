@@ -15,6 +15,8 @@ function HomePage() {
 
         fetchItems();
     }, []);
+    const handleClick = (item) => {
+    };
     const handleDelete = async (itemId) => {
         await axios.delete(`/api/device/delete/${itemId}`);
         setItems(items.filter((item) => item.id !== itemId));
@@ -31,7 +33,7 @@ function HomePage() {
                         <h4>{item.name}</h4>
                         <p>{item.description}</p>
                         <Link to={`/items/${item.id}`}>
-                        <button className='update' onClick='' type='submit'>Redaguoti</button>
+                        <button className='update' onClick={() => handleClick(item)} type='submit'>Redaguoti</button>
                         </Link>
                         <button className="wish">Noriu!</button>
                         <button className="delete" onClick={() => handleDelete(item.id)}>
