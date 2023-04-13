@@ -14,6 +14,11 @@ function HomePage() {
 
         fetchItems();
     }, []);
+    const handleDelete = async (itemId) => {
+        await axios.delete(`/api/device/delete/${itemId}`);
+        setItems(items.filter((item) => item.id !== itemId));
+      };
+
     return (
         <div className="home">
             <section className="product-list">
@@ -24,7 +29,10 @@ function HomePage() {
                         <img src="./images/phone.png" alt="{item.name}" />
                         <h4>{item.name}</h4>
                         <p>{item.description}</p>
-                        <button>Noriu!</button>
+                        <button className="wish">Noriu!</button>
+                        <button className="delete" onClick={() => handleDelete(item.id)}>
+                        Ištrinti
+                        </button>
                     </li>
                 ))}
                 </ul>
