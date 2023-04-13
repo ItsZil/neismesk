@@ -92,7 +92,7 @@ export class NavMenu extends Component {
                             <img alt="logo" src="./images/logo.png" />
                         </NavbarBrand>
                         <div className="d-flex align-items-center">
-                        <div class="search-container">
+                        <div className="search-container">
                         <Input type="search" placeholder="Ieškoti" style={{ width: '350px' }} />
                         <Nav navbar>
                             <Dropdown nav isOpen={this.state.dropdownOpen} toggle={this.toggleDropdown}>
