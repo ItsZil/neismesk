@@ -10,7 +10,7 @@ function HomePage() {
 
     useEffect(() => {
         async function fetchItems() {
-            const response = await axios.get('/api/device/getDevices');
+            const response = await axios.get('/api/item/getItems');
             setItems(response.data);
         }
 
@@ -22,7 +22,7 @@ function HomePage() {
     }
 
     const handleDelete = async (itemId) => {
-        await axios.delete(`/api/device/delete/${itemId}`);
+        await axios.delete(`/api/item/delete/${itemId}`);
         setItems(items.filter((item) => item.id !== itemId));
     };
 
