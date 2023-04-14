@@ -17,14 +17,13 @@ export const ItemViewPage = () => {
     useEffect(() => {
         const fetchItem = async () => {
             try {
-                console.log(itemId);
-                const response = await axios.get('api/item/endpoint');
-                setItem(response.data);
+                const response = await axios.get('api/item/getItem/1');
+                setItem(response.data[0]);
 
                 setInterval(() => {
                     setCurrentTime(new Date());
                 }, 1000);
-                setIsPastEndTime(currentTime.getTime() > new Date(item.end_datetime).getTime());
+
             } catch (error) {
                 toast('Įvyko klaida, susisiekite su administratoriumi!');
             }
@@ -33,6 +32,13 @@ export const ItemViewPage = () => {
         fetchItem();
     }, [itemId]);
 
+    useEffect(() => {
+        if (item) {
+            setIsPastEndTime(currentTime.getTime() > new Date(item.endDateTime).getTime());
+        }
+    }, [item, currentTime]);
+
+    /*
     useEffect(() => {
         const fetchUserItems = async () => {
             try {
@@ -44,7 +50,7 @@ export const ItemViewPage = () => {
         };
 
         fetchUserItems();
-    }, []);
+    }, []);*/
 
     const handleItemSelect = (event) => {
         setSelectedItem(event.target.value);
@@ -100,9 +106,9 @@ export const ItemViewPage = () => {
         participants: 53,
         location: 'Vilnius',
         category: 'Stambi buitinė technika',
-        creation_date: '2023-03-30',
+        creation_datetime: '2023-03-30',
         end_datetime: '2023-04-04 12:50',
-        photos: [
+        images: [
             {
                 id: 1,
                 url: 'https://picsum.photos/200/300',
@@ -124,28 +130,32 @@ export const ItemViewPage = () => {
         ],
     };*/
 
-    return item && userItems ? (
+    return item ? (
         <div className='outerBoxWrapper'>
             <Toaster />
             <Container className="my-5">
                 <Row>
                     <Col md={6}>
                         <Carousel>
-                            {item.photos.map((photo, index) => (
-                                <Carousel.Item key={index}>
-                                    <img className="d-block w-100" src={photo.url} alt={`Photo ${index + 1}`} />
-                                </Carousel.Item>
-                            ))}
+                            {item.images && item.images.length > 0 && (
+                                <Carousel>
+                                    {item.images.map((photo, index) => (
+                                        <Carousel.Item key={index}>
+                                            <img className="d-block w-100" src={photo.url} alt={`Photo ${index + 1}`} />
+                                        </Carousel.Item>
+                                    ))}
+                                </Carousel>
+                            )}
                         </Carousel>
                     </Col>
                     <Col md={6}>
                         <Card>
                             <Card.Header>{item.category}</Card.Header>
                             <Card.Body>
-                                <Card.Title>{item.title}</Card.Title>
+                                <Card.Title>{item.name}</Card.Title>
                                 <Card.Text>{item.description}</Card.Text>
                                 <hr className="mb-2" />
-                                {item.type === 'exchange' && (
+                                {item.type === 'Keitimas' && (
                                     <Form onSubmit={handleSubmit}>
                                         <Form.Group>
                                             <Form.Label>Pasirinkite savo prietaisą, kurį norite pasiūlyti:</Form.Label>
@@ -163,7 +173,7 @@ export const ItemViewPage = () => {
                                         <Button variant="primary" type="submit" disabled={isPastEndTime}>Siūlyti</Button>
                                     </Form>
                                 )}
-                                {item.type === 'questionnaire' && (
+                                {item.type === 'Klausimynas' && userItems && (
                                     <Form onSubmit={handleSubmit}>
                                         {item.questions.map((question) => (
                                             <Form.Group key={question.id}>
@@ -174,19 +184,25 @@ export const ItemViewPage = () => {
                                         <Button variant="primary" type="submit" disabled={isPastEndTime}>Atsakyti</Button>
                                     </Form>
                                 )}
-                                {item.type === 'lottery' && (
+                                {item.type === 'Loterija' && (
                                     <Form onSubmit={handleSubmit}>
                                         <p>Dalyvių skaičius: {item.participants}</p>
-                                        <p>Laimėtojas bus išrinktas {item.end_datetime}</p>
+                                        <p>Laimėtojas bus išrinktas {new Date(item.endDateTime).toLocaleString('lt-LT')}</p>
                                         <Button variant="primary" type="submit" disabled={isPastEndTime}>Dalyvauti</Button>
                                     </Form>
                                 )}
                             </Card.Body>
-                            <Card.Footer>{item.location} | {item.creation_date}</Card.Footer>
+                            <Card.Footer>{item.location} | {new Date(item.creationDateTime).toLocaleString('lt-LT')}</Card.Footer>
                         </Card>
                     </Col>
                 </Row>
             </Container>
         </div>
-    ) : <Container className="my-5"><div className='outerBoxWrapper d-flex justify-content-center'> <Spinner animation="border" role="status" /> </div></Container>
-};
+    ) : (
+        <Container className="my-5">
+            <div className='outerBoxWrapper d-flex justify-content-center'>
+                <Spinner animation="border" role="status" />
+            </div>
+        </Container>
+    );
+}
