@@ -16,6 +16,9 @@ namespace neismesk.ViewModels.Item
         [JsonProperty("description")]
         public string Description { get; set; }
 
+        [JsonProperty("status")]
+        public string Status { get; set; }
+
         [JsonProperty("type")]
         public string Type { get; set; }
 

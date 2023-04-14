@@ -134,6 +134,9 @@ export const ItemViewPage = () => {
                             <Card.Header>{item.category}</Card.Header>
                             <Card.Body>
                                 <Card.Title>{item.name}</Card.Title>
+                                {item.status != "Sukurta" ? (
+                                    <Card.Text>Šis skelbimas nebegalioja.</Card.Text>
+                                ) : null}
                                 <Card.Text>{item.description}</Card.Text>
                                 <hr className="mb-2" />
                                 {item.type === 'Keitimas' && userItems && viewerId && (

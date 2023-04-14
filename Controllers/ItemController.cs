@@ -48,13 +48,14 @@ namespace neismesk.Controllers
             try
             {
                 var itemData = await _database.LoadData(
-                    "SELECT ads.*, ad_type.type AS ad_type, categories.name AS category_name, " +
+                    "SELECT ads.*, ad_type.type AS ad_type, categories.name AS category_name, status.name AS status_name, " +
                     "COUNT(ad_lottery_participants.id) AS participants_count, images.img_id AS image_id, images.img AS image_blob, " +
                     "GROUP_CONCAT(questions.question_text SEPARATOR ';') AS question_text, " +
                     "GROUP_CONCAT(images.img SEPARATOR ';') AS image_blob " +
                     "FROM ads " +
                     "JOIN ad_type ON ads.fk_type = ad_type.id " +
                     "JOIN categories ON ads.fk_category = categories.id " +
+                    "JOIN status ON ads.fk_status = status.id " +
                     "LEFT JOIN ad_lottery_participants ON ads.id = ad_lottery_participants.fk_ad " +
                     "LEFT JOIN images ON images.fk_ad = ads.id " +
                     "LEFT JOIN questions ON questions.fk_ad = ads.id " +
@@ -90,6 +91,7 @@ namespace neismesk.Controllers
                                   UserId = Convert.ToInt32(dt["fk_user"]),
                                   Name = dt["name"].ToString(),
                                   Description = dt["description"].ToString(),
+                                  Status = dt["status_name"].ToString(),
                                   Type = dt["ad_type"].ToString(),
                                   Participants = dt["participants_count"] == DBNull.Value ? null : (int?)Convert.ToInt32(dt["participants_count"]),
                                   Location = dt["location"].ToString(),
@@ -107,6 +109,7 @@ namespace neismesk.Controllers
                                   UserId = grouped.Key.UserId,
                                   Name = grouped.Key.Name,
                                   Description = grouped.Key.Description,
+                                  Status = grouped.Key.Status,
                                   Type = grouped.Key.Type,
                                   Participants = grouped.Key.Participants,
                                   Location = grouped.Key.Location,
@@ -150,13 +153,14 @@ namespace neismesk.Controllers
             {
                 int viewerId = Convert.ToInt32(HttpContext.User.FindFirst("user_id").Value);
                 var itemData = await _database.LoadData(
-                    "SELECT ads.*, ad_type.type AS ad_type, categories.name AS category_name, " +
+                    "SELECT ads.*, ad_type.type AS ad_type, categories.name AS category_name, status.name AS status_name, " +
                     "COUNT(ad_lottery_participants.id) AS participants_count, images.img_id AS image_id, images.img AS image_blob, " +
                     "GROUP_CONCAT(questions.question_text SEPARATOR ';') AS question_text, " +
                     "GROUP_CONCAT(images.img SEPARATOR ';') AS image_blob " +
                     "FROM ads " +
                     "JOIN ad_type ON ads.fk_type = ad_type.id " +
                     "JOIN categories ON ads.fk_category = categories.id " +
+                    "JOIN status ON ads.fk_status = status.id " +
                     "LEFT JOIN ad_lottery_participants ON ads.id = ad_lottery_participants.fk_ad " +
                     "LEFT JOIN images ON images.fk_ad = ads.id " +
                     "LEFT JOIN questions ON questions.fk_ad = ads.id " +
@@ -192,6 +196,7 @@ namespace neismesk.Controllers
                                   UserId = Convert.ToInt32(dt["fk_user"]),
                                   Name = dt["name"].ToString(),
                                   Description = dt["description"].ToString(),
+                                  Status = dt["status_name"].ToString(),
                                   Type = dt["ad_type"].ToString(),
                                   Participants = dt["participants_count"] == DBNull.Value ? null : (int?)Convert.ToInt32(dt["participants_count"]),
                                   Location = dt["location"].ToString(),
@@ -209,6 +214,7 @@ namespace neismesk.Controllers
                                   UserId = grouped.Key.UserId,
                                   Name = grouped.Key.Name,
                                   Description = grouped.Key.Description,
+                                  Status = grouped.Key.Status,
                                   Type = grouped.Key.Type,
                                   Participants = grouped.Key.Participants,
                                   Location = grouped.Key.Location,
