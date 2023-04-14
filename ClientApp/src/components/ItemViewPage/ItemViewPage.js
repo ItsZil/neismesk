@@ -162,14 +162,14 @@ export const ItemViewPage = () => {
                                                 <Form.Control type="text" onChange={(event) => handleAnswerChange(event, question.id)} />
                                             </Form.Group>
                                         ))}
-                                        <Button variant="primary" type="submit" disabled={isPastEndTime}>Atsakyti</Button>
+                                        <Button variant="primary" type="submit" disabled={isPastEndTime || item.userId === viewerId}>Atsakyti</Button>
                                     </Form>
                                 )}
                                 {item.type === 'Loterija' && (
                                     <Form onSubmit={handleSubmit}>
                                         <p>Dalyvių skaičius: {item.participants}</p>
                                         <p>Laimėtojas bus išrinktas {new Date(item.endDateTime).toLocaleString('lt-LT')}</p>
-                                        <Button variant="primary" type="submit" disabled={isPastEndTime}>Dalyvauti</Button>
+                                        <Button variant="primary" type="submit" disabled={isPastEndTime || item.userId === viewerId}>Dalyvauti</Button>
                                     </Form>
                                 )}
                             </Card.Body>
