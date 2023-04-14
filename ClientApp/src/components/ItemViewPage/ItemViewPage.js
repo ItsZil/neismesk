@@ -142,7 +142,7 @@ export const ItemViewPage = () => {
                                             <Form.Label>Pasirinkite savo prietaisą, kurį norite pasiūlyti:</Form.Label>
                                             <Form.Control as="select" onChange={handleItemSelect}>
                                                 <option value="">Pasirinkti skelbimą</option>
-                                                {userItems && userItems.filter(item => item.Userid !== viewerId).map(item => (
+                                                {userItems && userItems.map(item => (
                                                     <option key={item.id} value={item.id}>{item.name}</option>
                                                 ))}
                                             </Form.Control>
