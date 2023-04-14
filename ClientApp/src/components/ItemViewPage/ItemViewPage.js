@@ -155,7 +155,7 @@ export const ItemViewPage = () => {
                                 <Card.Title>{item.name}</Card.Title>
                                 <Card.Text>{item.description}</Card.Text>
                                 <hr className="mb-2" />
-                                {item.type === 'Keitimas' && (
+                                {item.type === 'Keitimas' && userItems && (
                                     <Form onSubmit={handleSubmit}>
                                         <Form.Group>
                                             <Form.Label>Pasirinkite savo prietaisą, kurį norite pasiūlyti:</Form.Label>
@@ -173,7 +173,7 @@ export const ItemViewPage = () => {
                                         <Button variant="primary" type="submit" disabled={isPastEndTime}>Siūlyti</Button>
                                     </Form>
                                 )}
-                                {item.type === 'Klausimynas' && userItems && (
+                                {item.type === 'Klausimynas' && (
                                     <Form onSubmit={handleSubmit}>
                                         {item.questions.map((question) => (
                                             <Form.Group key={question.id}>
