@@ -6,6 +6,9 @@ namespace neismesk.ViewModels.Item
     {
         [JsonProperty("id")]
         public int Id { get; set; }
+        
+        [JsonProperty("fk_user")]
+        public int UserId { get; set; }
 
         [JsonProperty("name")]
         public string Name { get; set; }
@@ -37,6 +40,4 @@ namespace neismesk.ViewModels.Item
         [JsonProperty("questions")]
         public List<ItemQuestionViewModel>? Questions { get; set; }
     }
-
-
 }

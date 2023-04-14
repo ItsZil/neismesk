@@ -11,14 +11,15 @@ export const ItemViewPage = () => {
     const [answers, setAnswers] = useState({});
     const [item, setItem] = useState(null);
     const [userItems, setUserItems] = useState(null);
+    const [viewerId, setViewerId] = useState(null);
     const [currentTime, setCurrentTime] = useState(new Date());
     const [isPastEndTime, setIsPastEndTime] = useState(true);
 
     useEffect(() => {
         const fetchItem = async () => {
             try {
-                const response = await axios.get('api/item/getItem/1');
-                setItem(response.data[0]);
+                const response = await axios.get(`api/item/getItem/${itemId}`);
+                setItem(response.data);
 
                 setInterval(() => {
                     setCurrentTime(new Date());
@@ -37,12 +38,11 @@ export const ItemViewPage = () => {
             setIsPastEndTime(currentTime.getTime() > new Date(item.endDateTime).getTime());
         }
     }, [item, currentTime]);
-
-    /*
+    
     useEffect(() => {
         const fetchUserItems = async () => {
             try {
-                const response = await axios.get('api/item/endpoint');
+                const response = await axios.get('api/item/getUserItems');
                 setUserItems(response.data);
             } catch (error) {
                 toast('Įvyko klaida, susisiekite su administratoriumi!');
@@ -50,7 +50,19 @@ export const ItemViewPage = () => {
         };
 
         fetchUserItems();
-    }, []);*/
+    }, []);
+
+    useEffect(() => {
+        const fetchViewerId = async () => {
+            try {
+                const response = await axios.get('api/login/getCurrentUserId');
+                setViewerId(response.data);
+            } catch (error) {
+                toast('Įvyko klaida, susisiekite su administratoriumi!');
+            }
+        };
+        fetchViewerId();
+    }, []);
 
     const handleItemSelect = (event) => {
         setSelectedItem(event.target.value);
@@ -76,7 +88,7 @@ export const ItemViewPage = () => {
         }
         else if (item.type === 'questionnaire') {
             const unansweredQuestions = item.questions.filter(q => !answers[q.id]);
-            console.log(unansweredQuestions.length)
+
             if (unansweredQuestions.length > 0) {
                 toast('Atsakykite į visus klausimus.');
                 return;
@@ -89,6 +101,7 @@ export const ItemViewPage = () => {
             ...(item.type === 'questionnaire' && { answers })
         };
 
+        // Submit
         axios.post('api/item/endpoint', data)
             .then(response => {
                 console.log(response);
@@ -97,38 +110,6 @@ export const ItemViewPage = () => {
                 console.error(error);
             });
     };
-
-    /* Hardcoded temporary
-    const item = {
-        title: 'Pavadinimas',
-        description: 'Aprasymas',
-        type: 'exchange',
-        participants: 53,
-        location: 'Vilnius',
-        category: 'Stambi buitinė technika',
-        creation_datetime: '2023-03-30',
-        end_datetime: '2023-04-04 12:50',
-        images: [
-            {
-                id: 1,
-                url: 'https://picsum.photos/200/300',
-            },
-            {
-                id: 2,
-                url: 'https://picsum.photos/200/300',
-            }
-        ],
-        questions: [
-            {  
-                id: 1,
-                question: 'Koks jūsų vardas?',
-            },
-            {
-                id: 2,
-                question: 'Kiek jums metų?',
-            }
-        ],
-    };*/
 
     return item ? (
         <div className='outerBoxWrapper'>
@@ -155,14 +136,14 @@ export const ItemViewPage = () => {
                                 <Card.Title>{item.name}</Card.Title>
                                 <Card.Text>{item.description}</Card.Text>
                                 <hr className="mb-2" />
-                                {item.type === 'Keitimas' && userItems && (
+                                {item.type === 'Keitimas' && userItems && viewerId && (
                                     <Form onSubmit={handleSubmit}>
                                         <Form.Group>
                                             <Form.Label>Pasirinkite savo prietaisą, kurį norite pasiūlyti:</Form.Label>
                                             <Form.Control as="select" onChange={handleItemSelect}>
                                                 <option value="">Pasirinkti skelbimą</option>
-                                                {userItems && userItems.map(item => (
-                                                    <option key={item.id} value={item.id}>{item.title}</option>
+                                                {userItems && userItems.filter(item => item.Userid !== viewerId).map(item => (
+                                                    <option key={item.id} value={item.id}>{item.name}</option>
                                                 ))}
                                             </Form.Control>
                                         </Form.Group>
@@ -170,7 +151,7 @@ export const ItemViewPage = () => {
                                             <Form.Label>Žinutė:</Form.Label>
                                             <Form.Control as="textarea" rows={3} onChange={handleMessageChange} />
                                         </Form.Group>
-                                        <Button variant="primary" type="submit" disabled={isPastEndTime}>Siūlyti</Button>
+                                        <Button variant="primary" type="submit" disabled={isPastEndTime || !selectedItem || item.userId === viewerId}>Siūlyti</Button>
                                     </Form>
                                 )}
                                 {item.type === 'Klausimynas' && (
