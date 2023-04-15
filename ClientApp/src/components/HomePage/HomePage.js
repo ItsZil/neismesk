@@ -1,23 +1,30 @@
 ﻿import React, { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import './HomePage.css';
 
 
 function HomePage() {
     const [items, setItems] = useState([]);
+    const navigate = useNavigate();
 
     useEffect(() => {
         async function fetchItems() {
-            const response = await axios.get('/api/device/getDevices');
+            const response = await axios.get('/api/item/getItems');
             setItems(response.data);
         }
 
         fetchItems();
     }, []);
+
+    const handleWish = (itemId) => {
+        navigate(`/skelbimas/${itemId}`);
+    }
+
     const handleDelete = async (itemId) => {
-        await axios.delete(`/api/device/delete/${itemId}`);
+        await axios.delete(`/api/item/delete/${itemId}`);
         setItems(items.filter((item) => item.id !== itemId));
-      };
+    };
 
     return (
         <div className="home">
@@ -29,7 +36,7 @@ function HomePage() {
                         <img src="./images/phone.png" alt="{item.name}" />
                         <h4>{item.name}</h4>
                         <p>{item.description}</p>
-                        <button className="wish">Noriu!</button>
+                        <button className="wish" onClick={() => handleWish(item.id)}>Noriu!</button>
                         <button className="delete" onClick={() => handleDelete(item.id)}>
                         Ištrinti
                         </button>

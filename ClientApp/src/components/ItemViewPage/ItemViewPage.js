@@ -1,50 +1,71 @@
 ﻿import React, { useState, useEffect } from 'react';
+import { useParams } from 'react-router-dom';
 import { Carousel, Col, Container, Row, Form, Button, Card, Spinner } from 'react-bootstrap';
 import toast, { Toaster } from 'react-hot-toast';
 import axios from 'axios';
 
-export const ItemViewPage = () => {;
-    const [selectedPosting, setSelectedPosting] = useState(null);
+export const ItemViewPage = () => {
+    const { itemId } = useParams();
+    const [selectedItem, setSelectedItem] = useState(null);
     const [message, setMessage] = useState('');
     const [answers, setAnswers] = useState({});
-    const [posting, setPosting] = useState(null);
-    const [userPostings, setUserPostings] = useState(null);
+    const [item, setItem] = useState(null);
+    const [userItems, setUserItems] = useState(null);
+    const [viewerId, setViewerId] = useState(null);
     const [currentTime, setCurrentTime] = useState(new Date());
     const [isPastEndTime, setIsPastEndTime] = useState(true);
 
     useEffect(() => {
-        const fetchPosting = async () => {
+        const fetchItem = async () => {
             try {
-                const response = await axios.get('api/item/endpoint');
-                setPosting(response.data);
+                const response = await axios.get(`api/item/getItem/${itemId}`);
+                setItem(response.data);
 
                 setInterval(() => {
                     setCurrentTime(new Date());
                 }, 1000);
-                setIsPastEndTime(currentTime.getTime() > new Date(posting.end_datetime).getTime());
+
             } catch (error) {
                 toast('Įvyko klaida, susisiekite su administratoriumi!');
             }
         };
 
-        fetchPosting();
+        fetchItem();
+    }, [itemId]);
+
+    useEffect(() => {
+        if (item) {
+            setIsPastEndTime(currentTime.getTime() > new Date(item.endDateTime).getTime());
+        }
+    }, [item, currentTime]);
+    
+    useEffect(() => {
+        const fetchUserItems = async () => {
+            try {
+                const response = await axios.get('api/item/getUserItems');
+                setUserItems(response.data);
+            } catch (error) {
+                toast('Įvyko klaida, susisiekite su administratoriumi!');
+            }
+        };
+
+        fetchUserItems();
     }, []);
 
     useEffect(() => {
-        const fetchUserPostings = async () => {
+        const fetchViewerId = async () => {
             try {
-                const response = await axios.get('api/item/endpoint');
-                setUserPostings(response.data);
+                const response = await axios.get('api/login/getCurrentUserId');
+                setViewerId(response.data);
             } catch (error) {
                 toast('Įvyko klaida, susisiekite su administratoriumi!');
             }
         };
-
-        fetchUserPostings();
+        fetchViewerId();
     }, []);
 
-    const handlePostingSelect = (event) => {
-        setSelectedPosting(event.target.value);
+    const handleItemSelect = (event) => {
+        setSelectedItem(event.target.value);
     };
 
     const handleMessageChange = (event) => {
@@ -61,13 +82,13 @@ export const ItemViewPage = () => {;
     const handleSubmit = (event) => {
         event.preventDefault();
 
-        if (posting.type === 'exchange' && !selectedPosting) {
+        if (item.type === 'exchange' && !selectedItem) {
             toast('Pasirinkite skelbimą, kurį norite pasiūlyti keitimui.');
             return;
         }
-        else if (posting.type === 'questionnaire') {
-            const unansweredQuestions = posting.questions.filter(q => !answers[q.id]);
-            console.log(unansweredQuestions.length)
+        else if (item.type === 'questionnaire') {
+            const unansweredQuestions = item.questions.filter(q => !answers[q.id]);
+
             if (unansweredQuestions.length > 0) {
                 toast('Atsakykite į visus klausimus.');
                 return;
@@ -75,11 +96,12 @@ export const ItemViewPage = () => {;
         }
 
         const data = {
-            selectedPosting,
+            selectedItem,
             message,
-            ...(posting.type === 'questionnaire' && { answers })
+            ...(item.type === 'questionnaire' && { answers })
         };
 
+        // Submit
         axios.post('api/item/endpoint', data)
             .then(response => {
                 console.log(response);
@@ -89,67 +111,42 @@ export const ItemViewPage = () => {;
             });
     };
 
-    /* Hardcoded temporary
-    const posting = {
-        title: 'Pavadinimas',
-        description: 'Aprasymas',
-        type: 'exchange',
-        participants: 53,
-        location: 'Vilnius',
-        category: 'Stambi buitinė technika',
-        creation_date: '2023-03-30',
-        end_datetime: '2023-04-04 12:50',
-        photos: [
-            {
-                id: 1,
-                url: 'https://picsum.photos/200/300',
-            },
-            {
-                id: 2,
-                url: 'https://picsum.photos/200/300',
-            }
-        ],
-        questions: [
-            {  
-                id: 1,
-                question: 'Koks jūsų vardas?',
-            },
-            {
-                id: 2,
-                question: 'Kiek jums metų?',
-            }
-        ],
-    };*/
-
-    return posting && userPostings ? (
+    return item ? (
         <div className='outerBoxWrapper'>
             <Toaster />
             <Container className="my-5">
                 <Row>
                     <Col md={6}>
                         <Carousel>
-                            {posting.photos.map((photo, index) => (
-                                <Carousel.Item key={index}>
-                                    <img className="d-block w-100" src={photo.url} alt={`Photo ${index + 1}`} />
-                                </Carousel.Item>
-                            ))}
+                            {item.images && item.images.length > 0 && (
+                                <Carousel>
+                                    {item.images.map((photo, index) => (
+                                        <Carousel.Item key={index}>
+                                            <img className="d-block w-100" src={photo.url} alt={`Photo ${index + 1}`} />
+                                        </Carousel.Item>
+                                    ))}
+                                </Carousel>
+                            )}
                         </Carousel>
                     </Col>
                     <Col md={6}>
                         <Card>
-                            <Card.Header>{posting.category}</Card.Header>
+                            <Card.Header>{item.category}</Card.Header>
                             <Card.Body>
-                                <Card.Title>{posting.title}</Card.Title>
-                                <Card.Text>{posting.description}</Card.Text>
+                                <Card.Title>{item.name}</Card.Title>
+                                {item.status != "Sukurta" ? (
+                                    <Card.Text>Šis skelbimas nebegalioja.</Card.Text>
+                                ) : null}
+                                <Card.Text>{item.description}</Card.Text>
                                 <hr className="mb-2" />
-                                {posting.type === 'exchange' && (
+                                {item.type === 'Keitimas' && userItems && viewerId && (
                                     <Form onSubmit={handleSubmit}>
                                         <Form.Group>
                                             <Form.Label>Pasirinkite savo prietaisą, kurį norite pasiūlyti:</Form.Label>
-                                            <Form.Control as="select" onChange={handlePostingSelect}>
+                                            <Form.Control as="select" onChange={handleItemSelect}>
                                                 <option value="">Pasirinkti skelbimą</option>
-                                                {userPostings && userPostings.map(posting => (
-                                                    <option key={posting.id} value={posting.id}>{posting.title}</option>
+                                                {userItems && userItems.map(item => (
+                                                    <option key={item.id} value={item.id}>{item.name}</option>
                                                 ))}
                                             </Form.Control>
                                         </Form.Group>
@@ -157,33 +154,39 @@ export const ItemViewPage = () => {;
                                             <Form.Label>Žinutė:</Form.Label>
                                             <Form.Control as="textarea" rows={3} onChange={handleMessageChange} />
                                         </Form.Group>
-                                        <Button variant="primary" type="submit" disabled={isPastEndTime}>Siūlyti</Button>
+                                        <Button variant="primary" type="submit" disabled={isPastEndTime || !selectedItem || item.userId === viewerId}>Siūlyti</Button>
                                     </Form>
                                 )}
-                                {posting.type === 'questionnaire' && (
+                                {item.type === 'Klausimynas' && (
                                     <Form onSubmit={handleSubmit}>
-                                        {posting.questions.map((question) => (
+                                        {item.questions.map((question) => (
                                             <Form.Group key={question.id}>
                                                 <Form.Label>{question.question}</Form.Label>
                                                 <Form.Control type="text" onChange={(event) => handleAnswerChange(event, question.id)} />
                                             </Form.Group>
                                         ))}
-                                        <Button variant="primary" type="submit" disabled={isPastEndTime}>Atsakyti</Button>
+                                        <Button variant="primary" type="submit" disabled={isPastEndTime || item.userId === viewerId}>Atsakyti</Button>
                                     </Form>
                                 )}
-                                {posting.type === 'lottery' && (
+                                {item.type === 'Loterija' && (
                                     <Form onSubmit={handleSubmit}>
-                                        <p>Dalyvių skaičius: {posting.participants}</p>
-                                        <p>Laimėtojas bus išrinktas {posting.end_datetime}</p>
-                                        <Button variant="primary" type="submit" disabled={isPastEndTime}>Dalyvauti</Button>
+                                        <p>Dalyvių skaičius: {item.participants}</p>
+                                        <p>Laimėtojas bus išrinktas {new Date(item.endDateTime).toLocaleString('lt-LT')}</p>
+                                        <Button variant="primary" type="submit" disabled={isPastEndTime || item.userId === viewerId}>Dalyvauti</Button>
                                     </Form>
                                 )}
                             </Card.Body>
-                            <Card.Footer>{posting.location} | {posting.creation_date}</Card.Footer>
+                            <Card.Footer>{item.location} | {new Date(item.creationDateTime).toLocaleString('lt-LT')}</Card.Footer>
                         </Card>
                     </Col>
                 </Row>
             </Container>
         </div>
-    ) : <Container className="my-5"><div className='outerBoxWrapper d-flex justify-content-center'> <Spinner animation="border" role="status" /> </div></Container>
-};
+    ) : (
+        <Container className="my-5">
+            <div className='outerBoxWrapper d-flex justify-content-center'>
+                <Spinner animation="border" role="status" />
+            </div>
+        </Container>
+    );
+}
