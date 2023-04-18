@@ -45,7 +45,7 @@ export const ItemViewPage = () => {
                 const response = await axios.get('api/item/getUserItems');
                 setUserItems(response.data);
             } catch (error) {
-                toast('Įvyko klaida, susisiekite su administratoriumi!');
+                //toast('Įvyko klaida, susisiekite su administratoriumi!');
             }
         };
 
@@ -58,7 +58,7 @@ export const ItemViewPage = () => {
                 const response = await axios.get('api/login/getCurrentUserId');
                 setViewerId(response.data);
             } catch (error) {
-                toast('Įvyko klaida, susisiekite su administratoriumi!');
+                //toast('Įvyko klaida, susisiekite su administratoriumi!');
             }
         };
         fetchViewerId();
@@ -120,9 +120,9 @@ export const ItemViewPage = () => {
                         <Carousel>
                             {item.images && item.images.length > 0 && (
                                 <Carousel>
-                                    {item.images.map((photo, index) => (
+                                    {item.images.map((index, image) => (
                                         <Carousel.Item key={index}>
-                                            <img className="d-block w-100" src={photo.url} alt={`Photo ${index + 1}`} />
+                                            <img className="d-block w-100" src={image.url} alt={`Image ${index + 1}`} />
                                         </Carousel.Item>
                                     ))}
                                 </Carousel>
@@ -139,7 +139,7 @@ export const ItemViewPage = () => {
                                 ) : null}
                                 <Card.Text>{item.description}</Card.Text>
                                 <hr className="mb-2" />
-                                {item.type === 'Keitimas' && userItems && viewerId && (
+                                {item.type === 'Keitimas' && (
                                     <Form onSubmit={handleSubmit}>
                                         <Form.Group>
                                             <Form.Label>Pasirinkite savo prietaisą, kurį norite pasiūlyti:</Form.Label>

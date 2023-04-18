@@ -58,8 +58,8 @@ const AppRoutes = [
     element: <ItemCreationPage />
   },
   {
-      path: '/skelbimas',
-      element: <ItemViewPage />
+    path: '/skelbimas/:itemId',
+    element: <ItemViewPage />
   }
 ];
 

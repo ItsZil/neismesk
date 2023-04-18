@@ -4,6 +4,7 @@ using neismesk.Utilities;
 using neismesk.ViewModels.Ad;
 using neismesk.ViewModels.Item;
 using System.Data;
+using System.Text;
 
 namespace neismesk.Controllers.Item
 {
@@ -73,13 +74,30 @@ namespace neismesk.Controllers.Item
                     questions = !string.IsNullOrEmpty(questionText) ? questionText.Split(';').ToList() : new List<string>();
                 }
 
-                // Create a list of image blobs.
-                List<string> imageBlobs = new List<string>();
+                // Create a list of images.
+                List<ItemImageViewModel> images = new List<ItemImageViewModel>();
                 if (itemData.Rows.Count > 0)
                 {
-                    string imageBlob = itemData.Rows[0]["image_blob"].ToString();
-                    imageBlobs = !string.IsNullOrEmpty(imageBlob) ? imageBlob.Split(';').ToList() : new List<string>();
+                    foreach (DataRow row in itemData.Rows)
+                    {
+                        int? imageId = row["image_id"] == DBNull.Value ? null : (int?)Convert.ToInt32(row["image_id"]);
+                        string imageBlob = row["image_blob"] == DBNull.Value ? null : Encoding.UTF8.GetString((byte[])row["image_blob"]);
+
+                        if (!string.IsNullOrEmpty(imageBlob))
+                        {
+                            images.Add(new ItemImageViewModel()
+                            {
+                                Id = imageId.Value,
+                                File = new FormFile(new MemoryStream((byte[])row["image_blob"]), 0, ((byte[])row["image_blob"]).Length, "image", "image.png")
+                                {
+                                    ContentType = "image/png"
+                                }
+                            });
+                        }
+                    }
                 }
+
+
 
                 if (itemData == null)
                 {
@@ -100,9 +118,6 @@ namespace neismesk.Controllers.Item
                                   Category = dt["category_name"].ToString(),
                                   CreationDateTime = Convert.ToDateTime(dt["creation_datetime"]),
                                   EndDateTime = dt["end_datetime"] == DBNull.Value ? null : (DateTime?)Convert.ToDateTime(dt["end_datetime"]),
-                                  ImageId = dt["image_id"] == DBNull.Value ? null : (int?)Convert.ToInt32(dt["image_id"]),
-                                  ImageBlob = dt["image_blob"] == DBNull.Value ? null : dt["image_blob"].ToString(),
-                                  ImageBlob1 = dt["image_blob1"] == DBNull.Value ? null : dt["image_blob1"].ToString(),
                                   QuestionText = dt["question_text"] == DBNull.Value ? null : dt["question_text"].ToString()
                               } into grouped
                               select new ItemViewModel()
@@ -118,13 +133,7 @@ namespace neismesk.Controllers.Item
                                   Category = grouped.Key.Category,
                                   CreationDateTime = grouped.Key.CreationDateTime,
                                   EndDateTime = grouped.Key.EndDateTime,
-                                  Images = (from DataRow imageRow in grouped
-                                            where imageRow["image_id"] != DBNull.Value
-                                            select new ItemImageViewModel()
-                                            {
-                                                Id = Convert.ToInt32(imageRow["image_id"]),
-                                                File = imageRow["image_blob"] == DBNull.Value ? null : new FormFile(new MemoryStream(Convert.FromBase64String(imageRow["image_blob"].ToString())), 0, Convert.FromBase64String(imageRow["image_blob"].ToString()).Length, "image", "image.png")
-                                            }).ToList(),
+                                  Images = images,
                                   Questions = (from DataRow questionRow in itemData.Rows
                                                where questionRow["id"].ToString() == grouped.First()["id"].ToString()
                                                select new ItemQuestionViewModel()
@@ -133,7 +142,6 @@ namespace neismesk.Controllers.Item
                                                    Question = questionRow["question_text"] == DBNull.Value ? null : questionRow["question_text"].ToString()
                                                }).ToList()
                               }).ToList();
-
 
                 return Ok(result[0]);
             }
