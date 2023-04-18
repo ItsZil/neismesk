@@ -13,7 +13,7 @@ const ItemCreationPage = () => {
     const navigate = useNavigate();
 
     useEffect(() => {
-        axios.get("api/device/getCategories")
+        axios.get("api/item/getCategories")
             .then(response => {
                 setCategories(response.data);
             })
@@ -78,9 +78,11 @@ const ItemCreationPage = () => {
                 const formData = new FormData();
                 formData.append('name', name);
                 formData.append('description', description);
-                formData.append('fk_category', category);
-                formData.append('images', images)
-                axios.post("api/device/create", formData)
+                formData.append('category', category);
+                for (let i = 0; i < images.length; i++) {
+                    formData.append('images', images[i]);
+                }
+                axios.post("api/item/create", formData)
                     .then(response => {
                         if (response.status === 200) {
                             toast('Sėkmingai sukūrėtė skelbimą!', {

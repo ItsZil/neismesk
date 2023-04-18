@@ -1,9 +1,11 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using neismesk.Models;
 using neismesk.Utilities;
+using neismesk.ViewModels.Ad;
 using neismesk.ViewModels.Item;
 using System.Data;
 
-namespace neismesk.Controllers
+namespace neismesk.Controllers.Item
 {
     [ApiController]
     [Route("api/[controller]")]
@@ -246,6 +248,48 @@ namespace neismesk.Controllers
             }
         }
 
+        [HttpPost("create")]
+        public async Task<IActionResult> CreateItem()
+        {
+            int userId = 5;//Convert.ToInt32(HttpContext.User.FindFirst("user_id").Value);
+            var form = await Request.ReadFormAsync();
+            List<IFormFile> images = form.Files.GetFiles("images").ToList();
+            var name = form["name"].ToString();
+            var description = form["description"].ToString();
+            var category = Convert.ToInt32(form["fk_category"]);
+
+            try
+            {
+                ItemModel item = new ItemModel()
+                {
+                    Name = name,
+                    Description = description,
+                    Status = 1,
+                    User = userId,
+                    Category = category,
+                    Images = images
+                };
+
+                item.Id = await _database.SaveDataGetId("INSERT INTO ads (name, description, fk_category, fk_user) VALUES (@name, @description, @fk_Category, @User, @Status)", "SELECT LAST_INSERT_ID()", item);
+
+                if (item.Id != null)
+                {
+                    bool success = true;
+                    //success = await _database.InsertImages(images, item.Id);
+                    return success == true ? Ok() : BadRequest();
+                }
+                else
+                {
+                    return BadRequest();
+                }
+            }
+            catch (Exception)
+            {
+                return BadRequest();
+            }
+
+        }
+
         [HttpDelete("delete/{itemId}")]
         public async Task<IActionResult> DeleteItem(int itemId)
         {
@@ -262,6 +306,33 @@ namespace neismesk.Controllers
                 await _database.SaveData($"DELETE FROM ads WHERE id={itemId}", itemId);
 
                 return Ok();
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
+        [HttpGet("getCategories")]
+        public async Task<IActionResult> GetCategories()
+        {
+            try
+            {
+                var categories = await _database.LoadData("SELECT * FROM categories");
+
+                if (categories == null)
+                {
+                    return BadRequest();
+                }
+
+                var result = (from DataRow dt in categories.Rows
+                              select new CategoryViewModel()
+                              {
+                                  Id = Convert.ToInt32(dt["id"]),
+                                  Name = dt["name"].ToString()
+                              }).ToList();
+
+                return Ok(result);
             }
             catch (Exception ex)
             {
