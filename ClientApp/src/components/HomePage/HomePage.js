@@ -1,55 +1,47 @@
-﻿import React from 'react';
+﻿import React, { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import axios from 'axios';
 import './HomePage.css';
 
 
 function HomePage() {
+    const [items, setItems] = useState([]);
+    const navigate = useNavigate();
+
+    useEffect(() => {
+        async function fetchItems() {
+            const response = await axios.get('/api/item/getItems');
+            setItems(response.data);
+        }
+
+        fetchItems();
+    }, []);
+
+    const handleWish = (itemId) => {
+        navigate(`/skelbimas/${itemId}`);
+    }
+
+    const handleDelete = async (itemId) => {
+        await axios.delete(`/api/item/delete/${itemId}`);
+        setItems(items.filter((item) => item.id !== itemId));
+    };
+
     return (
         <div className="home">
             <section className="product-list">
                 <h3>Naujausi prietaisų skelbimai</h3>
                 <ul className="ul">
-                    <li className="li">
-                        <img src="./images/phone.png" alt="" />
-                        <h4>Samsung A8 telefonas</h4>
-                        <p>Keitimas</p>
-                        <button>Noriu!</button>
+                {items.map(item => (
+                    <li className="li" key={item.id}>
+                        <img src="./images/phone.png" alt="{item.name}" />
+                        <h4>{item.name}</h4>
+                        <p>{item.description}</p>
+                        <button className="wish" onClick={() => handleWish(item.id)}>Noriu!</button>
+                        <button className="delete" onClick={() => handleDelete(item.id)}>
+                        Ištrinti
+                        </button>
                     </li>
-                    <li className="li">
-                        <img src="./images/washing_machine.png" alt="" />
-                        <h4>Skalbimo mašina Ultra max Pro</h4>
-                        <p>Loterija</p>
-                        <button>Noriu!</button>
-                    </li>
-                    <li className="li">
-                        <img src="./images/headphones.png" alt=""  />
-                        <h4>Ausinės "Razor Extreme"</h4>
-                        <p>Klausimynas</p>
-                        <button>Noriu!</button>
-                    </li>
-                    <li className="li">
-                        <img src="./images/phone.png" alt="" />
-                        <h4>Samsung A8 telefonas</h4>
-                        <p>Keitimas</p>
-                        <button>Noriu!</button>
-                    </li>
-                    <li className="li">
-                        <img src="./images/washing_machine.png" alt="" />
-                        <h4>Skalbimo mašina Ultra max Pro</h4>
-                        <p>Loterija</p>
-                        <button>Noriu!</button>
-                    </li>
-                    <li className="li">
-                        <img src="./images/headphones.png" alt="" />
-                        <h4>Ausinės "Razor Extreme"</h4>
-                        <p>Klausimynas</p>
-                        <button>Noriu!</button>
-                    </li>
-                    <li className="li">
-                        <img src="./images/headphones.png" alt="" />
-                        <h4>Ausinės "Razor Extreme"</h4>
-                        <p>Klausimynas</p>
-                        <button>Noriu!</button>
-                    </li>
+                ))}
                 </ul>
             </section>
         </div>
@@ -57,3 +49,4 @@ function HomePage() {
 }
 
 export default HomePage;
+

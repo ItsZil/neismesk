@@ -1,4 +1,5 @@
 ﻿using System.Data;
+using System.Linq.Expressions;
 using System.Reflection;
 using MySql.Data.MySqlClient;
 using Serilog;
@@ -54,24 +55,32 @@ namespace neismesk.Utilities
             AddParameters(command, parameters);
             
             await connection.OpenAsync();
-            using MySqlDataReader reader = (MySqlDataReader)await command.ExecuteReaderAsync();
-
-            List<T> result = new List<T>();
-
-            while (await reader.ReadAsync())
+            try
             {
-                T row = Activator.CreateInstance<T>();
-                for (int i = 0; i < reader.FieldCount; i++)
+                using MySqlDataReader reader = (MySqlDataReader)await command.ExecuteReaderAsync();
+
+                List<T> result = new List<T>();
+
+                while (await reader.ReadAsync())
                 {
-                    PropertyInfo property = row.GetType().GetProperty(reader.GetName(i));
-                    if (property != null && !reader.IsDBNull(i))
+                    T row = Activator.CreateInstance<T>();
+                    for (int i = 0; i < reader.FieldCount; i++)
                     {
-                        property.SetValue(row, reader.GetValue(i), null);
+                        PropertyInfo property = row.GetType().GetProperty(reader.GetName(i));
+                        if (property != null && !reader.IsDBNull(i))
+                        {
+                            property.SetValue(row, reader.GetValue(i), null);
+                        }
                     }
+                    result.Add(row);
                 }
-                result.Add(row);
+                return result;
             }
-            return result;
+            catch (Exception ex)
+            {
+                _logger.Error(ex, "Error loading data from database!");
+                return null;
+            }
         }
 
         /// <summary>
@@ -82,20 +91,28 @@ namespace neismesk.Utilities
         /// <returns>DataTable containing the query results</returns>
         public async Task<DataTable> LoadData<U>(string sql, U parameters)
         {
-            using (var connection = new MySqlConnection(_connectionString))
+            try
             {
-                using (var command = new MySqlCommand(sql, connection))
+                using (var connection = new MySqlConnection(_connectionString))
                 {
-                    AddParameters(command, parameters);
-                    
-                    await connection.OpenAsync();
-                    var dataTable = new DataTable();
-                    using (var dataAdapter = new MySqlDataAdapter(command))
+                    using (var command = new MySqlCommand(sql, connection))
                     {
-                        dataAdapter.Fill(dataTable);
+                        AddParameters(command, parameters);
+
+                        await connection.OpenAsync();
+                        var dataTable = new DataTable();
+                        using (var dataAdapter = new MySqlDataAdapter(command))
+                        {
+                            dataAdapter.Fill(dataTable);
+                        }
+                        return dataTable;
                     }
-                    return dataTable;
                 }
+            }
+            catch (Exception ex)
+            {
+                _logger.Error(ex, "Error loading data from database!");
+                return null;
             }
         }
 
@@ -106,18 +123,26 @@ namespace neismesk.Utilities
         /// <returns>DataTable containing the query results in plain form</returns>
         public async Task<DataTable> LoadData(string sql)
         {
-            using (var connection = new MySqlConnection(_connectionString))
+            try
             {
-                using (var command = new MySqlCommand(sql, connection))
+                using (var connection = new MySqlConnection(_connectionString))
                 {
-                    await connection.OpenAsync();
-                    var dataTable = new DataTable();
-                    using (var dataAdapter = new MySqlDataAdapter(command))
+                    using (var command = new MySqlCommand(sql, connection))
                     {
-                        dataAdapter.Fill(dataTable);
+                        await connection.OpenAsync();
+                        var dataTable = new DataTable();
+                        using (var dataAdapter = new MySqlDataAdapter(command))
+                        {
+                            dataAdapter.Fill(dataTable);
+                        }
+                        return dataTable;
                     }
-                    return dataTable;
                 }
+            }
+            catch (Exception ex)
+            {
+                _logger.Error(ex, "Error loading data from database!");
+                return null;
             }
         }
 
