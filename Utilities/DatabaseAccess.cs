@@ -3,6 +3,8 @@ using System.Linq.Expressions;
 using System.Reflection;
 using MySql.Data.MySqlClient;
 using Serilog;
+using neismesk.Models;
+using static System.Net.Mime.MediaTypeNames;
 
 namespace neismesk.Utilities
 {
@@ -228,25 +230,33 @@ namespace neismesk.Utilities
 		/// <typeparam name="U">Type of parameter object</typeparam>
 		/// <param name="sql">SQL statement to execute</param>
 		/// <param name="parameters">Object containing parameter values</param>
-		//public async Task<bool> InsertImages<U>(List<IFormFile> images, int adId)
-		//{
-		//	try
-		//	{
-		//		using MySqlConnection connection = GetConnection();
-		//		using MySqlCommand command = new MySqlCommand("", connection);
-		//		AddParameters(command, parameters);
-        //
-		//		await connection.OpenAsync();
-		//		await command.ExecuteNonQueryAsync();
-        //
-		//		return true;
-		//	}
-		//	catch (Exception ex)
-		//	{
-		//		_logger.Error(ex, "Error saving data to database!");
-		//		return false;
-		//	}
-		//}
+		public async Task<bool> InsertImages(ItemModel item)
+		{
+			try
+			{
+                using MySqlConnection connection = GetConnection();
+                await connection.OpenAsync();
+
+                foreach (IFormFile image in item.Images)
+                {
+                    using MySqlCommand command = new MySqlCommand(
+                        "INSERT INTO images (img, fk_ad) VALUES (@image, @fk_ad)", connection);
+
+                    // Add parameters
+                    command.Parameters.AddWithValue("@image", image.OpenReadStream());
+                    command.Parameters.AddWithValue("@fk_ad", item.Id);
+
+                    await command.ExecuteNonQueryAsync();
+                }
+
+                return true;
+			}
+			catch (Exception ex)
+			{
+				_logger.Error(ex, "Error saving data to database!");
+				return false;
+			}
+		}
 
 		public bool TestConnection()
         {

@@ -8,19 +8,26 @@ const ItemCreationPage = () => {
     const [name, setName] = useState('');
     const [images, setImages] = useState([]);
     const [description, setDescription] = useState('');
+    const [location, setLocation] = useState('');
     const [category, setCategory] = useState('Pasirinkite kategoriją');
     const [categories, setCategories] = useState([]);
+    const [itemType, setType] = useState('Pasirinkite, kaip norite atiduoti');
+    const [itemTypes, setItemTypes] = useState([]);
     const navigate = useNavigate();
 
     useEffect(() => {
-        axios.get("api/item/getCategories")
-            .then(response => {
-                setCategories(response.data);
-            })
-            .catch(error => {
-                console.log(error);
-                toast("Įvyko klaida, susisiekite su administratoriumi!");
-            })
+        Promise.all([
+            axios.get("api/item/getCategories"),
+            axios.get("api/item/getItemTypes")
+        ])
+        .then(([categoriesResponse, itemTypesResponse]) => {
+            setCategories(categoriesResponse.data);
+            setItemTypes(itemTypesResponse.data);
+        })
+        .catch(error => {
+            console.log(error);
+            toast("Įvyko klaida, susisiekite su administratoriumi!");
+        });
     }, []);
 
     useEffect(() => {
@@ -48,6 +55,18 @@ const ItemCreationPage = () => {
         }
     }
 
+    const getAllItemTypes = () => {
+        try {
+            return itemTypes.map((itemType) => {
+                return <option value={itemType.id}>{itemType.name}</option>;
+            });
+        }
+        catch (error) {
+            toast("Įvyko klaida, susisiekite su administratoriumi!");
+            console.log(error);
+        }
+    }
+
     const getAllImages = () => {
         if (images.length > 0) {
             return images.map((image) => {
@@ -58,7 +77,7 @@ const ItemCreationPage = () => {
     }
 
     function checkFields() {
-        if (name === '' || description === '' || category === 'Pasirinkite kategoriją') {
+        if (name === '' || description === '' || location === '' || category === 'Pasirinkite kategoriją' || itemType === 'Pasirinkite, kaip norite atiduoti') {
             toast('Reikia užpildyti visus laukus!', {
                 style: {
                     backgroundColor: 'red',
@@ -78,7 +97,9 @@ const ItemCreationPage = () => {
                 const formData = new FormData();
                 formData.append('name', name);
                 formData.append('description', description);
+                formData.append('location', location);
                 formData.append('category', category);
+                formData.append('type', itemType);
                 for (let i = 0; i < images.length; i++) {
                     formData.append('images', images[i]);
                 }
@@ -125,9 +146,18 @@ const ItemCreationPage = () => {
                     <textarea name='description' id='description' value={description} onChange={(e) => setDescription(e.target.value)} placeholder='Aprašymas'></textarea>
                 </div>
                 <div className='itemInputWrapper'>
+                    <input type='text' name='location' id='location' value={location} onChange={(e) => setLocation(e.target.value)} placeholder='Gyvenamoji vieta'></input>
+                </div>
+                <div className='itemInputWrapper'>
                     <select value={category} onChange={(e) => setCategory(e.target.value)} >
                         <option>Pasirinkite kategoriją</option>
                         {getAllCategories()}
+                    </select>
+                </div>
+                <div className='itemInputWrapper'>
+                    <select value={itemType} onChange={(e) => setType(e.target.value)} >
+                        <option>Pasirinkite, kaip norite atiduoti</option>
+                        {getAllItemTypes()}
                     </select>
                 </div>
                 <div style={{ display: 'flex', paddingTop: '20px' }}>

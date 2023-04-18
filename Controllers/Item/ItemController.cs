@@ -251,31 +251,28 @@ namespace neismesk.Controllers.Item
         [HttpPost("create")]
         public async Task<IActionResult> CreateItem()
         {
-            int userId = 5;//Convert.ToInt32(HttpContext.User.FindFirst("user_id").Value);
-            var form = await Request.ReadFormAsync();
-            List<IFormFile> images = form.Files.GetFiles("images").ToList();
-            var name = form["name"].ToString();
-            var description = form["description"].ToString();
-            var category = Convert.ToInt32(form["fk_category"]);
-
             try
             {
+                var form = await Request.ReadFormAsync();
                 ItemModel item = new ItemModel()
                 {
-                    Name = name,
-                    Description = description,
+                    Name = form["name"].ToString(),
+                    Description = form["description"].ToString(),
+                    Location = form["location"].ToString(),
                     Status = 1,
-                    User = userId,
-                    Category = category,
-                    Images = images
-                };
+                    User = Convert.ToInt32(HttpContext.User.FindFirst("user_id").Value),
+                    Category = Convert.ToInt32(form["category"]),
+                    Type = Convert.ToInt32(form["type"]),
+                    Images = form.Files.GetFiles("images").ToList(),
+                    EndDate = DateTime.Now.AddDays(14),
+            };
 
-                item.Id = await _database.SaveDataGetId("INSERT INTO ads (name, description, fk_category, fk_user) VALUES (@name, @description, @fk_Category, @User, @Status)", "SELECT LAST_INSERT_ID()", item);
+                item.Id = await _database.SaveDataGetId("INSERT INTO ads (name, description, location, fk_category, fk_user, fk_status, fk_type, end_datetime) VALUES (@Name, @Description, @Location, @Category, @User, @Status, @Type, @EndDate)", "SELECT LAST_INSERT_ID()", item);
 
                 if (item.Id != null)
                 {
-                    bool success = true;
-                    //success = await _database.InsertImages(images, item.Id);
+                    bool success = false;
+                    success = await _database.InsertImages(item);
                     return success == true ? Ok() : BadRequest();
                 }
                 else
@@ -326,10 +323,37 @@ namespace neismesk.Controllers.Item
                 }
 
                 var result = (from DataRow dt in categories.Rows
-                              select new CategoryViewModel()
+                              select new ItemCategoryViewModel()
                               {
                                   Id = Convert.ToInt32(dt["id"]),
                                   Name = dt["name"].ToString()
+                              }).ToList();
+
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
+        [HttpGet("getItemTypes")]
+        public async Task<IActionResult> GetItemTypes()
+        {
+            try
+            {
+                var types = await _database.LoadData("SELECT * FROM ad_type");
+
+                if (types == null)
+                {
+                    return BadRequest();
+                }
+
+                var result = (from DataRow dt in types.Rows
+                              select new ItemTypeViewModel()
+                              {
+                                  Id = Convert.ToInt32(dt["id"]),
+                                  Name = dt["type"].ToString()
                               }).ToList();
 
                 return Ok(result);
