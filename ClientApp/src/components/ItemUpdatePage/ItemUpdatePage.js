@@ -62,7 +62,7 @@ function ItemUpdatePage() {
     }
 }
 
-  if (!item) {
+  if (!item || !categories) {
       return <div><Spinner>Loading...</Spinner></div>;
   }
 

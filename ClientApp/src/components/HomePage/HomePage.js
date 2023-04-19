@@ -17,13 +17,13 @@ function HomePage() {
         fetchItems();
     }, []);
 
-    const handleClick = (item) => {
-        
-    };
-
     const handleOpen = (itemId) => {
         navigate(`/skelbimas/${itemId}`);
     }
+
+    const handleUpdate = (item) => {
+        
+    };
 
     const handleDelete = async (itemId) => {
         await axios.delete(`/api/item/delete/${itemId}`);
@@ -40,10 +40,10 @@ function HomePage() {
                         <img src="./images/phone.png" alt="{item.name}" />
                         <h4>{item.name}</h4>
                         <p>{item.description}</p>
+                        <button className="wish" onClick={() => handleOpen(item.id)}>Noriu!</button>
                         <Link to={`/skelbimas/redaguoti/${item.id}`}>
-                            <button className='update' onClick={() => handleClick(item)} type='submit'>Redaguoti</button>
+                            <button className='update' onClick={() => handleUpdate(item)} type='submit'>Redaguoti</button>
                         </Link>
-                        <button className="wish" onClick={() => handleOpen(item)}>Noriu!</button>
                         <button className="delete" onClick={() => handleDelete(item.id)}>
                         Ištrinti
                         </button>

@@ -58,7 +58,7 @@ const AppRoutes = [
       element: <ItemViewPage />
   },
   {
-    path: '/skelbimas/redaguoti/:id',
+    path: '/skelbimas/redaguoti/:itemId',
     element: <ItemUpdatePage />
   }
 ];

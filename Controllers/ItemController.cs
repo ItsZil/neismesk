@@ -285,8 +285,8 @@ namespace neismesk.Controllers
                 var result = (from DataRow dt in categories.Rows
                               select new CategoryViewModel()
                               {
-                                  Id = Convert.ToInt32(dt["category_id"]),
-                                  Name = dt["category_name"].ToString()
+                                  Id = Convert.ToInt32(dt["id"]),
+                                  Name = dt["name"].ToString()
                               }).ToList();
 
                 return Ok(result);
