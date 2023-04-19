@@ -52,8 +52,6 @@ function HomePage() {
                     <li className="li" key={item.id}>
                         <img src="./images/phone.png" alt="{item.name}" />
                         <h4>{item.name}</h4>
-                        <h4>{item.userId}</h4>
-                        <h4>{viewerId}</h4>
                         <p>{item.description}</p>
                         {item.userId !== viewerId && (
                         <button className="wish"  onClick={() => handleWish(item.id)}>Noriu!</button>
