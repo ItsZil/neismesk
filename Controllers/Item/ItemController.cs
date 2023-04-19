@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using neismesk.Models;
 using neismesk.Utilities;
 using neismesk.ViewModels.Ad;
@@ -89,15 +90,10 @@ namespace neismesk.Controllers.Item
                             {
                                 Id = imageId.Value,
                                 File = new FormFile(new MemoryStream((byte[])row["image_blob"]), 0, ((byte[])row["image_blob"]).Length, "image", "image.png")
-                                {
-                                    ContentType = "image/png"
-                                }
                             });
                         }
                     }
                 }
-
-
 
                 if (itemData == null)
                 {
@@ -259,6 +255,11 @@ namespace neismesk.Controllers.Item
         [HttpPost("create")]
         public async Task<IActionResult> CreateItem()
         {
+            if (!User.Identity.IsAuthenticated)
+            {
+                return Unauthorized();
+            }
+
             try
             {
                 var form = await Request.ReadFormAsync();
@@ -281,7 +282,7 @@ namespace neismesk.Controllers.Item
                 {
                     bool success = false;
                     success = await _database.InsertImages(item);
-                    return success == true ? Ok() : BadRequest();
+                    return success == true ? Ok(item.Id) : BadRequest();
                 }
                 else
                 {

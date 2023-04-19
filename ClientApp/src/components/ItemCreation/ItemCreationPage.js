@@ -112,6 +112,11 @@ const ItemCreationPage = () => {
                                     color: 'white',
                                 },
                             });
+                            navigate(`/skelbimas/${response.data}`)
+                        }
+                        else if (response.status === 401) {
+                            toast('Turite būti prisijungęs!')
+                            navigate('/prisijungti');
                         }
                         else {
                             toast("Įvyko klaida, susisiekite su administratoriumi!");

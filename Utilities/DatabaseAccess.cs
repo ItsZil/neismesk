@@ -224,41 +224,45 @@ namespace neismesk.Utilities
             }
         }
 
-		/// <summary>
-		/// Executes a query that modifies data in the database.
-		/// </summary>
-		/// <typeparam name="U">Type of parameter object</typeparam>
-		/// <param name="sql">SQL statement to execute</param>
-		/// <param name="parameters">Object containing parameter values</param>
-		public async Task<bool> InsertImages(ItemModel item)
-		{
-			try
-			{
+        /// <summary>
+        /// Executes a query that modifies data in the database.
+        /// </summary>
+        /// <typeparam name="U">Type of parameter object</typeparam>
+        /// <param name="sql">SQL statement to execute</param>
+        /// <param name="parameters">Object containing parameter values</param>
+        public async Task<bool> InsertImages(ItemModel item)
+        {
+            try
+            {
                 using MySqlConnection connection = GetConnection();
                 await connection.OpenAsync();
 
                 foreach (IFormFile image in item.Images)
                 {
+                    using MemoryStream stream = new MemoryStream();
+                    await image.CopyToAsync(stream); // Copy the contents of the uploaded file to the memory stream
+                    byte[] data = stream.ToArray(); // Convert the memory stream to a byte array
+
                     using MySqlCommand command = new MySqlCommand(
                         "INSERT INTO images (img, fk_ad) VALUES (@image, @fk_ad)", connection);
 
                     // Add parameters
-                    command.Parameters.AddWithValue("@image", image.OpenReadStream());
+                    command.Parameters.AddWithValue("@image", data);
                     command.Parameters.AddWithValue("@fk_ad", item.Id);
 
                     await command.ExecuteNonQueryAsync();
                 }
 
                 return true;
-			}
-			catch (Exception ex)
-			{
-				_logger.Error(ex, "Error saving data to database!");
-				return false;
-			}
-		}
+            }
+            catch (Exception ex)
+            {
+                _logger.Error(ex, "Error saving data to database!");
+                return false;
+            }
+        }
 
-		public bool TestConnection()
+        public bool TestConnection()
         {
             // Return true if the connection is successful
             using MySqlConnection connection = GetConnection();

@@ -78,7 +78,7 @@ export class NavMenu extends Component {
             <Collapse isOpen={this.state.isClicked} className="toolbar" style={{ flexDirection: 'column' }}>
                 <ul className="no-bullets">
                     <li><Button tag={Link} to="/login" color="primary" onClick={this.handleClick} className="mb-2">Prisijungti</Button></li>
-                    <li><Button tag={Link} to="/registration" color="primary" onClick={this.handleClick} className="mb-2">Registruotis</Button></li>
+                    <li><Button tag={Link} to="/register" color="primary" onClick={this.handleClick} className="mb-2">Registruotis</Button></li>
                     <li><Button tag={Link} to="/login" color="primary" onClick={() => {testLogout(); this.handleClick()}} className="mb-2">Atsijungti</Button></li>
                 </ul>
             </Collapse>
