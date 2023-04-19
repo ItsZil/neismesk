@@ -54,11 +54,11 @@ const AppRoutes = [
     element: <ForgotPasswordPage />
   },
   {
-      path: '/skelbimas',
+      path: '/skelbimas/:itemId',
       element: <ItemViewPage />
   },
   {
-    path: '/items/:id',
+    path: '/skelbimas/redaguoti/:id',
     element: <ItemUpdatePage />
   }
 ];

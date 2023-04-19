@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import toast, { Toaster } from 'react-hot-toast';
+import { Spinner } from 'react-bootstrap';
 import { useParams } from 'react-router-dom';
 import axios from 'axios';
 import './ItemUpdatePage.css';
@@ -13,7 +14,7 @@ function ItemUpdatePage() {
   const [item, setItem] = useState(null);
 
   useEffect(() => {
-    axios.get("api/device/getCategories")
+    axios.get("api/item/getCategories")
         .then(response => {
             setCategories(response.data);
         })
@@ -25,26 +26,28 @@ function ItemUpdatePage() {
 
   useEffect(() => {
     async function fetchItem() {
-      const response = await axios.get(`/api/device/getDevices/${itemId}`);
+      const response = await axios.get(`/api/item/getItem/${itemId}`);
       setItem(response.data);
     }
     fetchItem();
   }, [itemId]);
+  
   const handleSubmit = (event) => {
     try {
-    event.preventDefault();
-    const data = { name, description,category };
-    axios.put(`/api/device/update/${itemId}`, data)
-      .then(() => {
-        toast.success('Item updated successfully!');
-        setName('');
-        setDescription('');
-        setCategory('');
-      })
-        .catch((error) => console.log(error));
-    }
-    catch(error)
-    {toast('Ivyko klaida')};
+        event.preventDefault();
+        const data = { name, description,category };
+        axios.put(`/api/item/update/${itemId}`, data)
+          .then(() => {
+            toast.success('Item updated successfully!');
+            setName('');
+            setDescription('');
+            setCategory('');
+          })
+            .catch((error) => console.log(error));
+        }
+    catch(error) {
+          toast('Ivyko klaida, susisiekite su administratoriumi!')
+      };
   };
 
   const getAllCategories = () => {
@@ -60,7 +63,7 @@ function ItemUpdatePage() {
 }
 
   if (!item) {
-    return <div>Loading...</div>;
+      return <div><Spinner>Loading...</Spinner></div>;
   }
 
   return (
