@@ -1,5 +1,6 @@
 ﻿import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import toast, { Toaster } from 'react-hot-toast';
 import axios from 'axios';
 import './HomePage.css';
 
@@ -7,6 +8,22 @@ import './HomePage.css';
 function HomePage() {
     const [items, setItems] = useState([]);
     const navigate = useNavigate();
+    const [viewerId, setViewerId] = useState(null);
+
+
+
+    useEffect(() => {
+        const fetchViewerId = async () => {
+            try {
+                const response = await axios.get('api/login/getCurrentUserId');
+                setViewerId(response.data);
+            } catch (error) {
+                toast('Įvyko klaida, susisiekite su administratoriumi!');
+            }
+        };
+        fetchViewerId();
+    }, []);
+
 
     useEffect(() => {
         async function fetchItems() {
@@ -35,11 +52,21 @@ function HomePage() {
                     <li className="li" key={item.id}>
                         <img src="./images/phone.png" alt="{item.name}" />
                         <h4>{item.name}</h4>
+                        <h4>{item.userId}</h4>
+                        <h4>{viewerId}</h4>
                         <p>{item.description}</p>
-                        <button className="wish" onClick={() => handleWish(item.id)}>Noriu!</button>
-                        <button className="delete" onClick={() => handleDelete(item.id)}>
-                        Ištrinti
-                        </button>
+                        {item.userId !== viewerId && (
+                        <button className="wish"  onClick={() => handleWish(item.id)}>Noriu!</button>
+                        )}
+                        {item.userId === viewerId && (
+                        <button className="delete" onClick={() => handleDelete(item.id)}>Ištrinti</button>
+                        )}
+                        {item.userId === viewerId && (
+                        <button className="update" onClick={() => ''}>Redaguoti</button>
+                        )}
+                        {item.userId === viewerId && (
+                        <button className="view" onClick={() => ''}>Peržiūrėti</button>
+                        )}
                     </li>
                 ))}
                 </ul>
