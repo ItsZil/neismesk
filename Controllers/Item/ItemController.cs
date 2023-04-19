@@ -89,8 +89,8 @@ namespace neismesk.Controllers.Item
                             images.Add(new ItemImageViewModel()
                             {
                                 Id = imageId.Value,
-                                File = new FormFile(new MemoryStream((byte[])row["image_blob"]), 0, ((byte[])row["image_blob"]).Length, "image", "image.png")
-                            });
+                                File = new FormFile(new MemoryStream(Encoding.UTF8.GetBytes(imageBlob)), 0, imageBlob.Length, "image", "image.png")
+                        });
                         }
                     }
                 }

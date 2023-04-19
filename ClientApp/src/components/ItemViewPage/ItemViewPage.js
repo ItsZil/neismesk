@@ -40,17 +40,18 @@ export const ItemViewPage = () => {
     }, [item, currentTime]);
     
     useEffect(() => {
-        const fetchUserItems = async () => {
-            try {
-                const response = await axios.get('api/item/getUserItems');
-                setUserItems(response.data);
-            } catch (error) {
-                //toast('Įvyko klaida, susisiekite su administratoriumi!');
-            }
-        };
-
-        fetchUserItems();
-    }, []);
+        if (item && item.type === 'Keitimas') {
+            const fetchUserItems = async () => {
+                try {
+                    const response = await axios.get('api/item/getUserItems');
+                    setUserItems(response.data);
+                } catch (error) {
+                    //toast('Įvyko klaida, susisiekite su administratoriumi!');
+                }
+            };
+            fetchUserItems();
+        }
+    }, [item]);
 
     useEffect(() => {
         const fetchViewerId = async () => {
