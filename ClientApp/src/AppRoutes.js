@@ -30,7 +30,7 @@ const AppRoutes = [
     element: <HomePage />
   },
   {
-    path: '/registration',
+    path: '/register',
     element: <RegistrationPage />
   },
   {
@@ -54,7 +54,7 @@ const AppRoutes = [
     element: <ForgotPasswordPage />
   },
   {
-    path: '/item-creation',
+    path: '/skelbimas/naujas',
     element: <ItemCreationPage />
   },
   {
