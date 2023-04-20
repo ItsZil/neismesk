@@ -20,7 +20,7 @@ export const ItemViewPage = () => {
             try {
                 const response = await axios.get(`api/item/getItem/${itemId}`);
                 setItem(response.data);
-
+                
                 setInterval(() => {
                     setCurrentTime(new Date());
                 }, 1000);
@@ -121,9 +121,11 @@ export const ItemViewPage = () => {
                         <Carousel>
                             {item.images && item.images.length > 0 && (
                                 <Carousel>
-                                    {item.images.map((index, image) => (
+                                    {item.images.map((image, index) => (
                                         <Carousel.Item key={index}>
-                                            <img className="d-block w-100" src={image.url} alt={`Image ${index + 1}`} />
+                                            <img className="d-block w-100" 
+                                            src={`data:image/png;base64,${image.data}`}
+                                            alt={`Image ${index + 1}`} />
                                         </Carousel.Item>
                                     ))}
                                 </Carousel>

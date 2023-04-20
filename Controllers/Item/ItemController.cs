@@ -5,6 +5,8 @@ using neismesk.Utilities;
 using neismesk.ViewModels.Ad;
 using neismesk.ViewModels.Item;
 using System.Data;
+using System.Net.Http.Headers;
+using System.Net.Mime;
 using System.Text;
 
 namespace neismesk.Controllers.Item
@@ -82,15 +84,29 @@ namespace neismesk.Controllers.Item
                     foreach (DataRow row in itemData.Rows)
                     {
                         int? imageId = row["image_id"] == DBNull.Value ? null : (int?)Convert.ToInt32(row["image_id"]);
-                        string imageBlob = row["image_blob"] == DBNull.Value ? null : Encoding.UTF8.GetString((byte[])row["image_blob"]);
+                        byte[] imageBlob = row["image_blob"] == DBNull.Value ? null : (byte[])row["image_blob"];
 
-                        if (!string.IsNullOrEmpty(imageBlob))
+                        if (imageBlob != null)
                         {
+                            var fileName = "image.png";
+                            var contentType = "image/png";
+                            var contentDisposition = new ContentDispositionHeaderValue("attachment")
+                            {
+                                FileName = fileName,
+                            };
+
                             images.Add(new ItemImageViewModel()
                             {
                                 Id = imageId.Value,
-                                File = new FormFile(new MemoryStream(Encoding.UTF8.GetBytes(imageBlob)), 0, imageBlob.Length, "image", "image.png")
-                        });
+                                Data = imageBlob,
+                                File = new FormFile(new MemoryStream(imageBlob), 0, imageBlob.Length, fileName, contentType)
+                                {
+                                    Headers = new HeaderDictionary
+                                        {
+                                            { "Content-Disposition", contentDisposition.ToString() }
+                                        }
+                                }
+                            });
                         }
                     }
                 }
@@ -137,9 +153,9 @@ namespace neismesk.Controllers.Item
                                                    Id = Convert.ToInt32(questionRow["id"]),
                                                    Question = questionRow["question_text"] == DBNull.Value ? null : questionRow["question_text"].ToString()
                                                }).ToList()
-                              }).ToList();
+                              }).FirstOrDefault();
 
-                return Ok(result[0]);
+                return Ok(result);
             }
             catch (Exception ex)
             {

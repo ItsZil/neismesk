@@ -9,5 +9,9 @@ namespace neismesk.ViewModels.Item
 
         [JsonProperty("file")]
         public IFormFile File { get; set; }
+
+        [JsonProperty("data")]
+        public byte[] Data { get; set; }
+
     }
 }
