@@ -20,6 +20,8 @@
 
         public List<IFormFile> Images { get; set; }
 
+        public List<string> Questions { get; set; }
+
         public DateTime EndDate { get; set; }
     }
 }

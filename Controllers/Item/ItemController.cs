@@ -273,6 +273,7 @@ namespace neismesk.Controllers.Item
                     Category = Convert.ToInt32(form["category"]),
                     Type = Convert.ToInt32(form["type"]),
                     Images = form.Files.GetFiles("images").ToList(),
+                    Questions = form["questions"].ToList(),
                     EndDate = DateTime.Now.AddDays(14),
             };
 
@@ -282,6 +283,10 @@ namespace neismesk.Controllers.Item
                 {
                     bool success = false;
                     success = await _database.InsertImages(item);
+                    if (item.Type == 2)
+                    {
+                        success = await _database.InsertQuestions(item);
+                    }
                     return success == true ? Ok(item.Id) : BadRequest();
                 }
                 else

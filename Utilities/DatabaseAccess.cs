@@ -257,7 +257,41 @@ namespace neismesk.Utilities
             }
             catch (Exception ex)
             {
-                _logger.Error(ex, "Error saving data to database!");
+                _logger.Error(ex, "Error saving images to database!");
+                return false;
+            }
+        }
+
+        /// <summary>
+        /// Executes a query that modifies data in the database.
+        /// </summary>
+        /// <typeparam name="U">Type of parameter object</typeparam>
+        /// <param name="sql">SQL statement to execute</param>
+        /// <param name="parameters">Object containing parameter values</param>
+        public async Task<bool> InsertQuestions(ItemModel item)
+        {
+            try
+            {
+                using MySqlConnection connection = GetConnection();
+                await connection.OpenAsync();
+
+                foreach (string question in item.Questions)
+                {
+                    using MySqlCommand command = new MySqlCommand(
+                        "INSERT INTO questions (question_text, fk_ad) VALUES (@question, @fk_ad)", connection);
+
+                    // Add parameters
+                    command.Parameters.AddWithValue("@question", question);
+                    command.Parameters.AddWithValue("@fk_ad", item.Id);
+
+                    await command.ExecuteNonQueryAsync();
+                }
+
+                return true;
+            }
+            catch (Exception ex)
+            {
+                _logger.Error(ex, "Error saving questions to database!");
                 return false;
             }
         }

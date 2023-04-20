@@ -13,21 +13,55 @@ const ItemCreationPage = () => {
     const [categories, setCategories] = useState([]);
     const [itemType, setType] = useState('Pasirinkite, kaip norite atiduoti');
     const [itemTypes, setItemTypes] = useState([]);
+    const [isQuestionnaire, setIsQuestionnaire] = useState(false);
     const navigate = useNavigate();
+
+
+    const inputArr = [
+        {
+            type: "text",
+            id: 1,
+            value: ""
+        }
+    ];
+    const [questions, setQuestions] = useState(inputArr);
+    const addInput = () => {
+        setQuestions(s => {
+            return [
+                ...s,
+                {
+                    type: "text",
+                    value: ""
+                }
+            ];
+        });
+    };
+
+    const handleChange = e => {
+        e.preventDefault();
+
+        const index = e.target.id;
+        setQuestions(s => {
+            const newArr = s.slice();
+            newArr[index].value = e.target.value;
+
+            return newArr;
+        });
+    };
 
     useEffect(() => {
         Promise.all([
             axios.get("api/item/getCategories"),
             axios.get("api/item/getItemTypes")
         ])
-        .then(([categoriesResponse, itemTypesResponse]) => {
-            setCategories(categoriesResponse.data);
-            setItemTypes(itemTypesResponse.data);
-        })
-        .catch(error => {
-            console.log(error);
-            toast("Įvyko klaida, susisiekite su administratoriumi!");
-        });
+            .then(([categoriesResponse, itemTypesResponse]) => {
+                setCategories(categoriesResponse.data);
+                setItemTypes(itemTypesResponse.data);
+            })
+            .catch(error => {
+                console.log(error);
+                toast("Įvyko klaida, susisiekite su administratoriumi!");
+            });
     }, []);
 
     useEffect(() => {
@@ -100,6 +134,9 @@ const ItemCreationPage = () => {
                 formData.append('location', location);
                 formData.append('category', category);
                 formData.append('type', itemType);
+                for (let i = 0; i < questions.length; i++) {
+                    formData.append('questions', questions[i].value);
+                }
                 for (let i = 0; i < images.length; i++) {
                     formData.append('images', images[i]);
                 }
@@ -129,8 +166,15 @@ const ItemCreationPage = () => {
         }
     }
 
+    const handleItemType = (value) => {
+        if (value === '2') {
+            setIsQuestionnaire(true);
+        }
+        setType(value);
+    }
+
     const handleCancel = () => {
-        navigate("/index");
+        navigate("/");
     }
 
     return (
@@ -160,11 +204,32 @@ const ItemCreationPage = () => {
                     </select>
                 </div>
                 <div className='itemInputWrapper'>
-                    <select value={itemType} onChange={(e) => setType(e.target.value)} >
+                    <select value={itemType} onChange={(e) => handleItemType(e.target.value)} >
                         <option>Pasirinkite, kaip norite atiduoti</option>
                         {getAllItemTypes()}
                     </select>
                 </div>
+                {itemType === '2' && (
+                    <>
+                        {questions.map((item, i) => {
+                            return (
+                                <div className='itemInputWrapper'>
+                                    <input
+                                        onChange={handleChange}
+                                        value={item.value}
+                                        id={i}
+                                        type={item.type}
+                                        placeholder='Įrašykite klausimą'
+                                        className='questionInput'
+                                    />
+                                    <div className='addQuestion'>
+                                        {questions.length - 1 === i && <button className='addQuestionButton' onClick={addInput}>+</button>}
+                                    </div>
+                                </div>
+                            );
+                        })}
+                    </>
+                )}
                 <div style={{ display: 'flex', paddingTop: '20px' }}>
                     <div className='createButton'>
                         <button className='create' onClick={() => handleCreate()} type='submit'>Sukurti</button>
