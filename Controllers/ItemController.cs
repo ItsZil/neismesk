@@ -308,8 +308,11 @@ namespace neismesk.Controllers
                     return BadRequest();
                 }
                 // Update item in database
-                await _database.SaveData($"UPDATE ads SET name=@name, description=@description WHERE id={id}",
-                                  new { model.Name, model.Description });
+
+                await _database.SaveData(
+    "UPDATE ads SET name=@Name, description=@Description, fk_category=@Category WHERE id=@Id",
+    new { Id = id, Name = model.Name, Description = model.Description, Category = model.fk_Category }
+);
 
                 return Ok();
             }

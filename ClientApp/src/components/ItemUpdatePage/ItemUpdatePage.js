@@ -32,22 +32,19 @@ function ItemUpdatePage() {
     fetchItem();
   }, [itemId]);
   
-  const handleSubmit = (event) => {
+  const handleSubmit = async (event) => {
     try {
-        event.preventDefault();
-        const data = { name, description,category };
-        axios.put(`/api/item/update/${itemId}`, data)
-          .then(() => {
-            toast.success('Item updated successfully!');
-            setName('');
-            setDescription('');
-            setCategory('');
-          })
-            .catch((error) => console.log(error));
-        }
-    catch(error) {
-          toast('Ivyko klaida, susisiekite su administratoriumi!')
-      };
+      event.preventDefault();
+      const data = { name: name || item.name, description: description || item.description, fk_Category: category || category};
+      await axios.put(`/api/item/update/${itemId}`, data);
+      toast.success('Item updated successfully!');
+      setName('');
+      setDescription('');
+      setCategory('');
+    } catch (error) {
+      console.log(error);
+      toast('Ivyko klaida, susisiekite su administratoriumi!');
+    }
   };
 
   const getAllCategories = () => {
@@ -79,10 +76,10 @@ function ItemUpdatePage() {
             <textarea name='description' id='description' defaultValue={item.description} placeholder='Aprašymas' onChange={(event) => setDescription(event.target.value)} ></textarea>
         </div>
         <div className='itemInputWrapper'>
-            <select value={category} onChange={(e) => setCategory(e.target.value)}>
-                <option>Pasirinkite kategoriją</option>
-                {getAllCategories()}
-            </select>
+        <select value={category}  onChange={(event) => setCategory(event.target.value)} >
+                        <option value="">Pasirinkite kategoriją</option>
+                        {getAllCategories()}
+                    </select>
         </div>
         <div style={{ display: 'flex', paddingTop: '20px' }}>
         <button type="submit" onClick={(event) => handleSubmit(event)}>Update Item</button>

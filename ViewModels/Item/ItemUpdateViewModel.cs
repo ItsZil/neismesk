@@ -17,7 +17,7 @@ namespace neismesk.ViewModels.Item
         [JsonProperty("fk_category")]
         public int fk_Category { get; set; }
 
-        [JsonProperty("images")]
-        public IFormFile Images { get; set; }
+        //[JsonProperty("images")]
+        //public IFormFile Images { get; set; }
     }
 }
