@@ -1,6 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using neismesk.Utilities;
-using neismesk.ViewModels.Ad;
 using neismesk.ViewModels.Item;
 using System.Data;
 
@@ -298,17 +297,17 @@ namespace neismesk.Controllers
         }
 
         [HttpPut("update/{id}")]
-        public async Task<IActionResult> UpdateDevice(int id, DeviceViewModel model)
+        public async Task<IActionResult> UpdateDevice(int id, ItemUpdateViewModel model)
         {
             try
             {
                 // Check if device exists
-                var device = await _database.LoadData($"SELECT * FROM ads WHERE id={id}");
-                if (device == null || device.Rows.Count == 0)
+                var item = await _database.LoadData($"SELECT * FROM ads WHERE id={id}");
+                if (item == null || item.Rows.Count == 0)
                 {
                     return BadRequest();
                 }
-                // Update device in database
+                // Update item in database
                 await _database.SaveData($"UPDATE ads SET name=@name, description=@description WHERE id={id}",
                                   new { model.Name, model.Description });
 
