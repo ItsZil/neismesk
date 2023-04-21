@@ -36,7 +36,7 @@ export class NavMenu extends Component {
         this.setState({
             isClicked: !this.state.isClicked
         });
-        fetch("api/login/isloggedin/1", requesttOptions) // 1 is the minimum required role. 0 - client, 1 - admin.
+        fetch("api/login/isloggedin/0", requesttOptions) // 1 is the minimum required role. 0 - client, 1 - admin.
         .then(response => {
             if (response.status == 200) { // 200 - Ok, we are logged in.
                 this.setState({ isLogged: true});
