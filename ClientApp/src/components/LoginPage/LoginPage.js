@@ -21,7 +21,6 @@ export const LoginPage = () => {
         fetch("api/login/login", requestOptions)
             .then(response => {
                 if (response.status === 200) {
-                    toast('Sėkmingai prisijungėte!');
                     navigate("/");
                 }
                 else if (response.status === 400) {
