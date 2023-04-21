@@ -34,9 +34,13 @@ function HomePage() {
         fetchItems();
     }, []);
 
-    const handleWish = (itemId) => {
+    const handleOpen = (itemId) => {
         navigate(`/skelbimas/${itemId}`);
     }
+
+    const handleUpdate = (item) => {
+        
+    };
 
     const handleDelete = async (itemId) => {
         await axios.delete(`/api/item/delete/${itemId}`);
@@ -53,18 +57,13 @@ function HomePage() {
                         <img src="./images/phone.png" alt="{item.name}" />
                         <h4>{item.name}</h4>
                         <p>{item.description}</p>
-                        {item.userId !== viewerId && (
-                        <button className="wish"  onClick={() => handleWish(item.id)}>Noriu!</button>
-                        )}
-                        {item.userId === viewerId && (
-                        <button className="delete" onClick={() => handleDelete(item.id)}>Ištrinti</button>
-                        )}
-                        {item.userId === viewerId && (
-                        <button className="update" onClick={() => ''}>Redaguoti</button>
-                        )}
-                        {item.userId === viewerId && (
-                        <button className="view" onClick={() => ''}>Peržiūrėti</button>
-                        )}
+                        <button className="wish" onClick={() => handleOpen(item.id)}>Noriu!</button>
+                        <Link to={`/skelbimas/redaguoti/${item.id}`}>
+                            <button className='update' onClick={() => handleUpdate(item)} type='submit'>Redaguoti</button>
+                        </Link>
+                        <button className="delete" onClick={() => handleDelete(item.id)}>
+                        Ištrinti
+                        </button>
                     </li>
                 ))}
                 </ul>

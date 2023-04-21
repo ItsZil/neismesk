@@ -269,5 +269,58 @@ namespace neismesk.Controllers
                 return BadRequest(ex.Message);
             }
         }
+
+        [HttpGet("getCategories")]
+        public async Task<IActionResult> GetCategories()
+        {
+            try
+            {
+                var categories = await _database.LoadData("SELECT * FROM categories");
+
+                if (categories == null)
+                {
+                    return BadRequest();
+                }
+
+                var result = (from DataRow dt in categories.Rows
+                              select new CategoryViewModel()
+                              {
+                                  Id = Convert.ToInt32(dt["id"]),
+                                  Name = dt["name"].ToString()
+                              }).ToList();
+
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
+        [HttpPut("update/{id}")]
+        public async Task<IActionResult> UpdateDevice(int id, ItemUpdateViewModel model)
+        {
+            try
+            {
+                // Check if device exists
+                var item = await _database.LoadData($"SELECT * FROM ads WHERE id={id}");
+                if (item == null || item.Rows.Count == 0)
+                {
+                    return BadRequest();
+                }
+                // Update item in database
+
+                await _database.SaveData(
+    "UPDATE ads SET name=@Name, description=@Description, fk_category=@Category WHERE id=@Id",
+    new { Id = id, Name = model.Name, Description = model.Description, Category = model.fk_Category }
+);
+
+                return Ok();
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
     }
 }
