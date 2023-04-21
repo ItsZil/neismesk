@@ -1,7 +1,8 @@
 ﻿import React, { useState, useEffect } from 'react';
+import { Container, Row, Col, Image, Form, Button, Card } from 'react-bootstrap';
 import toast, { Toaster } from 'react-hot-toast';
 import axios from 'axios';
-import './ProfilePage.css';
+import './ProfilePage.css'
 
 const ProfilePage = () => {
 
@@ -97,23 +98,56 @@ const ProfilePage = () => {
     }
 
     return (
-        <div className="profile">
-            <div className="avatar-container">
-                <img className="avatar" src="https://randomuser.me/api/portraits/men/75.jpg" alt="User avatar" />
-                <input type="file" accept="image/png, image/jpeg" onChange={(e) => setImage([...e.target.files])}></input>
-            </div>
-            <div className="info">
-                <p><strong>Vardas:</strong></p> <input type="name" id="name" value={user.name}></input>
-                <p><strong>Pavardė:</strong></p> <input type="surname" id="surname" value={user.surname}></input>
-                <p><strong>Email:</strong></p> <input type="email" id="email" value={user.email}></input>
+        <Container className="profile">
+            <Row>
+                <Col md={4}>
+                    <Card>
+                        <Card.Body>
+                            <Image className="avatar" src="https://randomuser.me/api/portraits/men/75.jpg" alt="User avatar" />
+                            <Form>
+                                <Form.Group>
+                                    <Form.Label><strong>Nuotrauka:</strong></Form.Label>
+                                    <Form.Control type="file" accept="image/png, image/jpeg" custom onChange={(e) => setImage([...e.target.files])} />
+                                </Form.Group>
+                            </Form>
+                        </Card.Body>
+                    </Card>
+                </Col>
+                <Col md={8}>
+                    <Card>
+                        <Card.Body>
+                            <div className="info">
+                                <Form>
+                                    <Form.Group>
+                                        <Form.Label><strong>Vardas:</strong></Form.Label>
+                                        <Form.Control type="text" id="name" value={user.name} onChange={(e) => setUser({ ...user, name: e.target.value })} />
+                                    </Form.Group>
+                                    <Form.Group>
+                                        <Form.Label><strong>Pavardė:</strong></Form.Label>
+                                        <Form.Control type="text" id="surname" value={user.surname} onChange={(e) => setUser({ ...user, surname: e.target.value })} />
+                                    </Form.Group>
+                                    <Form.Group>
+                                        <Form.Label><strong>El. paštas:</strong></Form.Label>
+                                        <Form.Control type="email" id="email" value={user.email} onChange={(e) => setUser({ ...user, email: e.target.value })} />
+                                    </Form.Group>
+                                    <div className="my-5"></div>
+                                    <Form.Group>
+                                        <Form.Label><strong>Senas slaptažodis:</strong></Form.Label>
+                                        <Form.Control type="password" id="old_password" />
+                                    </Form.Group>
+                                    <Form.Group>
+                                        <Form.Label><strong>Naujas slaptažodis:</strong></Form.Label>
+                                        <Form.Control type="password" id="new_password" />
+                                    </Form.Group>
+                                    <Button className="save-button" onClick={handleSave} type='submit'>Išsaugoti</Button>
+                                </Form>
+                            </div>
+                        </Card.Body>
+                    </Card>
+                </Col>
+            </Row>
+        </Container>
 
-                <hr></hr>
-                <p><strong>Senas slaptažodis:</strong></p> <input type="password" id="old_password"></input>
-                <p><strong>Naujas slaptažodis:</strong></p> <input type="password" id="new_password"></input>
-                <button className="save-button" onClick={() => handleSave()} type='submit'>Save</button>
-                
-            </div>
-        </div>
     );
 };
 
