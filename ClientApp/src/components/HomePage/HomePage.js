@@ -1,5 +1,5 @@
 ﻿import React, { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import toast, { Toaster } from 'react-hot-toast';
 import axios from 'axios';
 import './HomePage.css';
@@ -38,6 +38,9 @@ function HomePage() {
         navigate(`/skelbimas/${itemId}`);
     }
 
+    const handleWish = (itemId) => {
+        navigate(`/skelbimas/${itemId}`);
+    }
     const handleUpdate = (item) => {
         
     };
@@ -57,13 +60,20 @@ function HomePage() {
                         <img src="./images/phone.png" alt="{item.name}" />
                         <h4>{item.name}</h4>
                         <p>{item.description}</p>
-                        <button className="wish" onClick={() => handleOpen(item.id)}>Noriu!</button>
+                        {item.userId !== viewerId && (
+                        <button className="wish"  onClick={() => handleWish(item.id)}>Noriu!</button>
+                        )}
+                        {item.userId === viewerId && (
+                        <button className="delete" onClick={() => handleDelete(item.id)}>Ištrinti</button>
+                        )}
+                        {item.userId === viewerId && (
                         <Link to={`/skelbimas/redaguoti/${item.id}`}>
-                            <button className='update' onClick={() => handleUpdate(item)} type='submit'>Redaguoti</button>
+                        <button className="update" onClick={() => ''}>Redaguoti</button>
                         </Link>
-                        <button className="delete" onClick={() => handleDelete(item.id)}>
-                        Ištrinti
-                        </button>
+                        )}
+                        {item.userId === viewerId && (
+                        <button className="view" onClick={() => ''}>Peržiūrėti</button>
+                        )}
                     </li>
                 ))}
                 </ul>
