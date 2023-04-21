@@ -1,5 +1,6 @@
 ﻿import React, { useEffect, useState } from 'react';
-import { useNavigate, Link } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
+import toast, { Toaster } from 'react-hot-toast';
 import axios from 'axios';
 import './HomePage.css';
 
@@ -7,6 +8,22 @@ import './HomePage.css';
 function HomePage() {
     const [items, setItems] = useState([]);
     const navigate = useNavigate();
+    const [viewerId, setViewerId] = useState(null);
+
+
+
+    useEffect(() => {
+        const fetchViewerId = async () => {
+            try {
+                const response = await axios.get('api/login/getCurrentUserId');
+                setViewerId(response.data);
+            } catch (error) {
+                toast('Įvyko klaida, susisiekite su administratoriumi!');
+            }
+        };
+        fetchViewerId();
+    }, []);
+
 
     useEffect(() => {
         async function fetchItems() {

@@ -21,7 +21,7 @@ namespace neismesk.Controllers
         {
             try
             {
-                var items = await _database.LoadData("SELECT id, name, description FROM ads");
+                var items = await _database.LoadData("SELECT id, name, description, fk_user FROM ads");
                 if (items == null)
                 {
                     return BadRequest();
@@ -31,7 +31,8 @@ namespace neismesk.Controllers
                               {
                                   Id = Convert.ToInt32(dt["id"]),
                                   Name = dt["name"].ToString(),
-                                  Description = dt["description"].ToString()
+                                  Description = dt["description"].ToString(),
+                                  UserId = Convert.ToInt32(dt["fk_user"])
                               }).ToList();
 
                 return Ok(result);
