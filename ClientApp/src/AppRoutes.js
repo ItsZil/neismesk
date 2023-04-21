@@ -3,6 +3,7 @@ import { AboutUs } from "./components/AboutUs";
 import { TestAccessControl } from "./components/TestAccessControl";
 import ForgotPasswordPage from "./components/ForgotPasswordPage/ForgotPasswordPage";
 import HelpPage from "./components/HelpPage/HelpPage";
+import ItemUpdatePage from './components/ItemUpdatePage/ItemUpdatePage';
 import ProfilePage from "./components/ProfilePage/ProfilePage";
 import HomePage from "./components/HomePage/HomePage";
 
@@ -54,12 +55,17 @@ const AppRoutes = [
     element: <ForgotPasswordPage />
   },
   {
-    path: '/skelbimas/naujas',
-    element: <ItemCreationPage />
+      path: '/skelbimas/:itemId',
+      element: <ItemViewPage />
   },
   {
-    path: '/skelbimas/:itemId',
-    element: <ItemViewPage />
+      path: '/skelbimas/redaguoti/:itemId',
+      element: <ItemUpdatePage />
+  },
+  {
+      path: '/skelbimas/naujas',
+      element: <ItemCreationPage />
+  },
   }
 ];
 
