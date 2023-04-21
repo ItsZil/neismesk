@@ -13,18 +13,17 @@ const ItemCreationPage = () => {
     const [categories, setCategories] = useState([]);
     const [itemType, setType] = useState('Pasirinkite, kaip norite atiduoti');
     const [itemTypes, setItemTypes] = useState([]);
-    const [isQuestionnaire, setIsQuestionnaire] = useState(false);
     const navigate = useNavigate();
 
 
-    const inputArr = [
+    const questionArray = [
         {
             type: "text",
             id: 1,
             value: ""
         }
     ];
-    const [questions, setQuestions] = useState(inputArr);
+    const [questions, setQuestions] = useState(questionArray);
     const addInput = () => {
         setQuestions(s => {
             return [
@@ -112,7 +111,7 @@ const ItemCreationPage = () => {
 
     function checkFields() {
         if (name === '' || description === '' || location === '' || category === 'Pasirinkite kategoriją' || itemType === 'Pasirinkite, kaip norite atiduoti') {
-            toast('Reikia užpildyti visus laukus!', {
+            toast.error('Reikia užpildyti visus laukus!', {
                 style: {
                     backgroundColor: 'red',
                     color: 'white',
@@ -143,7 +142,7 @@ const ItemCreationPage = () => {
                 axios.post("api/item/create", formData)
                     .then(response => {
                         if (response.status === 200) {
-                            toast('Sėkmingai sukūrėtė skelbimą!', {
+                            toast.success('Sėkmingai sukūrėtė skelbimą!', {
                                 style: {
                                     backgroundColor: 'rgb(14, 160, 14)',
                                     color: 'white',
@@ -152,25 +151,28 @@ const ItemCreationPage = () => {
                             navigate(`/skelbimas/${response.data}`)
                         }
                         else if (response.status === 401) {
-                            toast('Turite būti prisijungęs!')
+                            toast.error('Turite būti prisijungęs!')
                             navigate('/prisijungti');
                         }
                         else {
-                            toast("Įvyko klaida, susisiekite su administratoriumi!");
+                            toast.error("Įvyko klaida, susisiekite su administratoriumi!");
+                        }
+                        debugger;
+                    })
+                    .catch(error => {
+                        if (error.response.status === 401) {
+                            toast.error('Turite būti prisijungęs!')
+                            navigate('/prisijungti');
+                        }
+                        else {
+                            toast.error("Įvyko klaida, susisiekite su administratoriumi!");
                         }
                     })
             }
             catch (error) {
-                toast("Įvyko klaida, susisiekite su administratoriumi!");
+                toast.error("Įvyko klaida, susisiekite su administratoriumi!");
             }
         }
-    }
-
-    const handleItemType = (value) => {
-        if (value === '2') {
-            setIsQuestionnaire(true);
-        }
-        setType(value);
     }
 
     const handleCancel = () => {
@@ -204,7 +206,7 @@ const ItemCreationPage = () => {
                     </select>
                 </div>
                 <div className='itemInputWrapper'>
-                    <select value={itemType} onChange={(e) => handleItemType(e.target.value)} >
+                    <select value={itemType} onChange={(e) => setType(e.target.value)} >
                         <option>Pasirinkite, kaip norite atiduoti</option>
                         {getAllItemTypes()}
                     </select>

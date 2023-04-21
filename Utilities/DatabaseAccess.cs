@@ -5,6 +5,8 @@ using MySql.Data.MySqlClient;
 using Serilog;
 using neismesk.Models;
 using static System.Net.Mime.MediaTypeNames;
+using neismesk.ViewModels.Item;
+using System.Data.Common;
 
 namespace neismesk.Utilities
 {
@@ -293,6 +295,36 @@ namespace neismesk.Utilities
             {
                 _logger.Error(ex, "Error saving questions to database!");
                 return false;
+            }
+        }
+
+        public async Task<List<ItemQuestionViewModel>> GetQuestions(int itemId)
+        {
+            List<ItemQuestionViewModel> questions = new List<ItemQuestionViewModel>();
+            try
+            {
+                using MySqlConnection connection = GetConnection();
+                await connection.OpenAsync();
+
+                using MySqlCommand command = new MySqlCommand(
+                    "SELECT question_text, id FROM questions where fk_ad=@itemId", connection);
+                command.Parameters.AddWithValue("@itemId", itemId);
+
+                using DbDataReader reader = await command.ExecuteReaderAsync();
+                while (await reader.ReadAsync())
+                {
+                    int id = reader.GetInt32("id");
+                    string text = reader.GetString("question_text");
+                    ItemQuestionViewModel question = new ItemQuestionViewModel { Id = id, Question = text };
+                    questions.Add(question);
+                }
+
+                return questions;
+            }
+            catch (Exception ex)
+            {
+                _logger.Error(ex, "Error getting questions from database!");
+                return questions;
             }
         }
 

@@ -4,6 +4,7 @@ using neismesk.Models;
 using neismesk.Utilities;
 using neismesk.ViewModels.Ad;
 using neismesk.ViewModels.Item;
+using Newtonsoft.Json;
 using System.Data;
 using System.Net.Http.Headers;
 using System.Net.Mime;
@@ -56,7 +57,6 @@ namespace neismesk.Controllers.Item
                 var itemData = await _database.LoadData(
                     "SELECT ads.*, ad_type.type AS ad_type, categories.name AS category_name, status.name AS status_name, " +
                     "COUNT(ad_lottery_participants.id) AS participants_count, images.img_id AS image_id, images.img AS image_blob, " +
-                    "GROUP_CONCAT(questions.question_text SEPARATOR ';') AS question_text, " +
                     "GROUP_CONCAT(images.img SEPARATOR ';') AS image_blob " +
                     "FROM ads " +
                     "JOIN ad_type ON ads.fk_type = ad_type.id " +
@@ -64,18 +64,16 @@ namespace neismesk.Controllers.Item
                     "JOIN status ON ads.fk_status = status.id " +
                     "LEFT JOIN ad_lottery_participants ON ads.id = ad_lottery_participants.fk_ad " +
                     "LEFT JOIN images ON images.fk_ad = ads.id " +
-                    "LEFT JOIN questions ON questions.fk_ad = ads.id " +
                     "WHERE ads.id = " + itemId +
                     " GROUP BY ads.id, ad_type.type, categories.name, images.img_id, images.img"
                 );
 
-                // Create a list of questions.
-                List<string> questions = new List<string>();
-                if (itemData.Rows.Count > 0)
+                if (itemData == null)
                 {
-                    string questionText = itemData.Rows[0]["question_text"].ToString();
-                    questions = !string.IsNullOrEmpty(questionText) ? questionText.Split(';').ToList() : new List<string>();
+                    return BadRequest();
                 }
+
+                var questions = await _database.GetQuestions(itemId);
 
                 // Create a list of images.
                 List<ItemImageViewModel> images = new List<ItemImageViewModel>();
@@ -111,11 +109,6 @@ namespace neismesk.Controllers.Item
                     }
                 }
 
-                if (itemData == null)
-                {
-                    return BadRequest();
-                }
-
                 var result = (from DataRow dt in itemData.Rows
                               group dt by new
                               {
@@ -146,13 +139,7 @@ namespace neismesk.Controllers.Item
                                   CreationDateTime = grouped.Key.CreationDateTime,
                                   EndDateTime = grouped.Key.EndDateTime,
                                   Images = images,
-                                  Questions = (from DataRow questionRow in itemData.Rows
-                                               where questionRow["id"].ToString() == grouped.First()["id"].ToString()
-                                               select new ItemQuestionViewModel()
-                                               {
-                                                   Id = Convert.ToInt32(questionRow["id"]),
-                                                   Question = questionRow["question_text"] == DBNull.Value ? null : questionRow["question_text"].ToString()
-                                               }).ToList()
+                                  Questions = questions
                               }).FirstOrDefault();
 
                 return Ok(result);
