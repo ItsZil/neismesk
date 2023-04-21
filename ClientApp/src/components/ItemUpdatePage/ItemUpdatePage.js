@@ -1,14 +1,16 @@
 import React, { useEffect, useState } from 'react';
 import toast, { Toaster } from 'react-hot-toast';
 import { Spinner } from 'react-bootstrap';
-import { useParams } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import './ItemUpdatePage.css';
 
 function ItemUpdatePage() {
+  const navigate = useNavigate();
   const { itemId } = useParams();
   const [name, setName] = useState('');
   const [description, setDescription] = useState('');
+  const [viewerId, setViewerId] = useState(null);
   const [category, setCategory] = useState('Pasirinkite kategoriją');
   const [categories, setCategories] = useState([]);
   const [item, setItem] = useState(null);
@@ -31,6 +33,25 @@ function ItemUpdatePage() {
     }
     fetchItem();
   }, [itemId]);
+
+  useEffect(() => {
+    const fetchViewerId = async () => {
+        try {
+            const response = await axios.get('api/login/getCurrentUserId');
+            setViewerId(response.data);
+        } catch (error) {
+            toast('Įvyko klaida, susisiekite su administratoriumi!');
+        }
+    };
+    fetchViewerId();
+}, []);
+
+
+
+if (item && viewerId && item.userId !== viewerId) {
+  alert('Jūs nesate šio skelbimo savininkas!');
+  navigate(`/`);
+}
   
   const handleSubmit = async (event) => {
     try {
@@ -62,6 +83,7 @@ function ItemUpdatePage() {
   if (!item || !categories) {
       return <div><Spinner>Loading...</Spinner></div>;
   }
+
 
   return (
     <div className='itemOuterBox'>
