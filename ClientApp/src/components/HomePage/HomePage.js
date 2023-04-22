@@ -60,9 +60,7 @@ function HomePage() {
                         <img src="./images/phone.png" alt="{item.name}" />
                         <h4>{item.name}</h4>
                         <p>{item.description}</p>
-                        {item.userId !== viewerId && (
                         <button className="wish"  onClick={() => handleWish(item.id)}>Noriu!</button>
-                        )}
                         {item.userId === viewerId && (
                         <button className="delete" onClick={() => handleDelete(item.id)}>Ištrinti</button>
                         )}
@@ -70,9 +68,6 @@ function HomePage() {
                         <Link to={`/skelbimas/redaguoti/${item.id}`}>
                         <button className="update" onClick={() => ''}>Redaguoti</button>
                         </Link>
-                        )}
-                        {item.userId === viewerId && (
-                        <button className="view" onClick={() => ''}>Peržiūrėti</button>
                         )}
                     </li>
                 ))}
