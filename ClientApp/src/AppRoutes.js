@@ -66,7 +66,6 @@ const AppRoutes = [
       path: '/skelbimas/naujas',
       element: <ItemCreationPage />
   },
-  }
 ];
 
 export default AppRoutes;
