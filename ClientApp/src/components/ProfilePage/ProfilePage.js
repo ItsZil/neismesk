@@ -110,7 +110,6 @@ const ProfilePage = () => {
                 }
             })
             .catch(error => {
-                console.log(error.response.data);
                 if (error.response.data) {
                     toast(error.response.data, {
                         style: {
