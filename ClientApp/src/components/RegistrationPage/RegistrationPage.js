@@ -53,7 +53,7 @@ const RegistrationPage = () => {
                     email: email,
                 }),
             };
-            fetch("api/registration/register", requestOptions)
+            fetch("api/user/register", requestOptions)
                 .then(response => {
                     if (response.status === 200) {
                         toast('Sėkmingai prisiregistravote!');

@@ -18,7 +18,7 @@ export const LoginPage = () => {
                 email: email
             }),
         };
-        fetch("api/login/login", requestOptions)
+        fetch("api/user/login", requestOptions)
             .then(response => {
                 if (response.status === 200) {
                     toast('Sėkmingai prisijungėte!');
@@ -48,7 +48,7 @@ export const LoginPage = () => {
             method: "GET"
         };
 
-        fetch("api/login/isloggedin", requestOptions)
+        fetch("api/user/isLoggedIn", requestOptions)
             .then(response => {
                 if (response.status === 200) {
                     toast("Logged in");
@@ -77,7 +77,7 @@ export const LoginPage = () => {
             method: "GET"
         };
 
-        fetch("api/login/logout", requestOptions)
+        fetch("api/user/logout", requestOptions)
             .then(response => {
                 if (response.status === 200) {
                     toast("Logged out");

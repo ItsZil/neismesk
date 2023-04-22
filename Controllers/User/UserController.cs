@@ -3,19 +3,19 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using neismesk.Utilities;
 using neismesk.ViewModels.UserAuthentication;
-using System.Linq.Expressions;
+using System.IO;
 using System.Security.Claims;
 
 namespace neismesk.Controllers.UserAuthentication
 {
     [ApiController]
     [Route("api/[controller]")]
-    public class LoginController : ControllerBase
+    public class UserController : ControllerBase
     {
-        private readonly ILogger<LoginController> _logger;
+        private readonly ILogger<UserController> _logger;
         private readonly DatabaseAccess _database;
 
-        public LoginController(ILogger<LoginController> logger)
+        public UserController(ILogger<UserController> logger)
         {
             _logger = logger;
             _database = new DatabaseAccess();
@@ -36,9 +36,6 @@ namespace neismesk.Controllers.UserAuthentication
 
             string hashed_password = result.Rows[0]["password_hash"].ToString();
             string password_salt = result.Rows[0]["password_salt"].ToString();
-
-            _logger.LogInformation("Hashed password is {hashed_password}", hashed_password);
-            _logger.LogInformation("Password salt is {password_salt}", password_salt);
 
             bool match = false;
             try
@@ -80,7 +77,28 @@ namespace neismesk.Controllers.UserAuthentication
             }
         }
 
-        [HttpGet("isloggedin/{requiredRole?}")]
+        [HttpPost("register")]
+        public async Task<IActionResult> Register(RegistrationViewModel registration)
+        {
+            // Retrieve a hashed version of the user's plain text password.
+            byte[] salt;
+            string password_hash = PasswordHasher.hashPassword(registration.Password, out salt);
+            string password_salt = Convert.ToBase64String(salt);
+
+            bool success = await _database.SaveData("INSERT INTO users (name, surname, email, password_hash, password_salt) VALUES (@name, @surname, @email, @password_hash, @password_salt)",
+                    new { registration.Name, registration.Surname, registration.Email, password_hash, password_salt });
+
+            if (success)
+            {
+                return Ok();
+            }
+            else
+            {
+                return BadRequest();
+            }
+        }
+
+        [HttpGet("isLoggedIn/{requiredRole?}")]
         public IActionResult IsLoggedIn(int requiredRole = 0)
         {
             if (HttpContext.User.Identity.IsAuthenticated)
@@ -138,6 +156,31 @@ namespace neismesk.Controllers.UserAuthentication
                 _logger.LogError($"Failed to sign out. Something went wrong - [Authorize] passed, but user might not be logged in?");
                 return Unauthorized();
             }
+        }
+
+        [HttpPost("updateProfileDetails")]
+        [Authorize]
+        public async Task<IActionResult> UpdateProfileDetails()
+        {
+            var form = await Request.ReadFormAsync();
+            string name = form["name"].ToString();
+            string surname = form["surname"].ToString();
+            string email = form["email"].ToString();
+            string old_password = form["old_password"].ToString();
+            string new_password = form["new_password"].ToString();
+            IFormFile image = Request.Form.Files.GetFile("avatar");
+            byte[] imageBytes = null;
+
+            if (image != null)
+            {
+                using (var memoryStream = new MemoryStream())
+                {
+                    await image.CopyToAsync(memoryStream);
+                    imageBytes = memoryStream.ToArray();
+                }
+            }
+
+            return Ok();
         }
     }
 }

@@ -12,7 +12,7 @@ const testLogout = () => {
     };
     
 
-    fetch("api/login/logout", requestOptions)
+    fetch("api/user/logout", requestOptions)
         .then(response => {
             if (response.status === 200) { // 200 - Ok
                 toast('Logged out');

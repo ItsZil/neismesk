@@ -12,7 +12,7 @@ export const TestAccessControl = () => {
 
     useEffect(() => {
         // Endpoint to check if the user is logged in. Located in LoginController.cs
-        fetch("api/login/isloggedin/1", requestOptions) // 1 is the minimum required role. 0 - client, 1 - admin.
+        fetch("api/user/isLoggedIn/1", requestOptions) // 1 is the minimum required role. 0 - client, 1 - admin.
             .then(response => {
                 if (response.status == 200) { // 200 - Ok, we are logged in.
                     setIsLoggedIn(true);
@@ -29,7 +29,7 @@ export const TestAccessControl = () => {
     }, []);
 
     const testLogin = () => {
-        fetch("api/login/isloggedin", requestOptions)
+        fetch("api/user/isLoggedIn", requestOptions)
             .then(response => {
                 if (response.status === 200) { // 200 - Ok
                     toast('Logged in');
@@ -44,7 +44,7 @@ export const TestAccessControl = () => {
     }
 
     const testLogout = () => {
-        fetch("api/login/logout", requestOptions)
+        fetch("api/user/logout", requestOptions)
             .then(response => {
                 if (response.status === 200) { // 200 - Ok
                     toast('Logged out');
