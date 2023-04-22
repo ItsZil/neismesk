@@ -123,8 +123,7 @@ namespace neismesk.Controllers.Item
                                   Location = dt["location"].ToString(),
                                   Category = dt["category_name"].ToString(),
                                   CreationDateTime = Convert.ToDateTime(dt["creation_datetime"]),
-                                  EndDateTime = dt["end_datetime"] == DBNull.Value ? null : (DateTime?)Convert.ToDateTime(dt["end_datetime"]),
-                                  QuestionText = dt["question_text"] == DBNull.Value ? null : dt["question_text"].ToString()
+                                  EndDateTime = dt["end_datetime"] == DBNull.Value ? null : (DateTime?)Convert.ToDateTime(dt["end_datetime"])
                               } into grouped
                               select new ItemViewModel()
                               {

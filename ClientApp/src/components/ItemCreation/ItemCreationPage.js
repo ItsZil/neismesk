@@ -15,7 +15,6 @@ const ItemCreationPage = () => {
     const [itemTypes, setItemTypes] = useState([]);
     const navigate = useNavigate();
 
-
     const questionArray = [
         {
             type: "text",
@@ -157,7 +156,6 @@ const ItemCreationPage = () => {
                         else {
                             toast.error("Įvyko klaida, susisiekite su administratoriumi!");
                         }
-                        debugger;
                     })
                     .catch(error => {
                         if (error.response.status === 401) {
