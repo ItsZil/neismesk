@@ -180,6 +180,81 @@ namespace neismesk.Controllers.UserAuthentication
                 }
             }
 
+            int user_id = Convert.ToInt32(HttpContext.User.FindFirst("user_id").Value);
+
+            // Check if there already is a user with the same email.
+            string sql = "SELECT user_id FROM users WHERE email = @email";
+            var parameters_email = new { email };
+            var result_email = await _database.LoadData(sql, parameters_email);
+
+            if (result_email.Rows.Count > 0)
+            {
+                int existingUserId = Convert.ToInt32(result_email.Rows[0]["user_id"]);
+                if (existingUserId != user_id)
+                {
+                    return BadRequest("Šis el. paštas užimtas.");
+                }
+            }
+
+            // Retrieve the user's hashed password and salt, then compare it to the new hashed plain text version.
+            sql = "SELECT password_hash, password_salt FROM users WHERE user_id = @user_id";
+            var parameters_password = new { user_id };
+            var result_password = await _database.LoadData(sql, parameters_password);
+
+            string hashed_password = result_password.Rows[0]["password_hash"].ToString();
+            string password_salt = result_password.Rows[0]["password_salt"].ToString();
+
+            bool match = false;
+            try
+            {
+                match = PasswordHasher.doesPasswordMatch(old_password, hashed_password, password_salt);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError("Error while comparing passwords during profile update: {ex}", ex);
+                return StatusCode(500);
+            }
+
+            if (match)
+            {
+                byte[] salt;
+                string password_hash = PasswordHasher.hashPassword(new_password, out salt);
+                password_salt = Convert.ToBase64String(salt);
+
+                sql = "UPDATE users SET name = @name, surname = @surname, email = @email, password_hash = @password_hash, password_salt = @password_salt WHERE user_id = @user_id";
+                var parameters_update = new { name, surname, email, password_hash, password_salt, user_id };
+                await _database.SaveData(sql, parameters_update);
+            }
+            else if (old_password == "" && new_password == "")
+            {
+                sql = "UPDATE users SET name = @name, surname = @surname, email = @email WHERE user_id = @user_id";
+                var parameters_update = new { name, surname, email, user_id };
+                await _database.SaveData(sql, parameters_update);
+            }
+            else
+            {
+                return BadRequest();
+            }
+            
+            // Update the user's avatar.
+            if (image != null)
+            {
+                sql = "SELECT id FROM user_avatars WHERE fk_user = @user_id";
+                var parameters_avatar = new { user_id };
+                var result_avatar = await _database.LoadData(sql, parameters_avatar);
+                if (result_avatar.Rows.Count > 0)
+                {
+                    sql = "UPDATE user_avatars SET image = @avatar WHERE fk_user = @user_id";
+                    var parameters_update_avatar = new { avatar = imageBytes, user_id };
+                    await _database.SaveData(sql, parameters_update_avatar);
+                }
+                else
+                {
+                    sql = "INSERT INTO user_avatars (image, fk_user) VALUES (@avatar, @user_id)";
+                    var parameters_insert_avatar = new { avatar = imageBytes, user_id };
+                    await _database.SaveData(sql, parameters_insert_avatar);
+                }
+            }
             return Ok();
         }
     }
