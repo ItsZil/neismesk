@@ -1,5 +1,5 @@
 ﻿import { useState, React, Component } from 'react';
-import { Collapse, Navbar, NavbarBrand, NavbarToggler, NavItem, NavLink, NavbarText, Button, Nav, InputGroup, InputGroupAddon, Input, Dropdown, DropdownToggle, DropdownMenu, DropdownItem  } from 'reactstrap';
+import { Collapse, Navbar, NavbarBrand, NavItem, NavLink, Button, Nav, Input, Dropdown, DropdownToggle, DropdownMenu, DropdownItem  } from 'reactstrap';
 import { Link } from 'react-router-dom';
 import { withRouter } from './withRouter';
 import axios from 'axios';
@@ -7,18 +7,12 @@ import toast, { Toaster } from 'react-hot-toast';
 import './NavMenu.css';
 
 const testLogout = () => {
-    const requestOptions = {
-        method: "GET"
-    };
-    
-    fetch("api/user/logout", requestOptions)
+    fetch("api/user/logout", { method: "GET" })
         .then(response => {
             if (response.status === 200) { // 200 - Ok
                 // Hack to make the NavMenu update the user avatar.
                 window.location.reload();
             }
-        }).catch(error => {
-            toast('Įvyko klaida, susisiekite su administratoriumi!');
         });
 }
 
@@ -63,7 +57,7 @@ export class NavMenu extends Component {
         this.setState({
             isClicked: !this.state.isClicked
         });
-        fetch("api/login/isloggedin/0", { method: "GET" })
+        fetch("api/user/isloggedin/0", { method: "GET" })
         .then(response => {
             if (response.status == 200) { // 200 - Ok, we are logged in.
                 this.setState({ isLogged: true});
@@ -72,7 +66,7 @@ export class NavMenu extends Component {
     };
 
     handleLogoutClick = () => {
-        fetch("api/login/logout", { method: "GET" })
+        fetch("api/user/logout", { method: "GET" })
         .then(response => {
             if (response.status === 200) { // 200 - Ok
                 toast('Logged out');

@@ -1,5 +1,5 @@
 ﻿import React, { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import toast, { Toaster } from 'react-hot-toast';
 import axios from 'axios';
 import './HomePage.css';
@@ -15,10 +15,11 @@ function HomePage() {
     useEffect(() => {
         const fetchViewerId = async () => {
             try {
-                const response = await axios.get('api/login/getCurrentUserId');
+                const response = await axios.get('api/user/getCurrentUserId');
                 setViewerId(response.data);
             } catch (error) {
-                toast('Įvyko klaida, susisiekite su administratoriumi!');
+                //toast('Įvyko klaida, susisiekite su administratoriumi!');
+                // TODO - an error still shows up in the console when logged out.
             }
         };
         fetchViewerId();
