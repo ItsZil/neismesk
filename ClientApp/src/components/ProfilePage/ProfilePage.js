@@ -6,6 +6,10 @@ import './ProfilePage.css'
 
 const ProfilePage = () => {
 
+    const [message, setMessage] = useState('');
+    const [image, setImage] = useState(null);
+    const [avatar, setAvatar] = useState(null);
+
     /*
     const [user, setUser] = useState({});
 
@@ -18,19 +22,40 @@ const ProfilePage = () => {
         fetchUser();
     }, []);
     */
-   
-   // Šita informacija statinė ir vėliau ją reiktų ištrint bei atkomentuot viską aukščiau
+
+    // Šita informacija statinė ir vėliau ją reiktų ištrint bei atkomentuot viską aukščiau
     const [user, setUser] = useState({
         name: "John",
         surname: "Smith",
         email: "john.smith@example.com",
-        address: "123 Main St, Anytown USA"
+        address: "123 Main St, Anytown USA",
+        old_password: '',
+        new_password: ''
     });
 
-    const [image, setImage] = useState([]);
+    const handleImageChange = (e) => {
+        setImage(URL.createObjectURL(e.target.files[0]));
+        setAvatar(e.target.files[0]);
+    };
+
+    const onNewPasswordChange = (e) => {
+        let password = e.target.value;
+        setUser({ ...user, new_password: password })
+        if (password.length >= 8 && /^(?=.*\d)(?=.*[!@#$%^&*])(?=.*[a-z])(?=.*[A-Z]).{8,}$/.test(password)) {
+            if (password === user.old_password) {
+                setMessage("Naujas slaptažodis negali sutapti su senuoju!");
+            }
+            else {
+                setMessage("");   
+            }
+        }
+        else {
+            setMessage("Naujas slaptažodis turi turėti mažąsias, didžiąsias raides, skaičius, spec. simbolius ir būti bent 8 simbolių ilgio!");
+        }
+    }
 
     function checkFields() {
-        if (user.name === '' || user.surname === '' || user.email === '') {
+        if (user.name === '' || user.surname === '' || user.email === '' || user.new_password !== '' && user.old_password === '') {
             toast('Reikia užpildyti visus laukus!', {
                 style: {
                     backgroundColor: 'red',
@@ -39,29 +64,8 @@ const ProfilePage = () => {
             });
             return false;
         }
-        else {
-            return true;
-        }
+        return true;
     }
-
-    /*
-     sita reikia pakoreguoti, cia ostino, mums reikes tik 1 nuotraukos (ir nebutina aisku keisti)
-    useEffect(() => {
-        if (images.length < 1) return;
-        if (images.length > 6) {
-            toast("Negalima įkelti daugiau nei 6 nuotraukų!", {
-                style: {
-                    backgroundColor: 'red',
-                    color: 'white',
-                },
-            });
-            return;
-        }
-        const newImageUrls = [];
-        images.forEach(image => newImageUrls.push(URL.createObjectURL(image)));
-        setImageUrls(newImageUrls);
-    }, [images]);
-    */
 
     const handleSave = () => {
         if (checkFields()) {
@@ -70,13 +74,11 @@ const ProfilePage = () => {
                 formData.append('name', user.name);
                 formData.append('surname', user.surname);
                 formData.append('email', user.email);
-                formData.append('id', 1); // todo
-                formData.append('fk_category', 2); // todo
-                //formData.append('image', imageURLs)
+                formData.append('old_password', user.old_password);
+                formData.append('new_password', user.new_password);
+                formData.append('avatar', avatar);
 
-                // TODO: check if avatar was changed?
-                
-                axios.post("", formData)
+                axios.post("api/user/updateProfileDetails", formData)
                     .then(response => {
                         if (response.status === 200) {
                             toast('Duomenys sėkmingai išsaugoti!', {
@@ -103,11 +105,11 @@ const ProfilePage = () => {
                 <Col md={4}>
                     <Card>
                         <Card.Body>
-                            <Image className="avatar" src="https://randomuser.me/api/portraits/men/75.jpg" alt="User avatar" />
+                            <Image className="avatar" src={image || 'https://randomuser.me/api/portraits/men/75.jpg'} style={{ maxWidth: "128px", maxHeight: "128px" }} alt="User avatar" />
                             <Form>
                                 <Form.Group>
                                     <Form.Label><strong>Nuotrauka:</strong></Form.Label>
-                                    <Form.Control type="file" accept="image/png, image/jpeg" custom onChange={(e) => setImage([...e.target.files])} />
+                                    <Form.Control type="file" accept="image/png, image/jpeg" onChange={handleImageChange} />
                                 </Form.Group>
                             </Form>
                         </Card.Body>
@@ -133,13 +135,16 @@ const ProfilePage = () => {
                                     <div className="my-5"></div>
                                     <Form.Group>
                                         <Form.Label><strong>Senas slaptažodis:</strong></Form.Label>
-                                        <Form.Control type="password" id="old_password" />
+                                        <Form.Control type="password" id="old_password" value={user.old_password} onChange={(e) => setUser({ ...user, old_password: e.target.value })} />
                                     </Form.Group>
                                     <Form.Group>
                                         <Form.Label><strong>Naujas slaptažodis:</strong></Form.Label>
-                                        <Form.Control type="password" id="new_password" />
+                                        <Form.Control type="password" id="new_password" value={user.new_password} onChange={onNewPasswordChange} />
                                     </Form.Group>
-                                    <Button className="save-button" onClick={handleSave} type='submit'>Išsaugoti</Button>
+                                    <div className="d-flex flex-column">
+                                        <Form.Text className="text-danger">{message}</Form.Text>
+                                        <Button className="save-button mt-3" onClick={handleSave} type='submit'>Išsaugoti</Button>
+                                    </div>
                                 </Form>
                             </div>
                         </Card.Body>
@@ -150,5 +155,4 @@ const ProfilePage = () => {
 
     );
 };
-
 export default ProfilePage;
