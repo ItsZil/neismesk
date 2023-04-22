@@ -173,11 +173,7 @@ namespace neismesk.Controllers.UserAuthentication
 
             if (image != null)
             {
-                using (var memoryStream = new MemoryStream())
-                {
-                    await image.CopyToAsync(memoryStream);
-                    imageBytes = memoryStream.ToArray();
-                }
+                imageBytes = await ImageUtilities.ResizeCompressImage(image, 128, 128);
             }
 
             int user_id = Convert.ToInt32(HttpContext.User.FindFirst("user_id").Value);
