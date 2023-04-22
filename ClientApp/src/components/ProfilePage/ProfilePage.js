@@ -1,41 +1,38 @@
 ﻿import React, { useState, useEffect } from 'react';
-import { Container, Row, Col, Image, Form, Button, Card } from 'react-bootstrap';
+import { Container, Row, Col, Image, Form, Button, Card, Spinner } from 'react-bootstrap';
+import { useNavigate } from 'react-router';
 import toast, { Toaster } from 'react-hot-toast';
 import axios from 'axios';
 import './ProfilePage.css'
 
 const ProfilePage = () => {
-
     const [message, setMessage] = useState('');
     const [image, setImage] = useState(null);
     const [avatar, setAvatar] = useState(null);
-
-    /*
-    const [user, setUser] = useState({});
+    const [user, setUser] = useState(null);
+    const navigate = useNavigate();
 
     useEffect(() => {
         async function fetchUser() {
-            const response = await fetch("ProfilePageEndpointasCia");
-            const data = await response.json();
-            setUser(data);
+            try {
+                await axios.get("api/user/getProfileDetails").then(response => {
+                    const data = response.data;
+                    setUser({ ...data, new_password: '', old_password: '', avatar: data.avatar });
+                });    
+            }
+            catch (error) {
+                if (error.response.status === 401) {
+                    navigate('/login');
+                }
+            };
         }
         fetchUser();
     }, []);
-    */
-
-    // Šita informacija statinė ir vėliau ją reiktų ištrint bei atkomentuot viską aukščiau
-    const [user, setUser] = useState({
-        name: "John",
-        surname: "Smith",
-        email: "john.smith@example.com",
-        address: "123 Main St, Anytown USA",
-        old_password: '',
-        new_password: ''
-    });
 
     const handleImageChange = (e) => {
         setImage(URL.createObjectURL(e.target.files[0]));
         setAvatar(e.target.files[0]);
+        setUser({ ...user, avatar: null })
     };
 
     const onNewPasswordChange = (e) => {
@@ -54,9 +51,24 @@ const ProfilePage = () => {
         }
     }
 
-    function checkFields() {
-        if (user.name === '' || user.surname === '' || user.email === '' || user.new_password !== '' && user.old_password === '') {
-            toast('Reikia užpildyti visus laukus!', {
+    function checkFields(formData) {
+        const name = formData.get('name');
+        const surname = formData.get('surname');
+        const email = formData.get('email');
+        const old_password = formData.get('old_password');
+        const new_password = formData.get('new_password');
+
+        if ((name === '' || surname === '' || email === '') && new_password === '' && old_password === '') {
+            toast('Vardas, pavardė arba el. paštas negali būti tušti!', {
+                style: {
+                    backgroundColor: 'red',
+                    color: 'white',
+                },
+            });
+            return false;
+        }
+        else if ((new_password !== '' && old_password === '') || old_password !== '' && new_password === '') {
+            toast('Visi lauktai turi būti užpildyti norint keisti slaptažodi!', {
                 style: {
                     backgroundColor: 'red',
                     color: 'white',
@@ -67,45 +79,61 @@ const ProfilePage = () => {
         return true;
     }
 
-    const handleSave = () => {
-        if (checkFields()) {
-            try {
-                const formData = new FormData();
-                formData.append('name', user.name);
-                formData.append('surname', user.surname);
-                formData.append('email', user.email);
-                formData.append('old_password', user.old_password);
-                formData.append('new_password', user.new_password);
-                formData.append('avatar', avatar);
+    const handleSubmit = event => {
+        event.preventDefault();
+        
+        if (message !== '' || (message !== '' && user.old_password === '' && user.new_password === '')) {
+            return;
+        }
 
-                axios.post("api/user/updateProfileDetails", formData)
-                    .then(response => {
-                        if (response.status === 200) {
-                            toast('Duomenys sėkmingai išsaugoti!', {
-                                style: {
-                                    backgroundColor: 'rgb(14, 160, 14)',
-                                    color: 'white',
-                                },
-                            });
-                        }
-                        else {
-                            toast("Įvyko klaida, susisiekite su administratoriumi!");
-                        }
-                    })
-            }
-            catch (error) {
-                toast("Įvyko klaida, susisiekite su administratoriumi!");
-            }
+        const formData = new FormData();
+        formData.append('name', user.name);
+        formData.append('surname', user.surname);
+        formData.append('email', user.email);
+        formData.append('old_password', user.old_password);
+        formData.append('new_password', user.new_password);
+        formData.append('avatar', avatar);
+
+        if (checkFields(formData)) {
+            axios.post("api/user/updateProfileDetails", formData)
+            .then(response => {
+                if (response.status === 200) {
+                    toast('Duomenys sėkmingai išsaugoti!', {
+                        style: {
+                            backgroundColor: 'rgb(14, 160, 14)',
+                            color: 'white',
+                        },
+                    });
+                }
+                else {
+                    toast("Įvyko klaida, susisiekite su administratoriumi!");
+                }
+            })
+            .catch(error => {
+                console.log(error.response.data);
+                if (error.response.data) {
+                    toast(error.response.data, {
+                        style: {
+                            backgroundColor: 'red',
+                            color: 'white',
+                        },
+                    });
+                }
+                else {
+                    toast("Įvyko klaida, susisiekite su administratoriumi!");
+                }
+            });
         }
     }
 
-    return (
+    return user ? (
         <Container className="profile">
+        <Toaster></Toaster>
             <Row>
                 <Col md={4}>
                     <Card>
                         <Card.Body>
-                            <Image className="avatar" src={image || 'https://randomuser.me/api/portraits/men/75.jpg'} style={{ maxWidth: "128px", maxHeight: "128px" }} alt="User avatar" />
+                            <Image className="avatar" src={user.avatar ? `data:image/png;base64,${user.avatar}` : image || 'https://randomuser.me/api/portraits/men/75.jpg'} style={{ maxWidth: "128px", maxHeight: "128px" }} alt="Profilio nuotrauka" />
                             <Form>
                                 <Form.Group>
                                     <Form.Label><strong>Nuotrauka:</strong></Form.Label>
@@ -135,15 +163,15 @@ const ProfilePage = () => {
                                     <div className="my-5"></div>
                                     <Form.Group>
                                         <Form.Label><strong>Senas slaptažodis:</strong></Form.Label>
-                                        <Form.Control type="password" id="old_password" value={user.old_password} onChange={(e) => setUser({ ...user, old_password: e.target.value })} />
+                                        <Form.Control type="password" id="old_password" onChange={(e) => setUser({ ...user, old_password: e.target.value })} />
                                     </Form.Group>
                                     <Form.Group>
                                         <Form.Label><strong>Naujas slaptažodis:</strong></Form.Label>
-                                        <Form.Control type="password" id="new_password" value={user.new_password} onChange={onNewPasswordChange} />
+                                        <Form.Control type="password" id="new_password" onChange={onNewPasswordChange} />
                                     </Form.Group>
                                     <div className="d-flex flex-column">
                                         <Form.Text className="text-danger">{message}</Form.Text>
-                                        <Button className="save-button mt-3" onClick={handleSave} type='submit'>Išsaugoti</Button>
+                                        <Button className="save-button mt-3" onClick={(e) => handleSubmit(e)} type='submit'>Išsaugoti</Button>
                                     </div>
                                 </Form>
                             </div>
@@ -152,7 +180,12 @@ const ProfilePage = () => {
                 </Col>
             </Row>
         </Container>
-
+    ) : (
+        <Container className="my-5">
+            <div className='outerBoxWrapper d-flex justify-content-center'>
+                <Spinner animation="border" role="status" />
+            </div>
+        </Container>
     );
 };
 export default ProfilePage;

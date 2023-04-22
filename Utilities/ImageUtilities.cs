@@ -13,7 +13,7 @@ namespace neismesk.Utilities
             }
         }
 
-        public async static Task<byte[]> ResizeCompressImage(IFormFile image, int width, int height, int quality = 70)
+        public async static Task<byte[]> ResizeCompressImage(IFormFile image, int width, int height, int quality = 90)
         {
             using (var memoryStream = new MemoryStream())
             {

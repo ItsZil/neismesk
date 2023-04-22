@@ -4,6 +4,8 @@ using Microsoft.AspNetCore.Mvc;
 using neismesk.Utilities;
 using neismesk.ViewModels.UserAuthentication;
 using System.IO;
+using System.Net.Http.Headers;
+using System.Net.Mime;
 using System.Security.Claims;
 
 namespace neismesk.Controllers.UserAuthentication
@@ -158,6 +160,43 @@ namespace neismesk.Controllers.UserAuthentication
             }
         }
 
+        [HttpGet("getProfileDetails")]
+        public async Task<IActionResult> GetProfileDetails()
+        {
+            if (!HttpContext.User.Identity.IsAuthenticated)
+            {
+                return Unauthorized();
+            }
+            
+            int userId = Convert.ToInt32(HttpContext.User.FindFirst("user_id").Value);
+
+            string sql = "SELECT name, surname, email FROM users WHERE user_id = @user_id";
+            var parameters = new { user_id = userId };
+            var result = await _database.LoadData(sql, parameters);
+
+            if (result.Rows.Count == 0)
+            {
+                return BadRequest();
+            }
+
+            string name = result.Rows[0]["name"].ToString();
+            string surname = result.Rows[0]["surname"].ToString();
+            string email = result.Rows[0]["email"].ToString();
+
+            // Grab the user's avatar if they have one.
+            sql = "SELECT image FROM user_avatars WHERE fk_user = @user_id";
+            parameters = new { user_id = userId };
+            result = await _database.LoadData(sql, parameters);
+            byte[] avatar = null;
+
+            if (result.Rows.Count > 0)
+            {
+                avatar = (byte[])result.Rows[0]["image"];
+            }
+
+            return Ok(new { name, surname, email, avatar });
+        }
+
         [HttpPost("updateProfileDetails")]
         [Authorize]
         public async Task<IActionResult> UpdateProfileDetails()
@@ -173,7 +212,10 @@ namespace neismesk.Controllers.UserAuthentication
 
             if (image != null)
             {
-                imageBytes = await ImageUtilities.ResizeCompressImage(image, 128, 128);
+                using (var memoryStream = new MemoryStream())
+                {
+                    imageBytes = await ImageUtilities.ResizeCompressImage(image, 128, 128);
+                }
             }
 
             int user_id = Convert.ToInt32(HttpContext.User.FindFirst("user_id").Value);
@@ -188,7 +230,7 @@ namespace neismesk.Controllers.UserAuthentication
                 int existingUserId = Convert.ToInt32(result_email.Rows[0]["user_id"]);
                 if (existingUserId != user_id)
                 {
-                    return BadRequest("Šis el. paštas užimtas.");
+                    return BadRequest("Šis el. paštas užimtas!");
                 }
             }
 
@@ -229,7 +271,7 @@ namespace neismesk.Controllers.UserAuthentication
             }
             else
             {
-                return BadRequest();
+                return BadRequest("Neteisingas slaptažodis!");
             }
             
             // Update the user's avatar.
