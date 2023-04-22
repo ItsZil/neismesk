@@ -295,5 +295,28 @@ namespace neismesk.Controllers.UserAuthentication
             }
             return Ok();
         }
+
+        [HttpGet("getUserAvatar")]
+        public async Task<IActionResult> GetUserAvatar()
+        {
+            if (!HttpContext.User.Identity.IsAuthenticated)
+            {
+                // Return Ok because we don't want an error to show up in the console.
+                // This method for now is only used in the NavMenu, which can be called when the user is not logged in.
+                return Ok("./images/profile.png");
+            }
+            int user_id = Convert.ToInt32(HttpContext.User.FindFirst("user_id").Value);
+
+            string sql = "SELECT image FROM user_avatars WHERE fk_user = @user_id";
+            var parameters = new { user_id };
+            var result = await _database.LoadData(sql, parameters);
+
+            if (result.Rows.Count == 0)
+            {
+                return Ok("./images/profile.png");
+            }
+            byte[] avatar = (byte[])result.Rows[0]["image"];
+            return Ok(new { user_id, avatar });
+        }
     }
 }

@@ -21,7 +21,7 @@ const ProfilePage = () => {
                 });    
             }
             catch (error) {
-                if (error.response.status === 401) {
+                if (error.response && error.response.status === 401) {
                     navigate('/login');
                 }
             };
@@ -133,7 +133,7 @@ const ProfilePage = () => {
                 <Col md={4}>
                     <Card>
                         <Card.Body>
-                            <Image className="avatar" src={user.avatar ? `data:image/png;base64,${user.avatar}` : image || 'https://randomuser.me/api/portraits/men/75.jpg'} style={{ maxWidth: "128px", maxHeight: "128px" }} alt="Profilio nuotrauka" />
+                            <Image className="avatar" src={user.avatar ? `data:image/jpeg;base64,${user.avatar}` : image || './images/profile.png'} style={{ maxWidth: "128px", maxHeight: "128px" }} alt="Profilio nuotrauka" />
                             <Form>
                                 <Form.Group>
                                     <Form.Label><strong>Nuotrauka:</strong></Form.Label>

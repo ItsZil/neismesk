@@ -22,7 +22,10 @@ export const LoginPage = () => {
             .then(response => {
                 if (response.status === 200) {
                     toast('Sėkmingai prisijungėte!');
-                    navigate("/");
+
+                    // Hack to make the NavMenu update the user avatar.
+                    window.location.reload();
+                    window.location.href = "/";
                 }
                 else if (response.status === 400) {
                     toast("Nerastas vartotojas su pateiktais duomenimis!", {
