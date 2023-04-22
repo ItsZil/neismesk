@@ -41,13 +41,6 @@ export class NavMenu extends Component {
         this.getUserAvatar();
     }
 
-    componentDidUpdate(prevProps, prevState) {
-        // Check if the isLoggedIn state has changed
-        if (this.state.isLoggedIn !== prevState.isLoggedIn) {
-            this.forceUpdate();
-        }
-    }
-
     getUserAvatar() {
         axios.get('api/user/getUserAvatar')
             .then(response => {
