@@ -38,6 +38,10 @@ button {
     border-radius: 5px;
 }
 
+.registrationButton:hover {
+    background-color: rgb(229, 225, 225);
+}
+
 .returnToLoginButton {
     color: rgb(240, 240, 240);
 }

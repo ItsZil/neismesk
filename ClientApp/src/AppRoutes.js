@@ -12,6 +12,7 @@ import { LoginPage } from "./components/LoginPage/LoginPage";
 import RegistrationPage from "./components/RegistrationPage/RegistrationPage";
 import { ItemViewPage } from "./components/ItemViewPage/ItemViewPage";
 
+import ItemCreationPage from "./components/ItemCreation/ItemCreationPage";
 const AppRoutes = [
   {
     path: '/counter',
@@ -30,7 +31,7 @@ const AppRoutes = [
     element: <HomePage />
   },
   {
-    path: '/registration',
+    path: '/register',
     element: <RegistrationPage />
   },
   {
@@ -58,9 +59,13 @@ const AppRoutes = [
       element: <ItemViewPage />
   },
   {
-    path: '/skelbimas/redaguoti/:itemId',
-    element: <ItemUpdatePage />
-  }
+      path: '/skelbimas/redaguoti/:itemId',
+      element: <ItemUpdatePage />
+  },
+  {
+      path: '/skelbimas/naujas',
+      element: <ItemCreationPage />
+  },
 ];
 
 export default AppRoutes;

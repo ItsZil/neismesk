@@ -27,6 +27,7 @@ namespace neismesk
                     options.ExpireTimeSpan = TimeSpan.FromMinutes(30);
                     options.SlidingExpiration = true;
                 });
+            builder.Services.AddSwaggerGen();
 
             builder.WebHost.UseUrls("https://localhost:7185");
 
@@ -42,6 +43,12 @@ namespace neismesk
             app.UseHttpsRedirection();
             app.UseStaticFiles();
             app.UseRouting();
+
+            app.UseSwagger();
+            app.UseSwaggerUI(options =>
+            {
+                options.SwaggerEndpoint("/swagger/v1/swagger.json", "NeismeskAPI");
+            });
 
             app.UseAuthentication();
             app.UseAuthorization();
