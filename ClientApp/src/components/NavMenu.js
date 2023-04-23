@@ -1,15 +1,20 @@
 ﻿import { useState, React, Component } from 'react';
-import { Collapse, Navbar, NavbarBrand, NavbarToggler, NavItem, NavLink, NavbarText, Button, Nav, InputGroup, InputGroupAddon, Input, Dropdown, DropdownToggle, DropdownMenu, DropdownItem  } from 'reactstrap';
+import { Collapse, Navbar, NavbarBrand, NavItem, NavLink, Button, Nav, Input, Dropdown, DropdownToggle, DropdownMenu, DropdownItem  } from 'reactstrap';
 import { Link } from 'react-router-dom';
 import { withRouter } from './withRouter';
-
-import toast from 'react-hot-toast';
+import axios from 'axios';
+import toast, { Toaster } from 'react-hot-toast';
 import './NavMenu.css';
 
-const requesttOptions = {
-        method: "GET"
-    };
-    
+const testLogout = () => {
+    fetch("api/user/logout", { method: "GET" })
+        .then(response => {
+            if (response.status === 200) { // 200 - Ok
+                // Hack to make the NavMenu update the user avatar.
+                window.location.reload();
+            }
+        });
+}
 
 export class NavMenu extends Component {
     static displayName = NavMenu.name;
@@ -22,10 +27,26 @@ export class NavMenu extends Component {
             isLoggedIn: false, // Assume the user is not logged in by default
             dropdownOpen: false,
             selectedCategory: 'Kategorijos',
+            userAvatar: './images/profile.png'
         };
         this.handleClick = this.handleClick.bind(this);
     }
 
+    componentDidMount() {
+        this.getUserAvatar();
+    }
+
+    getUserAvatar() {
+        axios.get('api/user/getUserAvatar')
+            .then(response => {
+                if (response.data.avatar !== undefined) {
+                    this.setState({
+                        userAvatar: response.data.avatar
+                    });
+                }
+            })
+            .catch(error => console.error(error));
+    }
 
     handleClick() {
         this.setState({
@@ -36,7 +57,7 @@ export class NavMenu extends Component {
         this.setState({
             isClicked: !this.state.isClicked
         });
-        fetch("api/login/isloggedin/0", requesttOptions) // 1 is the minimum required role. 0 - client, 1 - admin.
+        fetch("api/user/isloggedin/0", { method: "GET" })
         .then(response => {
             if (response.status == 200) { // 200 - Ok, we are logged in.
                 this.setState({ isLogged: true});
@@ -45,7 +66,7 @@ export class NavMenu extends Component {
     };
 
     handleLogoutClick = () => {
-        fetch("api/login/logout", requesttOptions)
+        fetch("api/user/logout", { method: "GET" })
         .then(response => {
             if (response.status === 200) { // 200 - Ok
                 toast('Logged out');
@@ -74,6 +95,8 @@ export class NavMenu extends Component {
 
 
     render() {
+        const { userAvatar } = this.state;
+        const avatar = userAvatar.length < 100 ? userAvatar : `data:image/jpeg;base64,${userAvatar}`;
         const maxCategoryLength = 15; // Maximum number of characters to display in dropdown toggle
 
         let displayCategory = this.state.selectedCategory;
@@ -103,6 +126,7 @@ export class NavMenu extends Component {
         return (
             <>
                 <header>
+                <Toaster></Toaster>
                     <Navbar className="header" expand="md">
                         <NavbarBrand tag={Link} to="/">
                             <img alt="logo" src="./images/logo.png" />
@@ -125,7 +149,7 @@ export class NavMenu extends Component {
                         </div>
                         <NavLink tag={Link} className="buttongive" to="/skelbimas/naujas">Dovanoti!</NavLink>
                         <NavItem className="profileContainer">
-                            <img alt="profilis" src="./images/profile.png" onClick={this.handleLoginClick} />
+                            <img alt="Profilio nuotrauka" src={avatar} onClick={this.handleLoginClick}/>
                             {toolbar}
                         </NavItem>
                     </Navbar>

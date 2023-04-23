@@ -56,7 +56,7 @@ export const ItemViewPage = () => {
     useEffect(() => {
         const fetchViewerId = async () => {
             try {
-                const response = await axios.get('api/login/getCurrentUserId');
+                const response = await axios.get('api/user/getCurrentUserId');
                 setViewerId(response.data);
             } catch (error) {
                 //toast('Įvyko klaida, susisiekite su administratoriumi!');

@@ -241,9 +241,7 @@ namespace neismesk.Utilities
 
                 foreach (IFormFile image in item.Images)
                 {
-                    using MemoryStream stream = new MemoryStream();
-                    await image.CopyToAsync(stream); // Copy the contents of the uploaded file to the memory stream
-                    byte[] data = stream.ToArray(); // Convert the memory stream to a byte array
+                    byte[] data = await ImageUtilities.ResizeCompressImage(image, 320, 240);
 
                     using MySqlCommand command = new MySqlCommand(
                         "INSERT INTO images (img, fk_ad) VALUES (@image, @fk_ad)", connection);
