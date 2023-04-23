@@ -20,7 +20,7 @@ export const ItemViewPage = () => {
             try {
                 const response = await axios.get(`api/item/getItem/${itemId}`);
                 setItem(response.data);
-
+                
                 setInterval(() => {
                     setCurrentTime(new Date());
                 }, 1000);
@@ -40,17 +40,18 @@ export const ItemViewPage = () => {
     }, [item, currentTime]);
     
     useEffect(() => {
-        const fetchUserItems = async () => {
-            try {
-                const response = await axios.get('api/item/getUserItems');
-                setUserItems(response.data);
-            } catch (error) {
-                toast('Įvyko klaida, susisiekite su administratoriumi!');
-            }
-        };
-
-        fetchUserItems();
-    }, []);
+        if (item && item.type === 'Keitimas') {
+            const fetchUserItems = async () => {
+                try {
+                    const response = await axios.get('api/item/getUserItems');
+                    setUserItems(response.data);
+                } catch (error) {
+                    //toast('Įvyko klaida, susisiekite su administratoriumi!');
+                }
+            };
+            fetchUserItems();
+        }
+    }, [item]);
 
     useEffect(() => {
         const fetchViewerId = async () => {
@@ -58,7 +59,7 @@ export const ItemViewPage = () => {
                 const response = await axios.get('api/login/getCurrentUserId');
                 setViewerId(response.data);
             } catch (error) {
-                toast('Įvyko klaida, susisiekite su administratoriumi!');
+                //toast('Įvyko klaida, susisiekite su administratoriumi!');
             }
         };
         fetchViewerId();
@@ -120,9 +121,11 @@ export const ItemViewPage = () => {
                         <Carousel>
                             {item.images && item.images.length > 0 && (
                                 <Carousel>
-                                    {item.images.map((photo, index) => (
+                                    {item.images.map((image, index) => (
                                         <Carousel.Item key={index}>
-                                            <img className="d-block w-100" src={photo.url} alt={`Photo ${index + 1}`} />
+                                            <img className="d-block w-100" 
+                                            src={`data:image/png;base64,${image.data}`}
+                                            alt={`Image ${index + 1}`} />
                                         </Carousel.Item>
                                     ))}
                                 </Carousel>
@@ -139,7 +142,7 @@ export const ItemViewPage = () => {
                                 ) : null}
                                 <Card.Text>{item.description}</Card.Text>
                                 <hr className="mb-2" />
-                                {item.type === 'Keitimas' && userItems && viewerId && (
+                                {item.type === 'Keitimas' && (
                                     <Form onSubmit={handleSubmit}>
                                         <Form.Group>
                                             <Form.Label>Pasirinkite savo prietaisą, kurį norite pasiūlyti:</Form.Label>

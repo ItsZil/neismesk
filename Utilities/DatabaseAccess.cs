@@ -3,6 +3,10 @@ using System.Linq.Expressions;
 using System.Reflection;
 using MySql.Data.MySqlClient;
 using Serilog;
+using neismesk.Models;
+using static System.Net.Mime.MediaTypeNames;
+using neismesk.ViewModels.Item;
+using System.Data.Common;
 
 namespace neismesk.Utilities
 {
@@ -172,13 +176,43 @@ namespace neismesk.Utilities
             }
         }
 
-        /// <summary>
-        /// Adds parameters to a database command object.
-        /// </summary>
-        /// <typeparam name="U">Type of parameter object</typeparam>
-        /// <param name="command">Command object to add parameters to</param>
-        /// <param name="parameters">Object containing parameter values</param>
-        private void AddParameters<U>(IDbCommand command, U parameters)
+		/// <summary>
+		/// Executes a query that modifies data in the database and return the id of the modified entry.
+		/// </summary>
+		/// <typeparam name="U">Type of parameter object</typeparam>
+		/// <param name="sqlForInsert">SQL statement to execute</param>
+		/// <param name="parameters">Object containing parameter values</param>
+		public async Task<int> SaveDataGetId<U>(string sqlForInsert, string sqlForId, U parameters)
+		{
+			try
+			{
+				using MySqlConnection connection = GetConnection();
+				using MySqlCommand command = new MySqlCommand(sqlForInsert, connection);
+				AddParameters(command, parameters);
+
+				await connection.OpenAsync();
+				await command.ExecuteNonQueryAsync();
+
+                command.CommandText = sqlForId;
+
+                int id = Convert.ToInt32(await command.ExecuteScalarAsync());
+
+				return id;
+			}
+			catch (Exception ex)
+			{
+				_logger.Error(ex, "Error saving data to database!");
+				return -1;
+			}
+		}
+
+		/// <summary>
+		/// Adds parameters to a database command object.
+		/// </summary>
+		/// <typeparam name="U">Type of parameter object</typeparam>
+		/// <param name="command">Command object to add parameters to</param>
+		/// <param name="parameters">Object containing parameter values</param>
+		private void AddParameters<U>(IDbCommand command, U parameters)
         {
             if (parameters != null)
             {
@@ -189,6 +223,108 @@ namespace neismesk.Utilities
                     parameter.Value = property.GetValue(parameters) ?? DBNull.Value;
                     command.Parameters.Add(parameter);
                 }
+            }
+        }
+
+        /// <summary>
+        /// Executes a query that modifies data in the database.
+        /// </summary>
+        /// <typeparam name="U">Type of parameter object</typeparam>
+        /// <param name="sql">SQL statement to execute</param>
+        /// <param name="parameters">Object containing parameter values</param>
+        public async Task<bool> InsertImages(ItemModel item)
+        {
+            try
+            {
+                using MySqlConnection connection = GetConnection();
+                await connection.OpenAsync();
+
+                foreach (IFormFile image in item.Images)
+                {
+                    using MemoryStream stream = new MemoryStream();
+                    await image.CopyToAsync(stream); // Copy the contents of the uploaded file to the memory stream
+                    byte[] data = stream.ToArray(); // Convert the memory stream to a byte array
+
+                    using MySqlCommand command = new MySqlCommand(
+                        "INSERT INTO images (img, fk_ad) VALUES (@image, @fk_ad)", connection);
+
+                    // Add parameters
+                    command.Parameters.AddWithValue("@image", data);
+                    command.Parameters.AddWithValue("@fk_ad", item.Id);
+
+                    await command.ExecuteNonQueryAsync();
+                }
+
+                return true;
+            }
+            catch (Exception ex)
+            {
+                _logger.Error(ex, "Error saving images to database!");
+                return false;
+            }
+        }
+
+        /// <summary>
+        /// Executes a query that modifies data in the database.
+        /// </summary>
+        /// <typeparam name="U">Type of parameter object</typeparam>
+        /// <param name="sql">SQL statement to execute</param>
+        /// <param name="parameters">Object containing parameter values</param>
+        public async Task<bool> InsertQuestions(ItemModel item)
+        {
+            try
+            {
+                using MySqlConnection connection = GetConnection();
+                await connection.OpenAsync();
+
+                foreach (string question in item.Questions)
+                {
+                    using MySqlCommand command = new MySqlCommand(
+                        "INSERT INTO questions (question_text, fk_ad) VALUES (@question, @fk_ad)", connection);
+
+                    // Add parameters
+                    command.Parameters.AddWithValue("@question", question);
+                    command.Parameters.AddWithValue("@fk_ad", item.Id);
+
+                    await command.ExecuteNonQueryAsync();
+                }
+
+                return true;
+            }
+            catch (Exception ex)
+            {
+                _logger.Error(ex, "Error saving questions to database!");
+                return false;
+            }
+        }
+
+        public async Task<List<ItemQuestionViewModel>> GetQuestions(int itemId)
+        {
+            List<ItemQuestionViewModel> questions = new List<ItemQuestionViewModel>();
+            try
+            {
+                using MySqlConnection connection = GetConnection();
+                await connection.OpenAsync();
+
+                using MySqlCommand command = new MySqlCommand(
+                    "SELECT question_text, id FROM questions where fk_ad=@itemId", connection);
+                command.Parameters.AddWithValue("@itemId", itemId);
+
+                using DbDataReader reader = await command.ExecuteReaderAsync();
+                while (await reader.ReadAsync())
+                {
+                    int id = reader.GetInt32("id");
+                    string text = reader.GetString("question_text");
+                    ItemQuestionViewModel question = new ItemQuestionViewModel { Id = id, Question = text };
+                    questions.Add(question);
+                }
+
+                return questions;
+            }
+            catch (Exception ex)
+            {
+                _logger.Error(ex, "Error getting questions from database!");
+                return questions;
             }
         }
 

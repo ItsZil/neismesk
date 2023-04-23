@@ -123,7 +123,7 @@ export class NavMenu extends Component {
                         </div>    
                             <Button className="buttonsearch" >Ieškoti</Button>
                         </div>
-                        <Button className="buttongive">Dovanoti!</Button>
+                        <NavLink tag={Link} className="buttongive" to="/skelbimas/naujas">Dovanoti!</NavLink>
                         <NavItem className="profileContainer">
                             <img alt="profilis" src="./images/profile.png" onClick={this.handleLoginClick} />
                             {toolbar}
