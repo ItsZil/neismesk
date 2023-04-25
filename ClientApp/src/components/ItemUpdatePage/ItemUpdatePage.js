@@ -30,6 +30,9 @@ function ItemUpdatePage() {
     async function fetchItem() {
       const response = await axios.get(`/api/item/getItem/${itemId}`);
       setItem(response.data);
+      setName(response.data.name);
+      setDescription(response.data.description);
+      setCategory(response.data.fk_Category);
     }
     fetchItem();
   }, [itemId]);
@@ -55,13 +58,20 @@ if (item && viewerId && item.userId !== viewerId) {
   
   const handleSubmit = async (event) => {
     try {
+
       event.preventDefault();
+      if (name === '' || description === '' || category === undefined) {
+        toast.error('Please fill in all fields!');
+        return;
+      }
       const data = { name: name || item.name, description: description || item.description, fk_Category: category || category};
       await axios.put(`/api/item/update/${itemId}`, data);
-      toast.success('Item updated successfully!');
       setName('');
       setDescription('');
       setCategory('');
+      navigate(`/skelbimas/${itemId}`);
+      await new Promise(resolve => setTimeout(resolve, 500));
+      toast.success('Item updated successfully!');
     } catch (error) {
       console.log(error);
       toast('Ivyko klaida, susisiekite su administratoriumi!');
