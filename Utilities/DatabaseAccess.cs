@@ -262,6 +262,42 @@ namespace neismesk.Utilities
             }
         }
 
+        public async Task<List<ItemImageViewModel>> GetImage (int id)
+        {
+            List<ItemImageViewModel> images = new List<ItemImageViewModel>();
+            try
+            {
+                using MySqlConnection connection = GetConnection();
+                await connection.OpenAsync();
+
+                using MySqlCommand command = new MySqlCommand(
+                    "SELECT img_id, img FROM images WHERE fk_ad=@id", connection);
+                command.Parameters.AddWithValue("@id", id);
+
+                using DbDataReader reader = await command.ExecuteReaderAsync();
+                await reader.ReadAsync();
+                
+                int dataLength = (int)reader.GetBytes(1, 0, null, 0, int.MaxValue);
+                byte[] imageData = new byte[dataLength];
+                reader.GetBytes(1, 0, imageData, 0, dataLength);
+
+                ItemImageViewModel image = new()
+                {
+                    Id = reader.GetInt32("img_id"),
+                    Data = imageData,
+                };
+                images.Add(image);
+                
+
+                return images;
+            }
+            catch (Exception ex)
+            {
+                _logger.Error(ex, "Error getting images from the database!");
+                return images;
+            }
+        }
+
         /// <summary>
         /// Executes a query that modifies data in the database.
         /// </summary>
@@ -323,6 +359,43 @@ namespace neismesk.Utilities
             {
                 _logger.Error(ex, "Error getting questions from database!");
                 return questions;
+            }
+        }
+
+        public async Task<List<ItemViewModel>> Search(string searchWord)
+        {
+            List<ItemViewModel> foundItems = new List<ItemViewModel>();
+            try
+            {
+                using MySqlConnection connection = GetConnection();
+                await connection.OpenAsync();
+
+                using MySqlCommand command = new MySqlCommand(
+                    "SELECT id, name, description, fk_user FROM ads " +
+                    "WHERE name LIKE CONCAT('%', @searchWord, '%') " +
+                    "OR description LIKE CONCAT('%', @searchWord, '%')", connection);
+                command.Parameters.AddWithValue("@searchWord", searchWord);
+
+                using DbDataReader reader = await command.ExecuteReaderAsync();
+                while (await reader.ReadAsync())
+                {
+                    ItemViewModel item = new()
+                    {
+                        Id = reader.GetInt32("id"),
+                        Name = reader.GetString("name"),
+                        Description = reader.GetString("description"),
+                        UserId = reader.GetInt32("fk_user"),
+                        Images = await GetImage(reader.GetInt32("id"))
+                    };
+                    foundItems.Add(item);
+                }
+
+                return foundItems;
+            }
+            catch (Exception ex)
+            {
+                _logger.Error(ex, "Error getting items by search word from database!");
+                return foundItems;
             }
         }
 
