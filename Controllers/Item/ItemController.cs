@@ -406,5 +406,20 @@ namespace neismesk.Controllers.Item
                 return BadRequest(ex.Message);
             }
         }
+
+        [HttpGet]
+        public async Task<IActionResult> Search([FromQuery] string searchWord)
+        {
+            try
+            {
+                var searchResults = await _database.Search(searchWord);
+
+                return Ok(searchResults);
+            }
+            catch(Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
     }
 }
