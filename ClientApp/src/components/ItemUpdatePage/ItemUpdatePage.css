@@ -16,11 +16,20 @@
 .ItemInnerBox {
     padding: 20px 10px;
 }
-
+.submitButton
+{
+    justify-content: center;
+}
 .itemInputWrapper {
     margin-bottom: 1.5em;
     display: flex;
 }
+
+img.image-preview {
+    max-width: 128px;
+    max-height: 128px;
+    margin-right: 10px;
+  }
 
 input, input:focus, #description, select {
     border: none;
@@ -29,7 +38,12 @@ input, input:focus, #description, select {
     padding: 1% 1% 1% 1%;
     width: 100%;
 }
-
+.Message
+{
+    font-size: 30px;
+    text-align: center;
+    color: rgb(131, 4, 4)
+}
 button {
     border: none;
     background-color: white;

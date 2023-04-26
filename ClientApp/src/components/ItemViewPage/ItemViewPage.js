@@ -1,11 +1,13 @@
 ﻿import React, { useState, useEffect } from 'react';
-import { useParams } from 'react-router-dom';
+import { useParams, useNavigate, Link } from 'react-router-dom';
 import { Carousel, Col, Container, Row, Form, Button, Card, Spinner } from 'react-bootstrap';
 import toast, { Toaster } from 'react-hot-toast';
+import './ItemViewPage.css'
 import axios from 'axios';
 
 export const ItemViewPage = () => {
     const { itemId } = useParams();
+    const [items, setItems] = useState([]);
     const [selectedItem, setSelectedItem] = useState(null);
     const [message, setMessage] = useState('');
     const [answers, setAnswers] = useState({});
@@ -14,6 +16,7 @@ export const ItemViewPage = () => {
     const [viewerId, setViewerId] = useState(null);
     const [currentTime, setCurrentTime] = useState(new Date());
     const [isPastEndTime, setIsPastEndTime] = useState(true);
+    const navigate = useNavigate();
 
     useEffect(() => {
         const fetchItem = async () => {
@@ -112,6 +115,13 @@ export const ItemViewPage = () => {
             });
     };
 
+
+    const handleDelete = async (itemId) => {
+        await axios.delete(`/api/item/delete/${itemId}`);
+        setItems(items.filter((item) => item.id !== itemId));
+        navigate(`/`);
+    };
+
     return item ? (
         <div className='outerBoxWrapper'>
             <Toaster />
@@ -141,6 +151,14 @@ export const ItemViewPage = () => {
                                     <Card.Text>Šis skelbimas nebegalioja.</Card.Text>
                                 ) : null}
                                 <Card.Text>{item.description}</Card.Text>
+                                {item.userId === viewerId && (
+                        <button className="delete" onClick={() => handleDelete(item.id)}>Ištrinti</button>
+                        )}
+                        {item.userId === viewerId && (
+                        <Link to={`/skelbimas/redaguoti/${item.id}`}>
+                        <button className="update" onClick={() => ''}>Redaguoti</button>
+                        </Link>
+                        )}
                                 <hr className="mb-2" />
                                 {item.type === 'Keitimas' && (
                                     <Form onSubmit={handleSubmit}>
