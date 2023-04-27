@@ -3,6 +3,7 @@ import { useParams } from 'react-router-dom';
 import { Container, Row, Col, Card, ListGroup, ListGroupItem, Button, Spinner } from "react-bootstrap";
 import toast, { Toaster } from 'react-hot-toast';
 import axios from 'axios';
+import './DetailedItemInfoPage.css';
 
 export const DetailedItemInfoPage = () => {
     const { itemId } = useParams();
@@ -25,7 +26,13 @@ export const DetailedItemInfoPage = () => {
         fetchItem();
     }, [itemId]);
 
-    /* Palieku kaip atskirus, bet gal bekuriant endpointus iseis kazkaip apjungt?
+
+    const handleSubmit = (event) => {
+        event.preventDefault();
+
+    };
+
+    /* Palieku kaip atskirus, bet gal bekuriant endpointus iseis kazkaip apjungt ar kaip tik reiks ju daugiau?
     useEffect(() => {
         const fetchItemQuestions_Answers = async () => {
             try {
@@ -68,54 +75,55 @@ export const DetailedItemInfoPage = () => {
 
 
     return item ? (
-        <div style={{ marginTop: "100px" }}>
+        <div className="my-div" style={{ marginTop: "100px" }}>
             {item.type === 'Keitimas' && (
                 <div style={{ textAlign: 'center' }}> <h2>Siūlomi daiktai mainams</h2>
                     <div className="row row-cols-1 row-cols-md-3 g-4">
-
-                        {/* Get all items who are being offered for trading
-                {itemOffers.offers.map((item) => (
-                    <Col>
-                        <Card>
-                            <Card.Img variant="top" src={item.imageUrl} style={{ height: "300px", width: "200px" }} />
-                            <Card.Body> 
-                                <Card.Title>{item.name}</Card.Title>
-                                <Card.Text>{item.description}</Card.Text>
-                            </Card.Body>
-                        </Card>
-                    </Col>
-                ))}*/}
-
+                        {/* {itemOffers.offers.map((item) => (
+                            <Col>
+                                <Card key={item.id}>
+                                    <Card.Img className="d-block mx-auto" src={item.imageUrl} style={{ height: "300px", width: "200px" }} />
+                                    <Card.Body>
+                                        <Card.Title>{item.name}</Card.Title>
+                                        <Card.Text>{item.description}</Card.Text>
+                                        <Button variant="primary" type="submit">Mainyti</Button>
+                                    </Card.Body>
+                                </Card>
+                            </Col>
+                        ))} */}
                         <Col>
                             <Card>
-                                <Card.Img variant="top" src="./images/phone.png" style={{ height: "300px", width: "200px" }} />
+                                <Card.Img className="d-block mx-auto" src="./images/phone.png" style={{ height: "300px", width: "200px" }} />
                                 <Card.Body>
                                     <Card.Title>Samsungas</Card.Title>
                                     <Card.Text>
                                         Biski padauzytas, siek tiek ekranas neveikia, gali sprogt
                                     </Card.Text>
+                                    <Button variant="primary">Mainyti</Button>
                                 </Card.Body>
                             </Card>
                         </Col>
                         <Col>
                             <Card>
-                                <Card.Img variant="top" src="./images/phone.png" style={{ height: "300px", width: "200px" }} />
+                                <Card.Img className="d-block mx-auto" src="./images/phone.png" style={{ height: "300px", width: "200px" }} />
                                 <Card.Body>
                                     <Card.Title>Samsungas</Card.Title>
                                     <Card.Text>
                                         Biski padauzytas, siek tiek ekranas neveikia, gali sprogt
                                     </Card.Text>
+                                    <Button variant="primary">Mainyti</Button>
                                 </Card.Body>
                             </Card>
                         </Col>
                         <Col>
                             <Card>
-                                <Card.Img variant="top" src="./images/phone.png" style={{ height: "300px", width: "200px" }} />
+                                <Card.Img className="d-block mx-auto" src="./images/phone.png" style={{ height: "300px", width: "200px" }} />
                                 <Card.Body>
                                     <Card.Title>Samsungas</Card.Title>
                                     <Card.Text>
                                         Biski padauzytas, siek tiek ekranas neveikia, gali sprogt
                                     </Card.Text>
+                                    <Button variant="primary">Mainyti</Button>
                                 </Card.Body>
                             </Card>
                         </Col>
@@ -125,39 +133,47 @@ export const DetailedItemInfoPage = () => {
             {item.type === 'Klausimynas' && (
 
                 <ListGroup>
-                    <ListGroupItem variant="info"> Klausimyno atsakymai </ListGroupItem>
+                    {/* 
+                    {itemQuestions_Answers.questionnaires.map((questionnaire) => ( 
+                        <Button type="submit" style={{ height: "40px", width: "90px" }} variant="primary">Atiduoti</Button>
+                        <ListGroupItem variant="info"> Klausimyno atsakymai : {questionnaire.user} </ListGroupItem>
+                        {questionnaire.questions.map((question) => (
+                          <ListGroupItem key={question.id}> {question.question} </ListGroupItem>
+                          <ListGroupItem key={question.id}> {question.answer} </ListGroupItem>
+                        ))}
+
+                    ))} */}  
+
+                    <Button style={{ height: "40px", width: "90px" }} variant="primary">Atiduoti</Button>
+                    <ListGroupItem variant="info"> Klausimyno atsakymai : Justas Andriusis </ListGroupItem>
                     <ListGroupItem variant="primary"> Klausimas nr 1 </ListGroupItem>
                     <ListGroupItem> Atsakymas Nr1.1 </ListGroupItem>
-                    <ListGroupItem> Atsakymas Nr1.2 </ListGroupItem>
                     <ListGroupItem variant="primary"> Klausimas nr 2 </ListGroupItem>
                     <ListGroupItem> Atsakymas Nr2.1 </ListGroupItem>
-                    <ListGroupItem> Atsakymas Nr2.2 </ListGroupItem>
+
+                    <Button style={{ height: "40px", width: "90px" }} variant="primary">Atiduoti</Button>
+                    <ListGroupItem variant="info"> Klausimyno atsakymai : Justas Andriusis </ListGroupItem>
+                    <ListGroupItem variant="primary"> Klausimas nr 1 </ListGroupItem>
+                    <ListGroupItem> Atsakymas Nr1.1 </ListGroupItem>
+                    <ListGroupItem variant="primary"> Klausimas nr 2 </ListGroupItem>
+                    <ListGroupItem> Atsakymas Nr2.1 </ListGroupItem>
+
+                    <Button style={{ height: "40px", width: "90px" }} variant="primary">Atiduoti</Button>
+                    <ListGroupItem variant="info"> Klausimyno atsakymai : Justas Andriusis </ListGroupItem>
+                    <ListGroupItem variant="primary"> Klausimas nr 1 </ListGroupItem>
+                    <ListGroupItem> Atsakymas Nr1.1 </ListGroupItem>
+                    <ListGroupItem variant="primary"> Klausimas nr 2 </ListGroupItem>
+                    <ListGroupItem> Atsakymas Nr2.1 </ListGroupItem>
                 </ListGroup>
-
-
-                /* Get Questions and all answers to those questions
-                 {itemQuestions_Answers.questions.map((question) => (
-                     <Card>                                          
-                         <Card.Header>{question.question}</Card.Header>
-                          Get users answers which are participating in this Questionnare
-                         <ListGroup>         
-                             {itemQuestions_Answers.answers.map((answer) => (
-                                 <ListGroupItem>{answer}</ListGroupItem>
-                         ))}
-                         </ListGroup>
-                     </Card>
-                 ))}*/
 
             )}
             {item.type === 'Loterija' && (
-                <ListGroup>{/* 
-              Get Users that are participating in this Lottery  
-                {itemLotteryParticipants.users.map((user) => (
-                <ListGroupItem>
-                {user.name} {user.surname}
-                </ListGroupItem>
-                ))}*/}
+                <ListGroup>
                     <ListGroupItem variant="primary"> Loterijos dalyviai </ListGroupItem>
+                    {/* 
+                    {itemLotteryParticipants.users.map((user) => ( 
+                        <ListGroupItem key={user.id}> {user.name} {user.surname} </ListGroupItem>
+                    ))} */}      
                     <ListGroupItem> Jonas Jonauskas </ListGroupItem>
                     <ListGroupItem> Jonas Jonauskas </ListGroupItem>
                 </ListGroup>
