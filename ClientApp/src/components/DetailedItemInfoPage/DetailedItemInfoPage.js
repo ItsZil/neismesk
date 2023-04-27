@@ -142,28 +142,33 @@ export const DetailedItemInfoPage = () => {
                           <ListGroupItem key={question.id}> {question.answer} </ListGroupItem>
                         ))}
 
-                    ))} */}  
-
+                    ))} */}
+                    <Container className="my-container">
                     <Button style={{ height: "40px", width: "90px" }} variant="primary">Atiduoti</Button>
                     <ListGroupItem variant="info"> Klausimyno atsakymai : Justas Andriusis </ListGroupItem>
                     <ListGroupItem variant="primary"> Klausimas nr 1 </ListGroupItem>
                     <ListGroupItem> Atsakymas Nr1.1 </ListGroupItem>
                     <ListGroupItem variant="primary"> Klausimas nr 2 </ListGroupItem>
                     <ListGroupItem> Atsakymas Nr2.1 </ListGroupItem>
+                    </Container>
 
+                    <Container className="my-container">
                     <Button style={{ height: "40px", width: "90px" }} variant="primary">Atiduoti</Button>
                     <ListGroupItem variant="info"> Klausimyno atsakymai : Justas Andriusis </ListGroupItem>
                     <ListGroupItem variant="primary"> Klausimas nr 1 </ListGroupItem>
                     <ListGroupItem> Atsakymas Nr1.1 </ListGroupItem>
                     <ListGroupItem variant="primary"> Klausimas nr 2 </ListGroupItem>
                     <ListGroupItem> Atsakymas Nr2.1 </ListGroupItem>
+                    </Container>
 
+                    <Container className="my-container">
                     <Button style={{ height: "40px", width: "90px" }} variant="primary">Atiduoti</Button>
                     <ListGroupItem variant="info"> Klausimyno atsakymai : Justas Andriusis </ListGroupItem>
                     <ListGroupItem variant="primary"> Klausimas nr 1 </ListGroupItem>
                     <ListGroupItem> Atsakymas Nr1.1 </ListGroupItem>
                     <ListGroupItem variant="primary"> Klausimas nr 2 </ListGroupItem>
                     <ListGroupItem> Atsakymas Nr2.1 </ListGroupItem>
+                    </Container>
                 </ListGroup>
 
             )}
