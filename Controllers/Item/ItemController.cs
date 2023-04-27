@@ -28,19 +28,28 @@ namespace neismesk.Controllers.Item
         {
             try
             {
-                var items = await _database.LoadData("SELECT id, name, description, fk_user FROM ads");
-                if (items == null)
+                var itemData = await _database.LoadData("SELECT id, name, description, fk_user FROM ads");
+                
+                if (itemData == null)
                 {
                     return BadRequest();
                 }
-                var result = (from DataRow dt in items.Rows
-                              select new ItemViewModel()
-                              {
-                                  Id = Convert.ToInt32(dt["id"]),
-                                  Name = dt["name"].ToString(),
-                                  Description = dt["description"].ToString(),
-                                  UserId = Convert.ToInt32(dt["fk_user"])
-                              }).ToList();
+
+                var imageTasks = itemData.Rows.Cast<DataRow>()
+                    .Select(row => _database.GetImage(Convert.ToInt32(row["id"])))
+                    .ToList();
+                var imageLists = await Task.WhenAll(imageTasks);
+
+                var result = itemData.Rows.Cast<DataRow>()
+                    .Select((row, index) => new ItemViewModel
+                    {
+                        Id = Convert.ToInt32(row["id"]),
+                        Name = row["name"].ToString(),
+                        Description = row["description"].ToString(),
+                        Images = imageLists[index],
+                        UserId = Convert.ToInt32(row["fk_user"])
+                    })
+                    .ToList();
 
                 return Ok(result);
             }
@@ -75,9 +84,7 @@ namespace neismesk.Controllers.Item
                 }
 
                 var questions = await _database.GetQuestions(itemId);
-
-                // Create a list of images.
-                List<ItemImageViewModel> images = new List<ItemImageViewModel>();
+                var images = new List<ItemImageViewModel>();
                 if (itemData.Rows.Count > 0)
                 {
                     foreach (DataRow row in itemData.Rows)
@@ -101,9 +108,9 @@ namespace neismesk.Controllers.Item
                                 File = new FormFile(new MemoryStream(imageBlob), 0, imageBlob.Length, fileName, contentType)
                                 {
                                     Headers = new HeaderDictionary
-                                        {
-                                            { "Content-Disposition", contentDisposition.ToString() }
-                                        }
+                                    {
+                                        { "Content-Disposition", contentDisposition.ToString() }
+                                    }
                                 }
                             });
                         }

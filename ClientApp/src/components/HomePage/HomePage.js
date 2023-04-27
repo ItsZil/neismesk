@@ -1,5 +1,6 @@
 ﻿import React, { useEffect, useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
+import { Container, Row, Col, Card, Button, Carousel } from 'react-bootstrap';
 import toast, { Toaster } from 'react-hot-toast';
 import axios from 'axios';
 import './HomePage.css';
@@ -9,8 +10,6 @@ function HomePage() {
     const [items, setItems] = useState([]);
     const navigate = useNavigate();
     const [viewerId, setViewerId] = useState(null);
-
-
 
     useEffect(() => {
         const fetchViewerId = async () => {
@@ -39,37 +38,36 @@ function HomePage() {
         navigate(`/skelbimas/${itemId}`);
     }
 
-    const handleUpdate = (item) => {
-        
-    };
-
-    const handleDelete = async (itemId) => {
-        await axios.delete(`/api/item/delete/${itemId}`);
-        setItems(items.filter((item) => item.id !== itemId));
-    };
-
     return (
-        <div className="home">
-            <section className="product-list">
-                <h3>Naujausi prietaisų skelbimai</h3>
-                <ul className="ul">
-                {items.map(item => (
-                    <li className="li" key={item.id}>
-                        <img src="./images/phone.png" alt="{item.name}" />
-                        <h4>{item.name}</h4>
-                        <p>{item.description}</p>
-                        <button className="wish" onClick={() => handleOpen(item.id)}>Noriu!</button>
-                        <Link to={`/skelbimas/redaguoti/${item.id}`}>
-                            <button className='update' onClick={() => handleUpdate(item)} type='submit'>Redaguoti</button>
-                        </Link>
-                        <button className="delete" onClick={() => handleDelete(item.id)}>
-                        Ištrinti
-                        </button>
-                    </li>
+        <Container className="home">
+            <h3>Naujausi prietaisų skelbimai</h3>
+            <Row>
+                {items.map((item) => (
+                    <Col sm={4} key={item.id}>
+                        <Card className="mb-4">
+                            <Carousel>
+                                {item.images && item.images.map((image, index) => (
+                                    <Carousel.Item key={index}>
+                                        <img
+                                            className="d-block w-100"
+                                            src={`data:image/png;base64,${image.data}`}
+                                            alt={item.name}
+                                        />
+                                    </Carousel.Item>
+                                ))}
+                            </Carousel>
+                            <Card.Body>
+                                <Card.Title>{item.name}</Card.Title>
+                                <Card.Text>{item.description}</Card.Text>
+                                <Button variant="primary" onClick={() => handleOpen(item.id)}>
+                                    Noriu!
+                                </Button>
+                            </Card.Body>
+                        </Card>
+                    </Col>
                 ))}
-                </ul>
-            </section>
-        </div>
+            </Row>
+        </Container>
     );
 }
 
