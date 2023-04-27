@@ -127,7 +127,7 @@ export const ItemViewPage = () => {
             <Toaster />
             <Container className="my-5">
                 <Row>
-                    <Col md={6}>
+                    <Col md={4}>
                         <Carousel>
                             {item.images && item.images.length > 0 && (
                                 <Carousel>
@@ -145,7 +145,7 @@ export const ItemViewPage = () => {
                             )}
                         </Carousel>
                     </Col>
-                    <Col md={6}>
+                    <Col md={8}>
                         <Card>
                             <Card.Header>{item.category}</Card.Header>
                             <Card.Body>
