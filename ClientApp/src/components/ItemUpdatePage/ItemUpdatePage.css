@@ -28,7 +28,7 @@
 img.image-preview {
     max-width: 128px;
     max-height: 128px;
-    margin-right: 10px;
+    margin-right: -35px;
   }
 
 input, input:focus, #description, select {

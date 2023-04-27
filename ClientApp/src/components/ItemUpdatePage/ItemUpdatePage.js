@@ -115,7 +115,7 @@ if (item && viewerId && item.userId !== viewerId) {
     if (images.length > 0) {
         return images.map((image) => {
             const imageUrl = URL.createObjectURL(image);
-            return <img src={imageUrl} style={{ maxWidth: '15%', height: 'auto', marginRight: '10px', border: '1px solid white' }}></img>;
+            return <img src={imageUrl} style={{ maxWidth: '15%', height: 'auto', marginRight: '15px', border: '1px solid white' }}></img>;
         })
     }
 }
