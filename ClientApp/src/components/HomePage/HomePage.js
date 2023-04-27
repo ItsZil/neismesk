@@ -1,37 +1,19 @@
-﻿import React, { useEffect, useState } from 'react';
-import { useNavigate, Link } from 'react-router-dom';
-import toast, { Toaster } from 'react-hot-toast';
+﻿import React, { useRef, useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { Container, Row, Col, Card, Button, Carousel, Spinner } from 'react-bootstrap';
 import axios from 'axios';
 import './HomePage.css';
 
 
 function HomePage() {
-    const [items, setItems] = useState([]);
+    const [items, setItems] = useState(null);
     const navigate = useNavigate();
-    const [viewerId, setViewerId] = useState(null);
-
-
-
-    useEffect(() => {
-        const fetchViewerId = async () => {
-            try {
-                const response = await axios.get('api/user/getCurrentUserId');
-                setViewerId(response.data);
-            } catch (error) {
-                //toast('Įvyko klaida, susisiekite su administratoriumi!');
-                // TODO - an error still shows up in the console when logged out.
-            }
-        };
-        fetchViewerId();
-    }, []);
-
 
     useEffect(() => {
         async function fetchItems() {
             const response = await axios.get('/api/item/getItems');
             setItems(response.data);
         }
-
         fetchItems();
     }, []);
 
@@ -39,32 +21,53 @@ function HomePage() {
         navigate(`/skelbimas/${itemId}`);
     }
 
-    const handleWish = (itemId) => {
-        navigate(`/skelbimas/${itemId}`);
-    }
-
-    return (
-        <div className="home">
-            <section className="product-list">
-                <h3>Naujausi prietaisų skelbimai</h3>
-                <ul className="ul">
-                {items.map(item => (
-                    <li className="li" key={item.id}>
-                        <img src="./images/phone.png" alt="{item.name}" />
-                        <h4>{item.name}</h4>
-                        <p>{item.description}</p>
-                        {item.userId !== viewerId ? (
-                        <button className="wish" onClick={() => handleWish(item.id)}>Noriu!</button>
-                        ) : (
-                            <button className="wish" onClick={() => handleWish(item.id)}>Peržiūrėti</button>
-                        )}
-                    </li>
+    return items ? (
+        <Container className="home">
+            <h3 style={{ textAlign: "center", marginBottom: "50px" }}>Naujausi prietaisų skelbimai</h3>
+            <Row>
+                {items.map((item) => (
+                    <Col sm={4} key={item.id}>
+                        <Card className="mb-4">
+                            <Carousel style={{ height: "250px" }} >
+                                {item.images && item.images.map((image, index) => (
+                                    <Carousel.Item key={index}>
+                                        <img
+                                            className="d-block w-100"
+                                            style={{ objectFit: "cover" }}
+                                            src={`data:image/png;base64,${image.data}`}
+                                            alt={item.name}
+                                        />
+                                    </Carousel.Item>
+                                ))}
+                            </Carousel>
+                            <Card.Body>
+                                <Card.Title>{item.name}</Card.Title>
+                                <Card.Text>{item.description}</Card.Text>
+                                <ul className="list-group list-group-flush mb-3">
+                                    <li className="list-group-item d-flex justify-content-between align-items-center">
+                                        <span>{item.type}</span>
+                                        <span>{item.location}</span>
+                                    </li>
+                                    <li className="list-group-item d-flex justify-content-between align-items-center">
+                                        <span>Baigiasi:</span>
+                                        <span>{new Date(item.endDateTime).toLocaleString('lt-LT').slice(5, -3)}</span>
+                                    </li>
+                                </ul>
+                                <div className="d-flex justify-content-end">
+                                    <Button variant="primary" onClick={() => handleOpen(item.id)}>Peržiūrėti</Button>
+                                </div>
+                            </Card.Body>
+                        </Card>
+                    </Col>
                 ))}
-                </ul>
-            </section>
-        </div>
+            </Row>
+        </Container>
+     ) : (
+        <Container className="my-5">
+            <div className='outerBoxWrapper d-flex justify-content-center'>
+                <Spinner animation="border" role="status" />
+            </div>
+        </Container>
     );
 }
-
 export default HomePage;
-
