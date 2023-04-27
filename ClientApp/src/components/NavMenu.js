@@ -172,6 +172,8 @@ export class NavMenu extends Component {
                         <NavLink tag={Link} className="links" to="/">
                             Privatumo politika
                         </NavLink>
+                        <NavLink tag={Link} to="https://www.sandbox.paypal.com/donate/?hosted_button_id=CSYYU9CP8BSG6" className="links">Parama</NavLink>
+                        
                     </div>
                 </footer>
             </>
