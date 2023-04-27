@@ -29,8 +29,11 @@ namespace neismesk.Controllers.Item
         {
             try
             {
-                var itemData = await _database.LoadData("SELECT id, name, description, fk_user FROM ads");
-                
+                var itemData = await _database.LoadData("SELECT ads.id, ads.name, ads.description, ads.fk_user, ads.location, ads.end_datetime, ad_type.type" +
+                    " FROM ads " +
+                    "LEFT JOIN ad_type ON ads.fk_type = ad_type.id " +
+                    "WHERE ads.fk_status = 1");
+
                 if (itemData == null)
                 {
                     return BadRequest();
@@ -47,6 +50,9 @@ namespace neismesk.Controllers.Item
                         Id = Convert.ToInt32(row["id"]),
                         Name = row["name"].ToString(),
                         Description = row["description"].ToString(),
+                        Type = row["type"].ToString(),
+                        Location = row["location"].ToString(),
+                        EndDateTime = Convert.ToDateTime(row["end_datetime"]),
                         Images = imageLists[index],
                         UserId = Convert.ToInt32(row["fk_user"])
                     })
