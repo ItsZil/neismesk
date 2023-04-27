@@ -39,14 +39,9 @@ function HomePage() {
         navigate(`/skelbimas/${itemId}`);
     }
 
-    const handleUpdate = (item) => {
-        
-    };
-
-    const handleDelete = async (itemId) => {
-        await axios.delete(`/api/item/delete/${itemId}`);
-        setItems(items.filter((item) => item.id !== itemId));
-    };
+    const handleWish = (itemId) => {
+        navigate(`/skelbimas/${itemId}`);
+    }
 
     return (
         <div className="home">
@@ -58,13 +53,11 @@ function HomePage() {
                         <img src="./images/phone.png" alt="{item.name}" />
                         <h4>{item.name}</h4>
                         <p>{item.description}</p>
-                        <button className="wish" onClick={() => handleOpen(item.id)}>Noriu!</button>
-                        <Link to={`/skelbimas/redaguoti/${item.id}`}>
-                            <button className='update' onClick={() => handleUpdate(item)} type='submit'>Redaguoti</button>
-                        </Link>
-                        <button className="delete" onClick={() => handleDelete(item.id)}>
-                        Ištrinti
-                        </button>
+                        {item.userId !== viewerId ? (
+                        <button className="wish" onClick={() => handleWish(item.id)}>Noriu!</button>
+                        ) : (
+                            <button className="wish" onClick={() => handleWish(item.id)}>Peržiūrėti</button>
+                        )}
                     </li>
                 ))}
                 </ul>
