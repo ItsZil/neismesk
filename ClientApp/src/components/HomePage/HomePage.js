@@ -59,9 +59,7 @@ function HomePage() {
                             <Card.Body>
                                 <Card.Title>{item.name}</Card.Title>
                                 <Card.Text>{item.description}</Card.Text>
-                                <Button variant="primary" onClick={() => handleOpen(item.id)}>
-                                    Noriu!
-                                </Button>
+                                <Button variant="primary" onClick={() => handleOpen(item.id)}>Peržiūrėti</Button>
                             </Card.Body>
                         </Card>
                     </Col>
@@ -70,6 +68,4 @@ function HomePage() {
         </Container>
     );
 }
-
 export default HomePage;
-

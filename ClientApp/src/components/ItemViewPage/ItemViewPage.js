@@ -1,11 +1,13 @@
 ﻿import React, { useState, useEffect } from 'react';
-import { useParams } from 'react-router-dom';
+import { useParams, useNavigate, Link } from 'react-router-dom';
 import { Carousel, Col, Container, Row, Form, Button, Card, Spinner } from 'react-bootstrap';
 import toast, { Toaster } from 'react-hot-toast';
+import './ItemViewPage.css'
 import axios from 'axios';
 
 export const ItemViewPage = () => {
     const { itemId } = useParams();
+    const [items, setItems] = useState([]);
     const [selectedItem, setSelectedItem] = useState(null);
     const [message, setMessage] = useState('');
     const [answers, setAnswers] = useState({});
@@ -14,6 +16,7 @@ export const ItemViewPage = () => {
     const [viewerId, setViewerId] = useState(null);
     const [currentTime, setCurrentTime] = useState(new Date());
     const [isPastEndTime, setIsPastEndTime] = useState(true);
+    const navigate = useNavigate();
 
     useEffect(() => {
         const fetchItem = async () => {
@@ -112,12 +115,19 @@ export const ItemViewPage = () => {
             });
     };
 
+
+    const handleDelete = async (itemId) => {
+        await axios.delete(`/api/item/delete/${itemId}`);
+        setItems(items.filter((item) => item.id !== itemId));
+        navigate(`/`);
+    };
+
     return item ? (
         <div className='outerBoxWrapper'>
             <Toaster />
             <Container className="my-5">
                 <Row>
-                    <Col md={6}>
+                    <Col md={4}>
                         <Carousel>
                             {item.images && item.images.length > 0 && (
                                 <Carousel>
@@ -125,14 +135,17 @@ export const ItemViewPage = () => {
                                         <Carousel.Item key={index}>
                                             <img className="d-block w-100" 
                                             src={`data:image/png;base64,${image.data}`}
-                                            alt={`Image ${index + 1}`} />
+                                            alt={`Image ${index + 1}`}
+                                            height="320"
+                                            style={{ border: '1px solid white' }}
+                                             />
                                         </Carousel.Item>
                                     ))}
                                 </Carousel>
                             )}
                         </Carousel>
                     </Col>
-                    <Col md={6}>
+                    <Col md={8}>
                         <Card>
                             <Card.Header>{item.category}</Card.Header>
                             <Card.Body>
@@ -141,6 +154,14 @@ export const ItemViewPage = () => {
                                     <Card.Text>Šis skelbimas nebegalioja.</Card.Text>
                                 ) : null}
                                 <Card.Text>{item.description}</Card.Text>
+                                {item.userId === viewerId && (
+                        <button className="delete" onClick={() => handleDelete(item.id)}>Ištrinti</button>
+                        )}
+                        {item.userId === viewerId && (
+                        <Link to={`/skelbimas/redaguoti/${item.id}`}>
+                        <button className="update" onClick={() => ''}>Redaguoti</button>
+                        </Link>
+                        )}
                                 <hr className="mb-2" />
                                 {item.type === 'Keitimas' && (
                                     <Form onSubmit={handleSubmit}>
