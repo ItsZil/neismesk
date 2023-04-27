@@ -413,7 +413,7 @@ public async Task<IActionResult> UpdateDevice(int id, IFormCollection form)
         {
             using (var memoryStream = new MemoryStream())
             {
-                var imageBytes = await ImageUtilities.ResizeCompressImage(image, 128, 128);
+                var imageBytes = await ImageUtilities.ResizeCompressImage(image, 640, 480);
                 imageBytesList.Add(imageBytes);
             }
         }

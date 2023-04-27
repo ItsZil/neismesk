@@ -135,7 +135,10 @@ export const ItemViewPage = () => {
                                         <Carousel.Item key={index}>
                                             <img className="d-block w-100" 
                                             src={`data:image/png;base64,${image.data}`}
-                                            alt={`Image ${index + 1}`} />
+                                            alt={`Image ${index + 1}`}
+                                            height="320"
+                                            style={{ border: '1px solid white' }}
+                                             />
                                         </Carousel.Item>
                                     ))}
                                 </Carousel>

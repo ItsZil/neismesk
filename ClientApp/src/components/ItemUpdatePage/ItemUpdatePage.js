@@ -130,6 +130,8 @@ function getExistingImages()
         className="image-preview"
         src={`data:image/png;base64,${image.data}`}
         alt={`Image ${index + 1}`}
+        height="320"
+        style={{ border: '1px solid white' }}
       />
       <button
         className="delete-button"
