@@ -241,7 +241,7 @@ namespace neismesk.Utilities
 
                 foreach (IFormFile image in item.Images)
                 {
-                    byte[] data = await ImageUtilities.ResizeCompressImage(image, 320, 240);
+                    byte[] data = await ImageUtilities.ResizeCompressImage(image, 640, 480);
 
                     using MySqlCommand command = new MySqlCommand(
                         "INSERT INTO images (img, fk_ad) VALUES (@image, @fk_ad)", connection);
@@ -275,20 +275,20 @@ namespace neismesk.Utilities
                 command.Parameters.AddWithValue("@id", id);
 
                 using DbDataReader reader = await command.ExecuteReaderAsync();
-                await reader.ReadAsync();
-                
-                int dataLength = (int)reader.GetBytes(1, 0, null, 0, int.MaxValue);
-                byte[] imageData = new byte[dataLength];
-                reader.GetBytes(1, 0, imageData, 0, dataLength);
 
-                ItemImageViewModel image = new()
+                while (await reader.ReadAsync())
                 {
-                    Id = reader.GetInt32("img_id"),
-                    Data = imageData,
-                };
-                images.Add(image);
-                
+                    int dataLength = (int)reader.GetBytes(1, 0, null, 0, int.MaxValue);
+                    byte[] imageData = new byte[dataLength];
+                    reader.GetBytes(1, 0, imageData, 0, dataLength);
 
+                    ItemImageViewModel image = new()
+                    {
+                        Id = reader.GetInt32("img_id"),
+                        Data = imageData,
+                    };
+                    images.Add(image);
+                }
                 return images;
             }
             catch (Exception ex)

@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using neismesk.Models;
 using neismesk.Utilities;
+using System.Linq;
 using neismesk.ViewModels.Ad;
 using neismesk.ViewModels.Item;
 using Newtonsoft.Json;
@@ -28,19 +29,34 @@ namespace neismesk.Controllers.Item
         {
             try
             {
-                var items = await _database.LoadData("SELECT id, name, description, fk_user FROM ads");
-                if (items == null)
+                var itemData = await _database.LoadData("SELECT ads.id, ads.name, ads.description, ads.fk_user, ads.location, ads.end_datetime, ad_type.type" +
+                    " FROM ads " +
+                    "LEFT JOIN ad_type ON ads.fk_type = ad_type.id " +
+                    "WHERE ads.fk_status = 1");
+
+                if (itemData == null)
                 {
                     return BadRequest();
                 }
-                var result = (from DataRow dt in items.Rows
-                              select new ItemViewModel()
-                              {
-                                  Id = Convert.ToInt32(dt["id"]),
-                                  Name = dt["name"].ToString(),
-                                  Description = dt["description"].ToString(),
-                                  UserId = Convert.ToInt32(dt["fk_user"])
-                              }).ToList();
+
+                var imageTasks = itemData.Rows.Cast<DataRow>()
+                    .Select(row => _database.GetImage(Convert.ToInt32(row["id"])))
+                    .ToList();
+                var imageLists = await Task.WhenAll(imageTasks);
+
+                var result = itemData.Rows.Cast<DataRow>()
+                    .Select((row, index) => new ItemViewModel
+                    {
+                        Id = Convert.ToInt32(row["id"]),
+                        Name = row["name"].ToString(),
+                        Description = row["description"].ToString(),
+                        Type = row["type"].ToString(),
+                        Location = row["location"].ToString(),
+                        EndDateTime = Convert.ToDateTime(row["end_datetime"]),
+                        Images = imageLists[index],
+                        UserId = Convert.ToInt32(row["fk_user"])
+                    })
+                    .ToList();
 
                 return Ok(result);
             }
@@ -75,9 +91,7 @@ namespace neismesk.Controllers.Item
                 }
 
                 var questions = await _database.GetQuestions(itemId);
-
-                // Create a list of images.
-                List<ItemImageViewModel> images = new List<ItemImageViewModel>();
+                var images = new List<ItemImageViewModel>();
                 if (itemData.Rows.Count > 0)
                 {
                     foreach (DataRow row in itemData.Rows)
@@ -101,9 +115,9 @@ namespace neismesk.Controllers.Item
                                 File = new FormFile(new MemoryStream(imageBlob), 0, imageBlob.Length, fileName, contentType)
                                 {
                                     Headers = new HeaderDictionary
-                                        {
-                                            { "Content-Disposition", contentDisposition.ToString() }
-                                        }
+                                    {
+                                        { "Content-Disposition", contentDisposition.ToString() }
+                                    }
                                 }
                             });
                         }
@@ -382,30 +396,73 @@ namespace neismesk.Controllers.Item
         }
 
         [HttpPut("update/{id}")]
-        public async Task<IActionResult> UpdateDevice(int id, ItemUpdateViewModel model)
+public async Task<IActionResult> UpdateDevice(int id, IFormCollection form)
+{
+    try
+    {
+        // Check if device exists
+        var item = await _database.LoadData($"SELECT * FROM ads WHERE id={id}");
+        if (item == null || item.Rows.Count == 0)
         {
-            try
-            {
-                // Check if device exists
-                var item = await _database.LoadData($"SELECT * FROM ads WHERE id={id}");
-                if (item == null || item.Rows.Count == 0)
-                {
-                    return BadRequest();
-                }
-                // Update item in database
+            return BadRequest();
+        }
 
-                await _database.SaveData(
-    "UPDATE ads SET name=@Name, description=@Description, fk_category=@Category WHERE id=@Id",
-    new { Id = id, Name = model.Name, Description = model.Description, Category = model.fk_Category }
-);
+        // Get form data
+        string name = form["name"];
+        string description = form["description"];
+        int Category = Convert.ToInt32(form["fk_Category"]);
 
-                return Ok();
-            }
-            catch (Exception ex)
+        // Get images data
+        var images = Request.Form.Files.GetFiles("images");
+
+        string sql = "SELECT img_id FROM images WHERE fk_ad = @id";
+        var parameters_image = new { id };
+        var result_image = await _database.LoadData(sql, parameters_image);
+
+        // Get list of image IDs to delete
+        var imageIdsToDelete = form["imagesToDelete"].Select(idStr => Convert.ToInt32(idStr)).ToList();
+        List<byte[]> imageBytesList = new List<byte[]>();
+        foreach (var image in images)
+        {
+            using (var memoryStream = new MemoryStream())
             {
-                return BadRequest(ex.Message);
+                var imageBytes = await ImageUtilities.ResizeCompressImage(image, 640, 480);
+                imageBytesList.Add(imageBytes);
             }
         }
+        
+
+        // Delete images from database
+        foreach (var imageId in imageIdsToDelete)
+        {
+            await _database.SaveData("DELETE FROM images WHERE img_id = @imageId", new { imageId });
+        }
+
+        // Update item in database
+        await _database.SaveData(
+            "UPDATE ads SET name=@Name, description=@Description, fk_category=@Category WHERE id=@Id",
+            new { Id = id, Name = name, Description = description, Category = Category }
+        );
+        
+        for (int i = 0; i < imageBytesList.Count; i++)
+        {
+            var imageBytes = imageBytesList[i];
+                // Insert new image
+                sql = "INSERT INTO images (img, fk_ad) VALUES (@image, @id)";
+                var parameters_insert_image = new { image = imageBytes, id };
+                await _database.SaveData(sql, parameters_insert_image);
+        }
+
+        return Ok();
+    }
+    catch (Exception ex)
+    {
+        return BadRequest(ex.Message);
+    }
+}
+
+
+
 
         [HttpGet]
         public async Task<IActionResult> Search([FromQuery] string searchWord)
