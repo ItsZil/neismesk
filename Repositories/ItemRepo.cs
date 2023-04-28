@@ -1,5 +1,6 @@
 ﻿using MySql.Data.MySqlClient;
 using neismesk.Models;
+using neismesk.Utilities;
 using neismesk.ViewModels.Item;
 using Serilog;
 using System.Data;
@@ -72,6 +73,40 @@ namespace neismesk.Repositories
         //    }
         //}
 
+        public async Task<int> Create(ItemModel item)
+        {
+            try
+            {
+                using MySqlConnection connection = GetConnection();
+                await connection.OpenAsync();
+
+                using MySqlCommand command = new MySqlCommand(
+                    "INSERT INTO ads (name, description, location, fk_category, fk_user, fk_status, fk_type, end_datetime) " +
+                    "VALUES (@Name, @Description, @Location, @Category, @User, @Status, @Type, @EndDate)", connection);
+
+                command.Parameters.AddWithValue("@Name", item.Name);
+                command.Parameters.AddWithValue("@Description", item.Description);
+                command.Parameters.AddWithValue("@Location", item.Location);
+                command.Parameters.AddWithValue("@Category", item.Category);
+                command.Parameters.AddWithValue("@User", item.User);
+                command.Parameters.AddWithValue("@Status", item.Status);
+                command.Parameters.AddWithValue("@Type", item.Type);
+                command.Parameters.AddWithValue("@EndDate", item.EndDate);
+
+                await command.ExecuteNonQueryAsync();
+
+                command.CommandText = "SELECT LAST_INSERT_ID()";
+                int id = Convert.ToInt32(await command.ExecuteScalarAsync());
+
+                return id;
+            }
+            catch (Exception ex)
+            {
+                _logger.Error(ex, "Error saving data to database!");
+                return -1;
+            }
+        }
+
         public async Task<ItemViewModel> Find(int id)
         {
             ItemViewModel item = new ItemViewModel();
@@ -90,11 +125,11 @@ namespace neismesk.Repositories
                         }
 
                         item = (from DataRow dt in dataTable.Rows
-                                 select new ItemViewModel()
-                                 {
-                                     Id = Convert.ToInt32(dt["id"]),
-                                     Name = dt["type"].ToString()
-                                 }).FirstOrDefault();
+                                select new ItemViewModel()
+                                {
+                                    Id = Convert.ToInt32(dt["id"]),
+                                    Name = dt["type"].ToString()
+                                }).FirstOrDefault();
 
                         return item;
                     }

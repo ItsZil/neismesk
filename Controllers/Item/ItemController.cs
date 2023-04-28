@@ -301,11 +301,11 @@ namespace neismesk.Controllers.Item
                     Images = form.Files.GetFiles("images").ToList(),
                     Questions = form["questions"].ToList(),
                     EndDate = DateTime.Now.AddDays(14),
-            };
+                };
 
-                item.Id = await _database.SaveDataGetId("INSERT INTO ads (name, description, location, fk_category, fk_user, fk_status, fk_type, end_datetime) VALUES (@Name, @Description, @Location, @Category, @User, @Status, @Type, @EndDate)", "SELECT LAST_INSERT_ID()", item);
+                item.Id = await _itemRepo.Create(item);
 
-                if (item.Id != null)
+                if (item.Id != -1)
                 {
                     bool success = false;
                     success = await _database.InsertImages(item);
@@ -330,6 +330,11 @@ namespace neismesk.Controllers.Item
         [HttpDelete("delete/{itemId}")]
         public async Task<IActionResult> DeleteItem(int itemId)
         {
+            if (!User.Identity.IsAuthenticated)
+            {
+                return Unauthorized();
+            }
+
             try
             {
                 var item = await _itemRepo.Find(itemId);
@@ -391,6 +396,11 @@ namespace neismesk.Controllers.Item
         [HttpPut("update/{id}")]
         public async Task<IActionResult> UpdateDevice(int id, IFormCollection form)
         {
+            if (!User.Identity.IsAuthenticated)
+            {
+                return Unauthorized();
+            }
+
             try
             {
                 var item = await _itemRepo.Find(id);
