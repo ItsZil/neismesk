@@ -332,15 +332,13 @@ namespace neismesk.Controllers.Item
         {
             try
             {
-                // Check if item exists
-                var item = await _database.LoadData($"SELECT * FROM ads WHERE id={itemId}");
-                if (item == null || item.Rows.Count == 0)
+                var item = await _itemRepo.Find(itemId);
+                if (item == null)
                 {
                     return BadRequest();
                 }
 
-                // Delete item from database
-                await _database.SaveData($"DELETE FROM ads WHERE id={itemId}", itemId);
+                await _itemRepo.Delete(itemId);
 
                 return Ok();
             }

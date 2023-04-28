@@ -131,5 +131,28 @@ namespace neismesk.Repositories
                 return false;
             }
         }
+
+        public async Task<bool> Delete(int id)
+        {
+            try
+            {
+                using MySqlConnection connection = GetConnection();
+                using MySqlCommand command = new MySqlCommand(
+                    "DELETE FROM ads WHERE id=@Id", connection);
+
+                command.Parameters.AddWithValue("@Id", id);
+
+                await connection.OpenAsync();
+                await command.ExecuteNonQueryAsync();
+
+                return true;
+            }
+            catch (Exception ex)
+            {
+                _logger.Error(ex, "Error deleting item from database!");
+                return false;
+            }
+        }
+
     }
 }
