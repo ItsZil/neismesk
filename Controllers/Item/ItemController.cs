@@ -10,6 +10,7 @@ using System.Data;
 using System.Net.Http.Headers;
 using System.Net.Mime;
 using System.Text;
+using neismesk.Repositories;
 
 namespace neismesk.Controllers.Item
 {
@@ -18,10 +19,18 @@ namespace neismesk.Controllers.Item
     public class ItemController : ControllerBase
     {
         private readonly DatabaseAccess _database;
+        private readonly TypeRepo _typeRepo;
+        private readonly CategoryRepo _categoryRepo;
+        private readonly ItemRepo _itemRepo;
+        private readonly ImageRepo _imageRepo;
 
         public ItemController()
         {
             _database = new DatabaseAccess();
+            _typeRepo = new TypeRepo();
+            _categoryRepo = new CategoryRepo();
+            _itemRepo = new ItemRepo();
+            _imageRepo = new ImageRepo();
         }
 
         [HttpGet("getItems")]
@@ -346,21 +355,14 @@ namespace neismesk.Controllers.Item
         {
             try
             {
-                var categories = await _database.LoadData("SELECT * FROM categories");
+                var categories = await _categoryRepo.GetAll();
 
                 if (categories == null)
                 {
                     return BadRequest();
                 }
 
-                var result = (from DataRow dt in categories.Rows
-                              select new ItemCategoryViewModel()
-                              {
-                                  Id = Convert.ToInt32(dt["id"]),
-                                  Name = dt["name"].ToString()
-                              }).ToList();
-
-                return Ok(result);
+                return Ok(categories);
             }
             catch (Exception ex)
             {
@@ -373,21 +375,14 @@ namespace neismesk.Controllers.Item
         {
             try
             {
-                var types = await _database.LoadData("SELECT * FROM ad_type");
+                var types = await _typeRepo.GetAll();
 
                 if (types == null)
                 {
                     return BadRequest();
                 }
 
-                var result = (from DataRow dt in types.Rows
-                              select new ItemTypeViewModel()
-                              {
-                                  Id = Convert.ToInt32(dt["id"]),
-                                  Name = dt["type"].ToString()
-                              }).ToList();
-
-                return Ok(result);
+                return Ok(types);
             }
             catch (Exception ex)
             {
@@ -396,73 +391,43 @@ namespace neismesk.Controllers.Item
         }
 
         [HttpPut("update/{id}")]
-public async Task<IActionResult> UpdateDevice(int id, IFormCollection form)
-{
-    try
-    {
-        // Check if device exists
-        var item = await _database.LoadData($"SELECT * FROM ads WHERE id={id}");
-        if (item == null || item.Rows.Count == 0)
+        public async Task<IActionResult> UpdateDevice(int id, IFormCollection form)
         {
-            return BadRequest();
-        }
-
-        // Get form data
-        string name = form["name"];
-        string description = form["description"];
-        int Category = Convert.ToInt32(form["fk_Category"]);
-
-        // Get images data
-        var images = Request.Form.Files.GetFiles("images");
-
-        string sql = "SELECT img_id FROM images WHERE fk_ad = @id";
-        var parameters_image = new { id };
-        var result_image = await _database.LoadData(sql, parameters_image);
-
-        // Get list of image IDs to delete
-        var imageIdsToDelete = form["imagesToDelete"].Select(idStr => Convert.ToInt32(idStr)).ToList();
-        List<byte[]> imageBytesList = new List<byte[]>();
-        foreach (var image in images)
-        {
-            using (var memoryStream = new MemoryStream())
+            try
             {
-                var imageBytes = await ImageUtilities.ResizeCompressImage(image, 640, 480);
-                imageBytesList.Add(imageBytes);
+                var item = await _itemRepo.Find(id);
+                if (item == null)
+                {
+                    return BadRequest();
+                }
+
+                var update = new ItemModel()
+                {
+                    Id = id,
+                    Name = form["name"].ToString(),
+                    Description = form["description"].ToString(),
+                    Category = Convert.ToInt32(form["fk_Category"]),
+                    Images = Request.Form.Files.GetFiles("images").ToList()
+                };
+        
+                // Get list of image IDs to delete
+                var imagesToDelete = form["imagesToDelete"].Select(idStr => Convert.ToInt32(idStr)).ToList();
+
+                // Delete images from database
+                await _imageRepo.Delete(imagesToDelete);
+        
+                // Update item in database
+                await _itemRepo.Update(update);
+
+                await _imageRepo.InsertImages(update);
+        
+                return Ok();
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
             }
         }
-        
-
-        // Delete images from database
-        foreach (var imageId in imageIdsToDelete)
-        {
-            await _database.SaveData("DELETE FROM images WHERE img_id = @imageId", new { imageId });
-        }
-
-        // Update item in database
-        await _database.SaveData(
-            "UPDATE ads SET name=@Name, description=@Description, fk_category=@Category WHERE id=@Id",
-            new { Id = id, Name = name, Description = description, Category = Category }
-        );
-        
-        for (int i = 0; i < imageBytesList.Count; i++)
-        {
-            var imageBytes = imageBytesList[i];
-                // Insert new image
-                sql = "INSERT INTO images (img, fk_ad) VALUES (@image, @id)";
-                var parameters_insert_image = new { image = imageBytes, id };
-                await _database.SaveData(sql, parameters_insert_image);
-        }
-
-        return Ok();
-    }
-    catch (Exception ex)
-    {
-        return BadRequest(ex.Message);
-    }
-}
-
-
-
 
         [HttpGet]
         public async Task<IActionResult> Search([FromQuery] string searchWord)
