@@ -105,6 +105,41 @@ namespace neismesk.Repositories
             }
         }
 
+        public async Task<List<ItemImageViewModel>> GetByAdFirst(int id)
+        {
+            List<ItemImageViewModel> image = new List<ItemImageViewModel>();
+            try
+            {
+                using MySqlConnection connection = GetConnection();
+                await connection.OpenAsync();
+
+                using MySqlCommand command = new MySqlCommand(
+                    "SELECT img_id, img FROM images WHERE fk_ad=@id", connection);
+                command.Parameters.AddWithValue("@id", id);
+
+                using DbDataReader reader = await command.ExecuteReaderAsync();
+
+                int dataLength = (int)reader.GetBytes(1, 0, null, 0, int.MaxValue);
+                byte[] imageData = new byte[dataLength];
+                reader.GetBytes(1, 0, imageData, 0, dataLength);
+
+                var firstImage = new ItemImageViewModel()
+                {
+                    Id = reader.GetInt32("img_id"),
+                    Data = imageData
+                };
+
+                image.Add(firstImage);
+
+                return image;
+            }
+            catch (Exception ex)
+            {
+                _logger.Error(ex, "Error getting images from the database!");
+                return image;
+            }
+        }
+
         public async Task<bool> Delete(List<int> ids)
         {
             try
