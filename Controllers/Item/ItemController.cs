@@ -5,7 +5,6 @@ using neismesk.Repositories.Category;
 using neismesk.Repositories.Type;
 using neismesk.Repositories.Item;
 using neismesk.Repositories.Image;
-using neismesk.Repositories.User;
 
 namespace neismesk.Controllers.Item
 {

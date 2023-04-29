@@ -4,9 +4,6 @@ using Microsoft.AspNetCore.Mvc;
 using neismesk.Utilities;
 using neismesk.Repositories.User;
 using neismesk.ViewModels.UserAuthentication;
-using System.IO;
-using System.Net.Http.Headers;
-using System.Net.Mime;
 using System.Security.Claims;
 
 namespace neismesk.Controllers.UserAuthentication

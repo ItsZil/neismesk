@@ -1,7 +1,6 @@
 ﻿using MySql.Data.MySqlClient;
 using neismesk.Models;
 using neismesk.Repositories.Image;
-using neismesk.Utilities;
 using neismesk.ViewModels.Item;
 using Serilog;
 using System.Data;

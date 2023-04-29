@@ -1,9 +1,4 @@
-using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.AspNetCore.Identity;
-using Microsoft.IdentityModel.Tokens;
-using neismesk.Utilities;
 using Serilog;
-using System.Text;
 
 namespace neismesk
 {
