@@ -58,8 +58,6 @@ namespace neismesk.Repositories
                     {
                         using (DbDataReader reader = await command.ExecuteReaderAsync())
                         {
-                            await reader.ReadAsync();
-
                             while (await reader.ReadAsync())
                             {
                                 var item = new ItemViewModel()
@@ -73,6 +71,8 @@ namespace neismesk.Repositories
                                     EndDateTime = Convert.ToDateTime(reader["end_datetime"]),
                                     Images = await _imageRepo.GetByAdFirst(Convert.ToInt32(reader["id"]))
                                 };
+
+                                items.Add(item);
                             }
                         }
                     }
@@ -106,7 +106,7 @@ namespace neismesk.Repositories
                         "JOIN status ON ads.fk_status = status.id " +
                         "LEFT JOIN ad_lottery_participants ON ads.id = ad_lottery_participants.fk_ad " +
                         "WHERE ads.id = @itemId " +
-                        "GROUP BY ads.id, ad_type.type, categories.name, images.img_id, images.img", connection))
+                        "GROUP BY ads.id, ad_type.type, categories.name", connection))
                     {
                         command.Parameters.AddWithValue("@itemId", itemId);
                         using (DbDataReader reader = await command.ExecuteReaderAsync())
@@ -126,11 +126,11 @@ namespace neismesk.Repositories
                             item.EndDateTime = Convert.ToDateTime(reader["end_datetime"]);
                             item.Images = images;
                             item.Questions = questions;
+
+                            return item;
                         }
                     }
                 }
-
-                return item;
             }
             catch (Exception ex)
             {
@@ -139,40 +139,63 @@ namespace neismesk.Repositories
             }
         }
 
-        //public async Task<List<ItemTypeViewModel>> GetAllByUser(int userId)
-        //{
-        //    List<ItemTypeViewModel> types = new List<ItemTypeViewModel>();
-        //
-        //    try
-        //    {
-        //        using (var connection = new MySqlConnection(_connectionString))
-        //        {
-        //            using (var command = new MySqlCommand("SELECT * FROM ad_type", connection))
-        //            {
-        //                await connection.OpenAsync();
-        //                var dataTable = new DataTable();
-        //                using (var dataAdapter = new MySqlDataAdapter(command))
-        //                {
-        //                    dataAdapter.Fill(dataTable);
-        //                }
-        //
-        //                types = (from DataRow dt in dataTable.Rows
-        //                         select new ItemTypeViewModel()
-        //                         {
-        //                             Id = Convert.ToInt32(dt["id"]),
-        //                             Name = dt["type"].ToString()
-        //                         }).ToList();
-        //
-        //                return types;
-        //            }
-        //        }
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        _logger.Error(ex, "Error loading data from database!");
-        //        return types;
-        //    }
-        //}
+        public async Task<List<ItemViewModel>> GetAllByUser(int userId)
+        {
+            List<ItemViewModel> items = new List<ItemViewModel>();
+
+            try
+            {
+                using (var connection = new MySqlConnection(_connectionString))
+                {
+                    using (MySqlCommand command = new MySqlCommand("SELECT ads.*, ad_type.type AS ad_type, " +
+                        "categories.name AS category_name, status.name AS status_name, " +
+                        "COUNT(ad_lottery_participants.id) AS participants_count, " +
+                        "FROM ads " +
+                        "JOIN ad_type ON ads.fk_type = ad_type.id " +
+                        "JOIN categories ON ads.fk_category = categories.id " +
+                        "JOIN status ON ads.fk_status = status.id " +
+                        "LEFT JOIN ad_lottery_participants ON ads.id = ad_lottery_participants.fk_ad " +
+                        "WHERE ads.fk_user = @userId " +
+                        "GROUP BY ads.id, ad_type.type, categories.name", connection))
+                    {
+                        await connection.OpenAsync();
+                        command.Parameters.AddWithValue("@userId", userId);
+
+                        using (DbDataReader reader = await command.ExecuteReaderAsync())
+                        {
+                            while (await reader.ReadAsync())
+                            {
+                                var item = new ItemViewModel()
+                                {
+                                    Id = Convert.ToInt32(reader["id"]),
+                                    UserId = Convert.ToInt32(reader["fk_user"]),
+                                    Name = reader["name"].ToString(),
+                                    Description = reader["description"].ToString(),
+                                    Status = reader["status_name"].ToString(),
+                                    Type = reader["ad_type"].ToString(),
+                                    Participants = Convert.ToInt32(reader["participants_count"]),
+                                    Location = reader["location"].ToString(),
+                                    Category = reader["category_name"].ToString(),
+                                    CreationDateTime = Convert.ToDateTime(reader["creation_datetime"]),
+                                    EndDateTime = Convert.ToDateTime(reader["end_datetime"]),
+                                    Images = await _imageRepo.GetByAd(Convert.ToInt32(reader["id"])),
+                                    Questions = await GetQuestions(Convert.ToInt32(reader["id"]))
+                                };
+
+                                items.Add(item);
+                            }
+                        }
+
+                        return items;
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.Error(ex, "Error loading data from database!");
+                return items;
+            }
+        }
 
         public async Task<int> Create(ItemModel item)
         {
