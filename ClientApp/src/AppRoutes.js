@@ -11,6 +11,7 @@ import HomePage from "./components/HomePage/HomePage";
 import { LoginPage } from "./components/LoginPage/LoginPage";
 import RegistrationPage from "./components/RegistrationPage/RegistrationPage";
 import { ItemViewPage } from "./components/ItemViewPage/ItemViewPage";
+import { DetailedItemInfoPage } from "./components/DetailedItemInfoPage/DetailedItemInfoPage";
 
 import ItemCreationPage from "./components/ItemCreation/ItemCreationPage";
 const AppRoutes = [
@@ -65,6 +66,10 @@ const AppRoutes = [
   {
       path: '/skelbimas/naujas',
       element: <ItemCreationPage />
+  },
+  {
+      path: '/detaileditem/:itemId',
+      element: <DetailedItemInfoPage />
   },
 ];
 
