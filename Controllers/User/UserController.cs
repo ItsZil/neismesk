@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using neismesk.Utilities;
+using neismesk.Repositories.User;
 using neismesk.ViewModels.UserAuthentication;
 using System.IO;
 using System.Net.Http.Headers;
@@ -15,12 +16,12 @@ namespace neismesk.Controllers.UserAuthentication
     public class UserController : ControllerBase
     {
         private readonly ILogger<UserController> _logger;
-        private readonly DatabaseAccess _database;
+        private readonly UserRepo _userRepo;
 
         public UserController(ILogger<UserController> logger)
         {
             _logger = logger;
-            _database = new DatabaseAccess();
+            _userRepo = new UserRepo();
         }
 
         [HttpPost("login")]
@@ -29,7 +30,7 @@ namespace neismesk.Controllers.UserAuthentication
             // Retrieve the user's hashed password and salt, then compare it to the hashed plain text version.
             string sql = "SELECT user_id, name, surname, password_hash, password_salt, user_role FROM users WHERE email = @email";
             var parameters = new { email = login.Email };
-            var result = await _database.LoadData(sql, parameters);
+            var result = await _userRepo.LoadData(sql, parameters);
 
             if (result.Rows.Count == 0)
             {
@@ -87,7 +88,7 @@ namespace neismesk.Controllers.UserAuthentication
             string password_hash = PasswordHasher.hashPassword(registration.Password, out salt);
             string password_salt = Convert.ToBase64String(salt);
 
-            bool success = await _database.SaveData("INSERT INTO users (name, surname, email, password_hash, password_salt) VALUES (@name, @surname, @email, @password_hash, @password_salt)",
+            bool success = await _userRepo.SaveData("INSERT INTO users (name, surname, email, password_hash, password_salt) VALUES (@name, @surname, @email, @password_hash, @password_salt)",
                     new { registration.Name, registration.Surname, registration.Email, password_hash, password_salt });
 
             if (success)
@@ -172,7 +173,7 @@ namespace neismesk.Controllers.UserAuthentication
 
             string sql = "SELECT name, surname, email FROM users WHERE user_id = @user_id";
             var parameters = new { user_id = userId };
-            var result = await _database.LoadData(sql, parameters);
+            var result = await _userRepo.LoadData(sql, parameters);
 
             if (result.Rows.Count == 0)
             {
@@ -186,7 +187,7 @@ namespace neismesk.Controllers.UserAuthentication
             // Grab the user's avatar if they have one.
             sql = "SELECT image FROM user_avatars WHERE fk_user = @user_id";
             parameters = new { user_id = userId };
-            result = await _database.LoadData(sql, parameters);
+            result = await _userRepo.LoadData(sql, parameters);
             byte[] avatar = null;
 
             if (result.Rows.Count > 0)
@@ -223,7 +224,7 @@ namespace neismesk.Controllers.UserAuthentication
             // Check if there already is a user with the same email.
             string sql = "SELECT user_id FROM users WHERE email = @email";
             var parameters_email = new { email };
-            var result_email = await _database.LoadData(sql, parameters_email);
+            var result_email = await _userRepo.LoadData(sql, parameters_email);
 
             if (result_email.Rows.Count > 0)
             {
@@ -237,7 +238,7 @@ namespace neismesk.Controllers.UserAuthentication
             // Retrieve the user's hashed password and salt, then compare it to the new hashed plain text version.
             sql = "SELECT password_hash, password_salt FROM users WHERE user_id = @user_id";
             var parameters_password = new { user_id };
-            var result_password = await _database.LoadData(sql, parameters_password);
+            var result_password = await _userRepo.LoadData(sql, parameters_password);
 
             string hashed_password = result_password.Rows[0]["password_hash"].ToString();
             string password_salt = result_password.Rows[0]["password_salt"].ToString();
@@ -261,13 +262,13 @@ namespace neismesk.Controllers.UserAuthentication
 
                 sql = "UPDATE users SET name = @name, surname = @surname, email = @email, password_hash = @password_hash, password_salt = @password_salt WHERE user_id = @user_id";
                 var parameters_update = new { name, surname, email, password_hash, password_salt, user_id };
-                await _database.SaveData(sql, parameters_update);
+                await _userRepo.SaveData(sql, parameters_update);
             }
             else if (old_password == "" && new_password == "")
             {
                 sql = "UPDATE users SET name = @name, surname = @surname, email = @email WHERE user_id = @user_id";
                 var parameters_update = new { name, surname, email, user_id };
-                await _database.SaveData(sql, parameters_update);
+                await _userRepo.SaveData(sql, parameters_update);
             }
             else
             {
@@ -279,18 +280,18 @@ namespace neismesk.Controllers.UserAuthentication
             {
                 sql = "SELECT id FROM user_avatars WHERE fk_user = @user_id";
                 var parameters_avatar = new { user_id };
-                var result_avatar = await _database.LoadData(sql, parameters_avatar);
+                var result_avatar = await _userRepo.LoadData(sql, parameters_avatar);
                 if (result_avatar.Rows.Count > 0)
                 {
                     sql = "UPDATE user_avatars SET image = @avatar WHERE fk_user = @user_id";
                     var parameters_update_avatar = new { avatar = imageBytes, user_id };
-                    await _database.SaveData(sql, parameters_update_avatar);
+                    await _userRepo.SaveData(sql, parameters_update_avatar);
                 }
                 else
                 {
                     sql = "INSERT INTO user_avatars (image, fk_user) VALUES (@avatar, @user_id)";
                     var parameters_insert_avatar = new { avatar = imageBytes, user_id };
-                    await _database.SaveData(sql, parameters_insert_avatar);
+                    await _userRepo.SaveData(sql, parameters_insert_avatar);
                 }
             }
             return Ok();
@@ -309,7 +310,7 @@ namespace neismesk.Controllers.UserAuthentication
 
             string sql = "SELECT image FROM user_avatars WHERE fk_user = @user_id";
             var parameters = new { user_id };
-            var result = await _database.LoadData(sql, parameters);
+            var result = await _userRepo.LoadData(sql, parameters);
 
             if (result.Rows.Count == 0)
             {

@@ -1,16 +1,11 @@
-﻿using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using neismesk.Models;
-using neismesk.Utilities;
-using System.Linq;
-using neismesk.ViewModels.Ad;
-using neismesk.ViewModels.Item;
-using Newtonsoft.Json;
 using System.Data;
-using System.Net.Http.Headers;
-using System.Net.Mime;
-using System.Text;
-using neismesk.Repositories;
+using neismesk.Repositories.Category;
+using neismesk.Repositories.Type;
+using neismesk.Repositories.Item;
+using neismesk.Repositories.Image;
+using neismesk.Repositories.User;
 
 namespace neismesk.Controllers.Item
 {
@@ -18,7 +13,6 @@ namespace neismesk.Controllers.Item
     [Route("api/[controller]")]
     public class ItemController : ControllerBase
     {
-        private readonly DatabaseAccess _database;
         private readonly TypeRepo _typeRepo;
         private readonly CategoryRepo _categoryRepo;
         private readonly ItemRepo _itemRepo;
@@ -26,7 +20,6 @@ namespace neismesk.Controllers.Item
 
         public ItemController()
         {
-            _database = new DatabaseAccess();
             _typeRepo = new TypeRepo();
             _categoryRepo = new CategoryRepo();
             _itemRepo = new ItemRepo();
@@ -126,20 +119,12 @@ namespace neismesk.Controllers.Item
 
                 item.Id = await _itemRepo.Create(item);
 
-                if (item.Id != -1)
+                bool success = await _imageRepo.InsertImages(item);
+                if (item.Type == 2)
                 {
-                    bool success = false;
-                    success = await _database.InsertImages(item);
-                    if (item.Type == 2)
-                    {
-                        success = await _database.InsertQuestions(item);
-                    }
-                    return success == true ? Ok(item.Id) : BadRequest();
+                    success = await _itemRepo.InsertQuestions(item);
                 }
-                else
-                {
-                    return BadRequest();
-                }
+                return success == true ? Ok(item.Id) : BadRequest();
             }
             catch (Exception)
             {
@@ -215,7 +200,7 @@ namespace neismesk.Controllers.Item
         }
 
         [HttpPut("update/{id}")]
-        public async Task<IActionResult> UpdateDevice(int id, IFormCollection form)
+        public async Task<IActionResult> UpdateItem(int id, IFormCollection form)
         {
             if (!User.Identity.IsAuthenticated)
             {
@@ -238,18 +223,20 @@ namespace neismesk.Controllers.Item
                     Category = Convert.ToInt32(form["fk_Category"]),
                     Images = Request.Form.Files.GetFiles("images").ToList()
                 };
-        
+
                 // Get list of image IDs to delete
                 var imagesToDelete = form["imagesToDelete"].Select(idStr => Convert.ToInt32(idStr)).ToList();
 
                 // Delete images from database
-                await _imageRepo.Delete(imagesToDelete);
-        
+                if (imagesToDelete.Count > 0)
+                {
+                    await _imageRepo.Delete(imagesToDelete);
+                }
                 // Update item in database
                 await _itemRepo.Update(update);
 
                 await _imageRepo.InsertImages(update);
-        
+
                 return Ok();
             }
             catch (Exception ex)
@@ -263,11 +250,11 @@ namespace neismesk.Controllers.Item
         {
             try
             {
-                var searchResults = await _database.Search(searchWord);
+                var searchResults = await _itemRepo.Search(searchWord);
 
                 return Ok(searchResults);
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 return BadRequest(ex.Message);
             }
