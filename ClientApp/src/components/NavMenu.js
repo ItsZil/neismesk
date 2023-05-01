@@ -1,6 +1,6 @@
 ﻿import { useState, React, Component } from 'react';
 import { Collapse, Navbar, NavbarBrand, NavItem, NavLink, Button, Nav, Input, Dropdown, DropdownToggle, DropdownMenu, DropdownItem  } from 'reactstrap';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { withRouter } from './withRouter';
 import axios from 'axios';
 import toast, { Toaster } from 'react-hot-toast';
@@ -16,12 +16,15 @@ const testLogout = () => {
         });
 }
 
+
+
 export class NavMenu extends Component {
     static displayName = NavMenu.name;
 
     constructor(props) {
         super(props);
         this.state = {
+            searchQuery: '',
             isClicked: false,
             isLogged: false,
             isLoggedIn: false, // Assume the user is not logged in by default
@@ -53,6 +56,29 @@ export class NavMenu extends Component {
             isClicked: !this.state.isClicked
         });
     };
+    handleSearchInputChange = (event) => {
+        this.setState({ searchQuery: event.target.value });
+    };
+    handleSearch = () => {
+        if (!this.state.searchQuery) {
+            toast.error('Negalite ieškoti skelbimų nieko neįvedę paieškos lange')
+            return;
+          }
+        
+  axios.get('/api/item/search', {
+    params: {
+      searchWord: this.state.searchQuery
+    }
+  })
+  .then((response) => {
+    this.props.navigate(`/search/${this.state.searchQuery}`, { state: { searchResults: response.data, searchQuery: this.state.searchQuery } });
+  })
+  .catch((error) => {
+    console.error(error);
+  });
+};
+      
+      
     handleLoginClick = () => {
         this.setState({
             isClicked: !this.state.isClicked
@@ -137,7 +163,13 @@ export class NavMenu extends Component {
                         </NavbarBrand>
                         <div className="d-flex align-items-center">
                         <div className="search-container">
-                        <Input type="search" placeholder="Ieškoti" style={{ width: '350px' }} />
+                        <Input
+                        type="search"
+                        placeholder="Ieškoti"
+                        style={{ width: '350px' }}
+                        value={this.state.searchQuery}
+                        onChange={this.handleSearchInputChange}
+                        />
                         <Nav navbar>
                             <Dropdown nav isOpen={this.state.dropdownOpen} toggle={this.toggleDropdown}>
                                         <DropdownToggle nav caret className="categories">{displayCategory}</DropdownToggle>
@@ -149,7 +181,7 @@ export class NavMenu extends Component {
                             </Dropdown>
                             </Nav>
                         </div>    
-                            <Button className="buttonsearch" >Ieškoti</Button>
+                            <Button className="buttonsearch" onClick={this.handleSearch}>Ieškoti</Button>
                         </div>
                         <NavLink tag={Link} className="buttongive" to="/skelbimas/naujas">Dovanoti!</NavLink>
                         <NavItem className="profileContainer">
@@ -179,4 +211,11 @@ export class NavMenu extends Component {
         );
     }
 }
+
+export function Redirection(props)
+{
+    const navigate = useNavigate();
+    return (<NavMenu navigate={navigate}></NavMenu>)
+}
+
 export default withRouter(NavMenu)

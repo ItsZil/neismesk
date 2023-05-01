@@ -244,7 +244,7 @@ namespace neismesk.Controllers.Item
             }
         }
 
-        [HttpGet]
+        [HttpGet("search")]
         public async Task<IActionResult> Search([FromQuery] string searchWord)
         {
             try

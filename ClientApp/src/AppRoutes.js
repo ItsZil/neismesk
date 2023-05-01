@@ -6,7 +6,7 @@ import HelpPage from "./components/HelpPage/HelpPage";
 import ItemUpdatePage from './components/ItemUpdatePage/ItemUpdatePage';
 import ProfilePage from "./components/ProfilePage/ProfilePage";
 import HomePage from "./components/HomePage/HomePage";
-
+import SearchResultsPage  from "./components/SearchResultsPage/SearchResultsPage";
 // User authentication
 import { LoginPage } from "./components/LoginPage/LoginPage";
 import RegistrationPage from "./components/RegistrationPage/RegistrationPage";
@@ -71,6 +71,10 @@ const AppRoutes = [
       path: '/detaileditem/:itemId',
       element: <DetailedItemInfoPage />
   },
+  {
+    path: '/search/:searchQuery',
+    element: <SearchResultsPage />
+  }
 ];
 
 export default AppRoutes;

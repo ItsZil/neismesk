@@ -4,6 +4,7 @@ import AppRoutes from './AppRoutes';
 import { Layout } from './components/Layout';
 import ItemUpdatePage from './components/ItemUpdatePage/ItemUpdatePage';
 import './custom.css';
+import SearchResultsPage from './components/SearchResultsPage/SearchResultsPage';
 
 export default class App extends Component {
   static displayName = App.name;
@@ -13,6 +14,7 @@ export default class App extends Component {
       <Layout>
         <Routes>
         <Route path="/items/:itemId" element={<ItemUpdatePage />} />
+        <Route path="/search/:searchQuery" element={<SearchResultsPage />} />
           {AppRoutes.map((route, index) => {
             const { element, ...rest } = route;
             return <Route key={index} {...rest} element={element} />;
