@@ -95,7 +95,7 @@ export const ItemViewPage = () => {
         });
     };
 
-    const handleSubmit = (event) => {
+    const handleSubmit = (event, isParticipating) => {
         event.preventDefault();
 
         if (item.type === 'Keitimas' && !selectedItem) {
@@ -118,13 +118,24 @@ export const ItemViewPage = () => {
         };
 
         if (item.type === 'Loterija') {
-            axios.post(`api/item/enterLottery/${itemId}`, data)
-                .then(response => {
-                    console.log(response);
-                })
-                .catch(error => {
-                    console.error(error);
-                });   
+            if (isParticipating) {
+                axios.post(`api/item/enterLottery/${itemId}`, data)
+                    .then(response => {
+                        console.log(response);
+                    })
+                    .catch(error => {
+                        console.error(error);
+                    });
+            }
+            else {
+                axios.post(`api/item/leaveLottery/${itemId}`, data)
+                    .then(response => {
+                        console.log(response);
+                    })
+                    .catch(error => {
+                        console.error(error);
+                    });
+            }
         }
     };
 
@@ -209,7 +220,11 @@ export const ItemViewPage = () => {
                                     <Form onSubmit={handleSubmit}>
                                         <p>Dalyvių skaičius: {item.participants}</p>
                                         <p>Laimėtojas bus išrinktas {new Date(item.endDateTime).toLocaleString('lt-LT')}</p>
-                                        <Button variant="primary" type="submit" disabled={isPastEndTime || item.userId === viewerId}>Dalyvauti</Button>
+                                        {!isUserParticipating ? (
+                                            <Button variant="primary" type="submit" disabled={isPastEndTime || item.userId === viewerId} onClick={() => handleSubmit(true)}>Dalyvauti</Button>
+                                        ) : (
+                                            <Button variant="primary" type="submit" disabled={isPastEndTime || item.userId === viewerId} onClick={() => handleSubmit(false)}>Nedalyvauti</Button>
+                                        )}
                                     </Form>
                                 )}
                             </Card.Body>
