@@ -5,6 +5,9 @@ using neismesk.Utilities;
 using neismesk.Repositories.User;
 using neismesk.ViewModels.UserAuthentication;
 using System.Security.Claims;
+using neismesk.ViewModels.User;
+using System.Security.Cryptography;
+using System.Web;
 
 namespace neismesk.Controllers.UserAuthentication
 {
@@ -315,6 +318,121 @@ namespace neismesk.Controllers.UserAuthentication
             }
             byte[] avatar = (byte[])result.Rows[0]["image"];
             return Ok(new { user_id, avatar });
+        }
+
+        [HttpPost("verify-email")]
+        public async Task<IActionResult> VerifyEmail(EmailVerificationViewModel emailVerify)
+        {
+            string sql = "SELECT verification_token FROM users WHERE email = @email AND verification_token = @token";
+            var parameters = new { email = emailVerify.Email, token = emailVerify.Token };
+            var result = await _userRepo.LoadData(sql, parameters);
+
+            if (result.Rows.Count == 0)
+            {
+                return StatusCode(400);
+            }
+            else
+            {
+                bool success = await _userRepo.SaveData("UPDATE users SET verification_token = NULL WHERE email = @email AND  verification_token = @token",
+                    new { email = emailVerify.Email, token = emailVerify.Token });
+                if (success)
+                {
+                    return Ok();
+                }
+                else
+                {
+                    return BadRequest();
+                }
+            }
+        }
+
+        [HttpPost("forgot-password")]
+        public async Task<IActionResult> ForgotPassword(PasswordResetRequestViewModel resetRequest)
+        {
+            // Retrieve the user's hashed password and salt, then compare it to the hashed plain text version.
+            string sql = "SELECT email FROM users WHERE email = @email";
+            var parameters = new { email = resetRequest.Email };
+            var result = await _userRepo.LoadData(sql, parameters);
+
+            if (result.Rows.Count == 0)
+            {
+                return StatusCode(400);
+            }
+            else
+            {
+                byte[] tokenData = new byte[32]; // 256-bit token
+                using (RNGCryptoServiceProvider rng = new RNGCryptoServiceProvider())
+                {
+                    rng.GetBytes(tokenData);
+                }
+
+                string token = BitConverter.ToString(tokenData).Replace("-", ""); // Convert byte array to hex string
+                DateTime changeTimer = DateTime.Now;
+                changeTimer = changeTimer.AddHours(1);
+                string time = changeTimer.ToString("yyyy-MM-dd HH:mm:ss.fff");
+
+                bool success = await _userRepo.SaveData("UPDATE users SET password_change_token = @token, password_change_time = @time WHERE email = @email",
+                                new { token, time, resetRequest.Email });
+
+                if (!success) { return BadRequest(); }
+
+                // local //localhost:44486/changepassword
+                // Pakeisti į //neismesk.azurewebsites.net/changepassword
+                string resetUrl = $"https://neismesk.azurewebsites.net/changepassword?email={HttpUtility.UrlEncode(resetRequest.Email)}&token={HttpUtility.UrlEncode(token)}";
+
+                Emailer emailer = new Emailer();
+                if (emailer.ChangePassword(result, resetUrl))
+                {
+                    return Ok();
+                }
+                else
+                {
+                    _logger.LogError("Failed to send email");
+                    return StatusCode(401);
+                }    
+            }
+        }
+
+        [HttpPost("change-password")]
+        public async Task<IActionResult> ChangePassword(PasswordChangeViewModel passwordChange)
+        {
+            // Retrieve the user's hashed password and salt, then compare it to the hashed plain text version.
+            string sql = "SELECT password_change_token, password_change_time FROM users WHERE email = @email AND password_change_token = @token";
+            var parameters = new {email = passwordChange.Email, token = passwordChange.Token };
+            var result = await _userRepo.LoadData(sql, parameters);
+
+            if (result.Rows.Count == 0)
+            {
+                return StatusCode(401);
+            }
+            else
+            {
+                DateTime timer = DateTime.Parse(result.Rows[0]["password_change_time"].ToString());
+
+                if (timer > DateTime.Now)
+                {
+                    byte[] salt;
+                    string password_hash = PasswordHasher.hashPassword(passwordChange.Password, out salt);
+                    string password_salt = Convert.ToBase64String(salt);
+
+                    bool success = await _userRepo.SaveData("UPDATE users SET password_hash = @password_hash, password_salt = @password_salt, password_change_token = NULL, password_change_time = NULL WHERE password_change_token = @token",
+                    new { password_hash, password_salt, token = passwordChange.Token });
+
+                    if (success)
+                    {
+                        return Ok();
+                    }
+                    else
+                    {
+                        return BadRequest();
+                    }
+                }
+                else
+                {
+                    return StatusCode(300);
+                }
+
+            }
         }
     }
 }
