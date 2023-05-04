@@ -343,5 +343,28 @@ namespace neismesk.Repositories.Item
             }
         }
 
+        public async Task<bool> IsUserParticipatingInLottery(int id, int userId)
+        {
+            try
+            {
+                using MySqlConnection connection = GetConnection();
+                await connection.OpenAsync();
+
+                using MySqlCommand command = new MySqlCommand(
+                    "SELECT id FROM ad_lottery_participants " +
+                    "WHERE fk_ad = @fk_ad AND fk_user = @fk_user ", connection);
+                command.Parameters.AddWithValue("@fk_ad", id);
+                command.Parameters.AddWithValue("@fk_user", userId);
+
+
+                using DbDataReader reader = await command.ExecuteReaderAsync();
+                return reader.HasRows;
+            }
+            catch (Exception ex)
+            {
+                _logger.Error(ex, "Error checking if user is participating in lottery from database!");
+                return false;
+            }
+        }
     }
 }

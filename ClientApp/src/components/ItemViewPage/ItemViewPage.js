@@ -16,6 +16,7 @@ export const ItemViewPage = () => {
     const [viewerId, setViewerId] = useState(null);
     const [currentTime, setCurrentTime] = useState(new Date());
     const [isPastEndTime, setIsPastEndTime] = useState(true);
+    const [isUserParticipating, setIsUserParticipating] = useState(false);
     const navigate = useNavigate();
 
     useEffect(() => {
@@ -54,6 +55,17 @@ export const ItemViewPage = () => {
             };
             fetchUserItems();
         }
+        else if (item && item.type === 'Loterija') {
+            const fetchIsUserParticipating = async () => {
+                try {
+                    const response = await axios.get(`api/item/isUserParticipatingInLottery/${itemId}`);
+                    setIsUserParticipating(response.data);
+                } catch (error) {
+                    //toast('Įvyko klaida, susisiekite su administratoriumi!');
+                }
+            };
+            fetchIsUserParticipating();
+        }
     }, [item]);
 
     useEffect(() => {
@@ -86,11 +98,11 @@ export const ItemViewPage = () => {
     const handleSubmit = (event) => {
         event.preventDefault();
 
-        if (item.type === 'exchange' && !selectedItem) {
+        if (item.type === 'Keitimas' && !selectedItem) {
             toast('Pasirinkite skelbimą, kurį norite pasiūlyti keitimui.');
             return;
         }
-        else if (item.type === 'questionnaire') {
+        else if (item.type === 'Klausimynas') {
             const unansweredQuestions = item.questions.filter(q => !answers[q.id]);
 
             if (unansweredQuestions.length > 0) {
@@ -102,17 +114,18 @@ export const ItemViewPage = () => {
         const data = {
             selectedItem,
             message,
-            ...(item.type === 'questionnaire' && { answers })
+            ...(item.type === 'Klausimynas' && { answers })
         };
 
-        // Submit
-        axios.post('api/item/endpoint', data)
-            .then(response => {
-                console.log(response);
-            })
-            .catch(error => {
-                console.error(error);
-            });
+        if (item.type === 'Loterija') {
+            axios.post(`api/item/enterLottery/${itemId}`, data)
+                .then(response => {
+                    console.log(response);
+                })
+                .catch(error => {
+                    console.error(error);
+                });   
+        }
     };
 
 

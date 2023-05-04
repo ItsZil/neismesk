@@ -5,6 +5,7 @@ using neismesk.Repositories.Category;
 using neismesk.Repositories.Type;
 using neismesk.Repositories.Item;
 using neismesk.Repositories.Image;
+using Microsoft.AspNetCore.Authorization;
 
 namespace neismesk.Controllers.Item
 {
@@ -252,6 +253,23 @@ namespace neismesk.Controllers.Item
                 var searchResults = await _itemRepo.Search(searchWord);
 
                 return Ok(searchResults);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
+        [HttpGet("isUserParticipatingInLottery/{id}")]
+        [Authorize]
+        public async Task<IActionResult> IsUserParticipatingInLottery(int id)
+        {
+            int userId = Convert.ToInt32(HttpContext.User.FindFirst("user_id").Value);
+            try
+            {
+                var result = await _itemRepo.IsUserParticipatingInLottery(id, userId);
+
+                return Ok(result);
             }
             catch (Exception ex)
             {
