@@ -16,6 +16,7 @@ export const ItemViewPage = () => {
     const [viewerId, setViewerId] = useState(null);
     const [currentTime, setCurrentTime] = useState(new Date());
     const [isPastEndTime, setIsPastEndTime] = useState(true);
+    const [isLoggedInAsAdmin, setIsLoggedInAsAdmin] = useState(false);
     const navigate = useNavigate();
 
     useEffect(() => {
@@ -67,6 +68,27 @@ export const ItemViewPage = () => {
         };
         fetchViewerId();
     }, []);
+
+    useEffect(() => {
+        const fetchUserRole = async () => {
+            try {
+                const response = await axios.get('api/user/isloggedin/1');
+                if (response.status == 200)
+                {
+                  setIsLoggedInAsAdmin(true);
+                }
+            } catch (error) {
+              if (error.response.status === 401) {
+                setIsLoggedInAsAdmin(false);
+              }
+              else
+              {
+                toast('Įvyko klaida, susisiekite su administratoriumi!');
+              }
+            }
+        };
+        fetchUserRole();
+      }, []);
 
     const handleItemSelect = (event) => {
         setSelectedItem(event.target.value);
@@ -154,14 +176,14 @@ export const ItemViewPage = () => {
                                     <Card.Text>Šis skelbimas nebegalioja.</Card.Text>
                                 ) : null}
                                 <Card.Text>{item.description}</Card.Text>
-                                {item.userId === viewerId && (
-                        <button className="delete" onClick={() => handleDelete(item.id)}>Ištrinti</button>
-                        )}
-                        {item.userId === viewerId && (
-                        <Link to={`/skelbimas/redaguoti/${item.id}`}>
-                        <button className="update" onClick={() => ''}>Redaguoti</button>
-                        </Link>
-                        )}
+                                {isLoggedInAsAdmin || item.userId === viewerId ? (
+                                <button className="delete" onClick={() => handleDelete(item.id)}>Ištrinti</button>
+                                ) : null}
+                                {isLoggedInAsAdmin || item.userId === viewerId ? (
+                                <Link to={`/skelbimas/redaguoti/${item.id}`}>
+                                <button className="update" onClick={() => ''}>Redaguoti</button>
+                                </Link>
+                                ) : null}
                                 <hr className="mb-2" />
                                 {item.type === 'Keitimas' && (
                                     <Form onSubmit={handleSubmit}>

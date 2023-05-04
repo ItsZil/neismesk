@@ -57,7 +57,7 @@ const RegistrationPage = () => {
                 .then(response => {
                     if (response.status === 200) {
                         toast('Sėkmingai prisiregistravote!');
-                        navigate("/login");
+                        navigate("/prisijungimas");
                     }
                     else {
                         toast("Įvyko klaida, susisiekite su administratoriumi!", {
@@ -99,7 +99,7 @@ const RegistrationPage = () => {
                         <button onClick={() => handleSubmit()} type='submit'>Registruotis</button>
                     </div>
                     <div className='returnToLogin'>
-                        <a href="/" className='returnToLoginButton'>Grįžti į prisijungimą</a>
+                        <a href="/prisijungimas" className='returnToLoginButton'>Grįžti į prisijungimą</a>
                     </div>
                 </div>
             </div>

@@ -24,7 +24,7 @@ const AppRoutes = [
     element: <AboutUs />
   },
   {
-    path: '/login',
+    path: '/prisijungimas',
     element: <LoginPage />
   },
   {
@@ -32,15 +32,15 @@ const AppRoutes = [
     element: <HomePage />
   },
   {
-    path: '/register',
+    path: '/registracija',
     element: <RegistrationPage />
   },
   {
-  path: '/forgotpassword',
+  path: '/pamirsau-slaptazodi',
   element: <ForgotPasswordPage />
   },
   {
-  path: '/help',
+  path: '/pagalba',
   element: <HelpPage />
   },
   {
@@ -52,7 +52,7 @@ const AppRoutes = [
     element: <ProfilePage />
   },
   {
-    path: '/forgotpassword',
+    path: '/pamirsau-slaptazodi',
     element: <ForgotPasswordPage />
   },
   {

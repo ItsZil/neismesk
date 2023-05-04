@@ -140,13 +140,13 @@ export class NavMenu extends Component {
             <Collapse isOpen={this.state.isClicked} className="toolbar" style={{ flexDirection: 'column' }}>
                 <ul className="no-bullets">
                     {!this.state.isLogged && (
-                    <li><Button tag={Link} to="/login" color="primary" onClick={this.handleClick} className="mb-2">Prisijungti</Button></li>
+                    <li><Button tag={Link} to="/prisijungimas" color="primary" onClick={this.handleClick} className="mb-2">Prisijungti</Button></li>
                     )}
                     {!this.state.isLogged && (
-                    <li><Button tag={Link} to="/registration" color="primary" onClick={this.handleClick} className="mb-2">Registruotis</Button></li>
+                    <li><Button tag={Link} to="/registracija" color="primary" onClick={this.handleClick} className="mb-2">Registruotis</Button></li>
                     )}
                     {this.state.isLogged && (
-                    <li><Button tag={Link} to="/login" color="primary" onClick={() => {this.handleLogoutClick()}} className="mb-2">Atsijungti</Button></li>
+                    <li><Button tag={Link} to="/prisijungimas" color="primary" onClick={() => {this.handleLogoutClick()}} className="mb-2">Atsijungti</Button></li>
                     )
                     }
                 </ul>
@@ -192,13 +192,13 @@ export class NavMenu extends Component {
                 </header>
                 <footer>
                     <div className="links">
-                        <NavLink tag={Link} to="/help">
+                        <NavLink tag={Link} to="/pagalba">
                             Pagalba
                         </NavLink>
                         <NavLink tag={Link} className="links" to="/">
                             Populiariausi klausimai
                         </NavLink>
-                        <NavLink tag={Link} className="links" to="/about-us">
+                        <NavLink tag={Link} className="links" to="/apie-mus">
                             Apie mus
                         </NavLink>
                         <NavLink tag={Link} className="links" to="/">
