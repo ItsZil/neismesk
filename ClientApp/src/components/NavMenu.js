@@ -135,7 +135,6 @@ export class NavMenu extends Component {
                         <NavbarBrand tag={Link} to="/">
                             <img alt="logo" src="./images/logo.png" />
                         </NavbarBrand>
-                        <div className="d-flex align-items-center">
                         <div className="search-container">
                         <Input type="search" placeholder="Ieškoti" style={{ width: '350px' }} />
                         <Nav navbar>
@@ -146,12 +145,13 @@ export class NavMenu extends Component {
                                     <DropdownItem onClick={() => this.selectCategory('Kompiuteriai')}>Kompiuteriai</DropdownItem>
                                     <DropdownItem onClick={() => this.selectCategory('Stambi buitinė technika')}>Stambi buitinė technika</DropdownItem>
                                 </DropdownMenu>
-                            </Dropdown>
-                            </Nav>
-                        </div>    
-                            <Button className="buttonsearch" >Ieškoti</Button>
+                                    </Dropdown>
+                                    <div className="button-container">
+                                        <Button className="buttonsearch" >Ieškoti</Button>
+                                        <NavLink tag={Link} className="buttongive" to="/skelbimas/naujas">Dovanoti!</NavLink>
+                                    </div>
+                        </Nav>
                         </div>
-                        <NavLink tag={Link} className="buttongive" to="/skelbimas/naujas">Dovanoti!</NavLink>
                         <NavItem className="profileContainer">
                             <img alt="Profilio nuotrauka" src={avatar} onClick={this.handleLoginClick}/>
                             {toolbar}

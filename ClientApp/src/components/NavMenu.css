@@ -129,28 +129,27 @@ footer {
 
 
 .buttonsearch {
-    padding: 10px 10px;
+    position: absolute;
     background-color: rgba(49, 160, 171, 0.9);
     color: white;
     border: thick;
     border-radius: 4px;
     cursor: pointer;
     font-size: 16px;
-    margin-top: 10px;
-    margin-left: -180px;
+    padding: 10px 10px;
+    left: 50px;
 }
 
 .buttongive {
     position: absolute;
-    left: 1550px;
-    padding: 10px 10px;
     background-color: rgba(49, 160, 171, 0.9);
     color: white;
     border: thick;
     border-radius: 4px;
     cursor: pointer;
     font-size: 16px;
-    margin-top: 10px;
+    padding: 10px 10px;
+    left: 800px;
 }
 
 .buttonsearch:hover {
@@ -161,6 +160,54 @@ footer {
 .buttongive:hover {
     background: rgba(49, 100, 171, 0.9);
     color: white;
+}
+
+@media screen and (max-width: 1850px) {
+    .buttongive {
+        transform: translateX(-100px);
+    }
+}
+
+@media screen and (max-width: 1750px) {
+    .buttongive {
+        transform: translateX(-190px);
+    }
+}
+
+@media screen and (max-width: 1650px) {
+    .buttongive {
+        transform: translateX(-270px);
+    }
+}
+
+@media screen and (max-width: 1550px) {
+    .buttongive {
+        transform: translateX(-360px);
+    }
+}
+
+@media screen and (max-width: 1450px) {
+    .buttongive {
+        transform: translateX(-450px);
+    }
+}
+
+@media screen and (max-width: 1350px) {
+    .buttongive {
+        transform: translateX(-540px);
+    }
+}
+
+@media screen and (max-width: 1250px) {
+    .buttongive {
+        transform: translateX(-660px);
+    }
+}
+
+
+.button-container {
+    position: relative;
+    display: inline-flex;
 }
 
 .categories {
