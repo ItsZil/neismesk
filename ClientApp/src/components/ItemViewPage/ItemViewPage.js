@@ -121,19 +121,42 @@ export const ItemViewPage = () => {
             if (isParticipating) {
                 axios.post(`api/item/enterLottery/${itemId}`, data)
                     .then(response => {
-                        console.log(response);
+                        if (response.data) {
+                            toast('Sėkmingai prisijungėte prie loterijos!');
+                            
+                            setIsUserParticipating(true);
+                            setItem({
+                                ...item,
+                                participants: item.participants + 1,
+                            });
+                        }
+                        else {
+                            toast('Įvyko klaida, susisiekite su administratoriumi!');
+                        }
                     })
                     .catch(error => {
-                        console.error(error);
+                        console.log(error);
+                        toast('Įvyko klaida, susisiekite su administratoriumi!');
                     });
             }
             else {
                 axios.post(`api/item/leaveLottery/${itemId}`, data)
                     .then(response => {
-                        console.log(response);
+                        if (response.data) {
+                            toast('Sėkmingai nebedalyvaujate loterijoje!');
+                            
+                            setIsUserParticipating(false);
+                            setItem({
+                                ...item,
+                                participants: item.participants - 1,
+                            });
+                        }
+                        else {
+                            toast('Įvyko klaida, susisiekite su administratoriumi!');
+                        }
                     })
                     .catch(error => {
-                        console.error(error);
+                        toast('Įvyko klaida, susisiekite su administratoriumi!');
                     });
             }
         }
@@ -221,9 +244,9 @@ export const ItemViewPage = () => {
                                         <p>Dalyvių skaičius: {item.participants}</p>
                                         <p>Laimėtojas bus išrinktas {new Date(item.endDateTime).toLocaleString('lt-LT')}</p>
                                         {!isUserParticipating ? (
-                                            <Button variant="primary" type="submit" disabled={isPastEndTime || item.userId === viewerId} onClick={() => handleSubmit(true)}>Dalyvauti</Button>
+                                            <Button variant="primary" type="submit" disabled={isPastEndTime || item.userId === viewerId} onClick={(event) => handleSubmit(event, true)}>Dalyvauti</Button>
                                         ) : (
-                                            <Button variant="primary" type="submit" disabled={isPastEndTime || item.userId === viewerId} onClick={() => handleSubmit(false)}>Nedalyvauti</Button>
+                                            <Button variant="primary" type="submit" disabled={isPastEndTime || item.userId === viewerId} onClick={(event) => handleSubmit(event, false)}>Nebedalyvauti</Button>
                                         )}
                                     </Form>
                                 )}

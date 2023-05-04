@@ -343,7 +343,7 @@ namespace neismesk.Repositories.Item
             }
         }
 
-        public async Task<bool> IsUserParticipatingInLottery(int id, int userId)
+        public async Task<bool> IsUserParticipatingInLottery(int itemId, int userId)
         {
             try
             {
@@ -353,7 +353,7 @@ namespace neismesk.Repositories.Item
                 using MySqlCommand command = new MySqlCommand(
                     "SELECT id FROM ad_lottery_participants " +
                     "WHERE fk_ad = @fk_ad AND fk_user = @fk_user ", connection);
-                command.Parameters.AddWithValue("@fk_ad", id);
+                command.Parameters.AddWithValue("@fk_ad", itemId);
                 command.Parameters.AddWithValue("@fk_user", userId);
 
 
@@ -363,6 +363,52 @@ namespace neismesk.Repositories.Item
             catch (Exception ex)
             {
                 _logger.Error(ex, "Error checking if user is participating in lottery from database!");
+                return false;
+            }
+        }
+
+        public async Task<bool> EnterLottery(int itemId, int userId)
+        {
+            try
+            {
+                using MySqlConnection connection = GetConnection();
+                await connection.OpenAsync();
+
+                using MySqlCommand command = new MySqlCommand(
+                    "INSERT INTO ad_lottery_participants " +
+                    "(fk_ad, fk_user) VALUES (@fk_ad, @fk_user)", connection);
+                command.Parameters.AddWithValue("@fk_ad", itemId);
+                command.Parameters.AddWithValue("@fk_user", userId);
+
+                await command.ExecuteNonQueryAsync();
+                return true;
+            }
+            catch (Exception ex)
+            {
+                _logger.Error(ex, "Error entering user into lottery!");
+                return false;
+            }
+        }
+
+        public async Task<bool> LeaveLottery(int itemId, int userId)
+        {
+            try
+            {
+                using MySqlConnection connection = GetConnection();
+                await connection.OpenAsync();
+
+                using MySqlCommand command = new MySqlCommand(
+                    "DELETE FROM ad_lottery_participants " +
+                    "WHERE fk_ad = @fk_ad AND fk_user = @fk_user ", connection);
+                command.Parameters.AddWithValue("@fk_ad", itemId);
+                command.Parameters.AddWithValue("@fk_user", userId);
+
+                await command.ExecuteNonQueryAsync();
+                return true;
+            }
+            catch (Exception ex)
+            {
+                _logger.Error(ex, "Error exiting user from lottery!");
                 return false;
             }
         }

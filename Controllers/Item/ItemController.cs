@@ -276,5 +276,39 @@ namespace neismesk.Controllers.Item
                 return BadRequest(ex.Message);
             }
         }
+
+        [HttpPost("enterLottery/{id}")]
+        [Authorize]
+        public async Task<IActionResult> EnterLottery(int id)
+        {
+            int userId = Convert.ToInt32(HttpContext.User.FindFirst("user_id").Value);
+            try
+            {
+                var result = await _itemRepo.EnterLottery(id, userId);
+                
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+        
+        [HttpPost("leaveLottery/{id}")]
+        [Authorize]
+        public async Task<IActionResult> LeaveLottery(int id)
+        {
+            int userId = Convert.ToInt32(HttpContext.User.FindFirst("user_id").Value);
+            try
+            {
+                var result = await _itemRepo.LeaveLottery(id, userId);
+
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
     }
 }
