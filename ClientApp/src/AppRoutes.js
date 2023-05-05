@@ -7,6 +7,7 @@ import ItemUpdatePage from './components/ItemUpdatePage/ItemUpdatePage';
 import ProfilePage from "./components/ProfilePage/ProfilePage";
 import HomePage from "./components/HomePage/HomePage";
 import SearchResultsPage  from "./components/SearchResultsPage/SearchResultsPage";
+import SearchResultsByCategoryPage  from "./components/SearchResultsByCategoryPage/SearchResultsByCategoryPage";
 // User authentication
 import { LoginPage } from "./components/LoginPage/LoginPage";
 import RegistrationPage from "./components/RegistrationPage/RegistrationPage";
@@ -20,7 +21,7 @@ const AppRoutes = [
     element: <Counter />
   },
   {
-    path: '/about-us',
+    path: '/apie-mus',
     element: <AboutUs />
   },
   {
@@ -74,6 +75,10 @@ const AppRoutes = [
   {
     path: '/search/:searchQuery',
     element: <SearchResultsPage />
+  },
+  {
+    path: '/search/category/:categoryId',
+    element: <SearchResultsByCategoryPage />
   }
 ];
 

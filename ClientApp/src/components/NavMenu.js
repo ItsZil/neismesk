@@ -30,13 +30,17 @@ export class NavMenu extends Component {
             isLoggedIn: false, // Assume the user is not logged in by default
             dropdownOpen: false,
             selectedCategory: 'Kategorijos',
-            userAvatar: './images/profile.png'
+            userAvatar: './images/profile.png',
+            categories: [],
+            items: [],
+            allItems: false,
         };
         this.handleClick = this.handleClick.bind(this);
     }
 
     componentDidMount() {
         this.getUserAvatar();
+        this.getCategories();
     }
 
     getUserAvatar() {
@@ -50,6 +54,20 @@ export class NavMenu extends Component {
             })
             .catch(error => console.error(error));
     }
+    
+    getCategories()
+    {
+        axios.get("api/item/getCategories")
+        .then(response => { this.setState({
+            categories : response.data
+        })
+        })
+        .catch(error => {
+            console.log(error);
+            toast("Įvyko klaida, susisiekite su administratoriumi!");
+        })
+    }
+    
 
     handleClick() {
         this.setState({
@@ -78,6 +96,15 @@ export class NavMenu extends Component {
   });
 };
       
+getItemsByCategory(categoryId) {
+        this.props.navigate(`/search/category/${categoryId}`);
+  }
+  getAllItems = () => {
+    this.setState({
+        allItems: true
+    });
+    this.props.navigate(`/search/category/0`);
+};
       
     handleLoginClick = () => {
         this.setState({
@@ -174,9 +201,10 @@ export class NavMenu extends Component {
                             <Dropdown nav isOpen={this.state.dropdownOpen} toggle={this.toggleDropdown}>
                                         <DropdownToggle nav caret className="categories">{displayCategory}</DropdownToggle>
                                 <DropdownMenu>
-                                    <DropdownItem onClick={() => this.selectCategory('Telefonai')}>Telefonai</DropdownItem>
-                                    <DropdownItem onClick={() => this.selectCategory('Kompiuteriai')}>Kompiuteriai</DropdownItem>
-                                    <DropdownItem onClick={() => this.selectCategory('Stambi buitinė technika')}>Stambi buitinė technika</DropdownItem>
+                                <DropdownItem onClick={() => this.getAllItems()}>Visi</DropdownItem>
+                                {this.state.categories.map(category => (
+                                <DropdownItem key={category.id} onClick={() => this.getItemsByCategory(category.id)}>{category.name}</DropdownItem>
+            ))}
                                 </DropdownMenu>
                             </Dropdown>
                             </Nav>
