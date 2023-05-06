@@ -62,22 +62,20 @@ export const ItemWinnerViewPage = () => {
             <Container className="my-5">
                 <Row>
                     <Col md={4}>
-                        <Carousel>
-                            {item.images && item.images.length > 0 && (
-                                <Carousel>
-                                    {item.images.map((image, index) => (
-                                        <Carousel.Item key={index}>
-                                            <img className="d-block w-100" 
-                                            src={`data:image/png;base64,${image.data}`}
-                                            alt={`Image ${index + 1}`}
-                                            height="320"
-                                            style={{ border: '1px solid white' }}
-                                             />
-                                        </Carousel.Item>
-                                    ))}
-                                </Carousel>
-                            )}
-                        </Carousel>
+                        {item.images && item.images.length > 0 && (
+                            <Carousel>
+                                {item.images.map((image, index) => (
+                                    <Carousel.Item key={index}>
+                                        <img className="d-block w-100" 
+                                        src={`data:image/png;base64,${image.data}`}
+                                        alt={`Image ${index + 1}`}
+                                        height="320"
+                                        style={{ border: '1px solid white' }}
+                                            />
+                                    </Carousel.Item>
+                                ))}
+                            </Carousel>
+                        )}
                     </Col>
                     <Col md={8}>
                         <Card>
