@@ -412,5 +412,103 @@ namespace neismesk.Repositories.Item
                 return false;
             }
         }
+
+        public async Task<List<ItemLotteryViewModel>> GetDueLotteries()
+        {
+            List<ItemLotteryViewModel> lotteriesList = new List<ItemLotteryViewModel>();
+            try
+            {
+                DateTime dateTimeNow = DateTime.Now;
+
+                using MySqlConnection connection = GetConnection();
+                await connection.OpenAsync();
+
+                using (MySqlCommand command = new MySqlCommand("SELECT ads.id, ads.fk_user AS UserId, ads.name AS Name, ads.description AS Description, COUNT(ad_lottery_participants.id) " +
+                    "AS Participants, ads.location AS Location, categories.name AS Category " +
+                    "FROM ads " +
+                    "JOIN categories ON ads.fk_category = categories.id " +
+                    "LEFT JOIN ad_lottery_participants ON ads.id = ad_lottery_participants.fk_ad " +
+                    "WHERE ads.end_datetime <= @dateTimeNow AND ads.fk_status = 1 AND ads.fk_type = 1 " +
+                    "GROUP BY ads.id, ads.fk_user, ads.name, ads.description, ads.location, categories.name", connection))
+                {
+                command.Parameters.AddWithValue("@dateTimeNow", dateTimeNow);
+
+                using DbDataReader reader = await command.ExecuteReaderAsync();
+                while (await reader.ReadAsync())
+                {
+                    ItemLotteryViewModel item = new ItemLotteryViewModel();
+                        item.Id = reader.GetInt32("id");
+                        item.UserId = reader.GetInt32("UserId");
+                        item.Name = reader.GetString("Name");
+                        item.Description = reader.GetString("Description");
+                        item.Participants = reader.GetInt32("Participants");
+                        item.Location = reader.GetString("Location");
+                        item.Category = reader.GetString("Category");
+
+                        lotteriesList.Add(item);
+                    }
+                }
+                return lotteriesList;
+            }
+            catch (Exception ex)
+            {
+                _logger.Error(ex, "Error getting due lotteries!");
+                return lotteriesList;
+            }
+        }
+
+        public async Task<int> DrawLotteryWinner(int itemId)
+        {
+            int winner = -1;
+            try
+            {
+                using MySqlConnection connection = GetConnection();
+                await connection.OpenAsync();
+
+                using MySqlCommand command = new MySqlCommand(
+                    "SELECT fk_user FROM ad_lottery_participants " +
+                    "WHERE fk_ad = @fk_ad " +
+                    "ORDER BY RAND() " +
+                    "LIMIT 1", connection);
+                command.Parameters.AddWithValue("@fk_ad", itemId);
+
+                using DbDataReader reader = await command.ExecuteReaderAsync();
+                while (await reader.ReadAsync())
+                {
+                    winner = reader.GetInt32("fk_user");
+                }
+                _logger.Information($"Lottery {itemId} winner is user id {winner}");
+                return winner;
+            }
+            catch (Exception ex)
+            {
+                _logger.Error(ex, $"Error drawing lottery winner for lottery id {itemId}!");
+                return winner;
+            }
+        }
+
+        public async Task<bool> UpdateItemStatus(int itemId, int newStatusId)
+        {
+            try
+            {
+                using MySqlConnection connection = GetConnection();
+                await connection.OpenAsync();
+
+                using MySqlCommand command = new MySqlCommand(
+                    "UPDATE ads " +
+                    "SET fk_status = @fk_status " +
+                    "WHERE id = @id", connection);
+                command.Parameters.AddWithValue("@fk_status", newStatusId);
+                command.Parameters.AddWithValue("@id", itemId);
+
+                await command.ExecuteNonQueryAsync();
+                return true;
+            }
+            catch (Exception ex)
+            {
+                _logger.Error(ex, $"Error updating item status for item id {itemId}!");
+                return false;
+            }
+        }
     }
 }
