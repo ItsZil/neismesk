@@ -135,8 +135,12 @@ export const ItemViewPage = () => {
                         }
                     })
                     .catch(error => {
-                        console.log(error);
-                        toast('Įvyko klaida, susisiekite su administratoriumi!');
+                        if (error.response.status === 401) {
+                            toast('Turite būti prisijungęs!');
+                        }
+                        else {
+                            toast('Įvyko klaida, susisiekite su administratoriumi!');   
+                        }
                     });
             }
             else {
@@ -156,7 +160,12 @@ export const ItemViewPage = () => {
                         }
                     })
                     .catch(error => {
-                        toast('Įvyko klaida, susisiekite su administratoriumi!');
+                        if (error.response.status === 401) {
+                            toast('Turite būti prisijungęs!');
+                        }
+                        else {
+                            toast('Įvyko klaida, susisiekite su administratoriumi!');
+                        }
                     });
             }
         }

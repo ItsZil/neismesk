@@ -2,6 +2,7 @@
 using neismesk.Models;
 using neismesk.Repositories.Image;
 using neismesk.ViewModels.Item;
+using Org.BouncyCastle.Cms;
 using Serilog;
 using System.Data;
 using System.Data.Common;
@@ -115,6 +116,7 @@ namespace neismesk.Repositories.Item
                         item.Category = reader["category_name"].ToString();
                         item.CreationDateTime = Convert.ToDateTime(reader["creation_datetime"]);
                         item.EndDateTime = Convert.ToDateTime(reader["end_datetime"]);
+                        item.WinnerId = reader["fk_winner"] == DBNull.Value ? null : (int?)Convert.ToInt32(reader["fk_winner"]);
                         item.Images = images;
                         item.Questions = questions;
 
@@ -161,6 +163,7 @@ namespace neismesk.Repositories.Item
                                 Category = reader["category_name"].ToString(),
                                 CreationDateTime = Convert.ToDateTime(reader["creation_datetime"]),
                                 EndDateTime = Convert.ToDateTime(reader["end_datetime"]),
+                                WinnerId = reader["fk_winner"] == DBNull.Value ? null : (int?)Convert.ToInt32(reader["fk_winner"]),
                                 Images = await _imageRepo.GetByAd(Convert.ToInt32(reader["id"])),
                                 Questions = await GetQuestions(Convert.ToInt32(reader["id"]))
                             };
@@ -507,6 +510,30 @@ namespace neismesk.Repositories.Item
             catch (Exception ex)
             {
                 _logger.Error(ex, $"Error updating item status for item id {itemId}!");
+                return false;
+            }
+        }
+
+        public async Task<bool> SetItemWinner(int itemId, int winnerId)
+        {
+            try
+            {
+                using MySqlConnection connection = GetConnection();
+                await connection.OpenAsync();
+
+                using MySqlCommand command = new MySqlCommand(
+                    "UPDATE ads " +
+                    "SET fk_winner = @fk_winner " +
+                    "WHERE id = @id", connection);
+                command.Parameters.AddWithValue("@fk_winner", winnerId);
+                command.Parameters.AddWithValue("@id", itemId);
+
+                await command.ExecuteNonQueryAsync();
+                return true;
+            }
+            catch (Exception ex)
+            {
+                _logger.Error(ex, $"Error setting item winner for item id {itemId}!");
                 return false;
             }
         }

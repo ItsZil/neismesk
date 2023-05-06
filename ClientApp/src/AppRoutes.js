@@ -14,63 +14,64 @@ import { ItemViewPage } from "./components/ItemViewPage/ItemViewPage";
 import { DetailedItemInfoPage } from "./components/DetailedItemInfoPage/DetailedItemInfoPage";
 
 import ItemCreationPage from "./components/ItemCreation/ItemCreationPage";
+import { ItemWinnerViewPage } from "./components/ItemWinnerViewPage/ItemWinnerViewPage";
 const AppRoutes = [
-  {
-    path: '/counter',
-    element: <Counter />
-  },
-  {
-    path: '/about-us',
-    element: <AboutUs />
-  },
-  {
-    path: '/login',
-    element: <LoginPage />
-  },
-  {
-    index: true,
-    element: <HomePage />
-  },
-  {
-    path: '/register',
-    element: <RegistrationPage />
-  },
-  {
-  path: '/forgotpassword',
-  element: <ForgotPasswordPage />
-  },
-  {
-  path: '/help',
-  element: <HelpPage />
-  },
-  {
-    path: '/testaccesscontrol',
-    element: <TestAccessControl />
-  },
-  {
-    path: '/profile',
-    element: <ProfilePage />
-  },
-  {
-    path: '/forgotpassword',
-    element: <ForgotPasswordPage />
-  },
-  {
-      path: '/skelbimas/:itemId',
-      element: <ItemViewPage />
-  },
-  {
-      path: '/skelbimas/redaguoti/:itemId',
-      element: <ItemUpdatePage />
-  },
-  {
-      path: '/skelbimas/naujas',
-      element: <ItemCreationPage />
-  },
-  {
-      path: '/detaileditem/:itemId',
-      element: <DetailedItemInfoPage />
-  },
+    {
+        path: '/about-us',
+        element: <AboutUs />
+    },
+    {
+        path: '/login',
+        element: <LoginPage />
+    },
+    {
+        index: true,
+        element: <HomePage />
+    },
+    {
+        path: '/register',
+        element: <RegistrationPage />
+    },
+    {
+        path: '/forgotpassword',
+        element: <ForgotPasswordPage />
+    },
+    {
+        path: '/help',
+        element: <HelpPage />
+    },
+    {
+        path: '/testaccesscontrol',
+        element: <TestAccessControl />
+    },
+    {
+        path: '/profile',
+        element: <ProfilePage />
+    },
+    {
+        path: '/forgotpassword',
+        element: <ForgotPasswordPage />
+    },
+    {
+        path: '/skelbimas/:itemId',
+        element: <ItemViewPage />
+    },
+    {
+        path: '/skelbimas/redaguoti/:itemId',
+        element: <ItemUpdatePage />
+    },
+    {
+        path: '/skelbimas/naujas',
+        element: <ItemCreationPage />
+    },
+    {
+        path: '/detaileditem/:itemId',
+        element: <DetailedItemInfoPage />
+    },
+    {
+        path: '/laimejimas/:itemId',
+        element: <ItemWinnerViewPage />
+    }
 ];
 
 export default AppRoutes;

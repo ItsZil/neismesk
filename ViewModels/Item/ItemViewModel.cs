@@ -37,6 +37,9 @@ namespace neismesk.ViewModels.Item
         [JsonProperty("end_datetime")]
         public DateTime? EndDateTime { get; set; }
 
+        [JsonProperty("fk_winner")]
+        public int? WinnerId { get; set; }
+
         [JsonProperty("images")]
         public List<ItemImageViewModel> Images { get; set; }
 
