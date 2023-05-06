@@ -6,6 +6,7 @@ using neismesk.Repositories.Type;
 using neismesk.Repositories.Item;
 using neismesk.Repositories.Image;
 using Microsoft.AspNetCore.Authorization;
+using neismesk.ViewModels.Item;
 
 namespace neismesk.Controllers.Item
 {
@@ -304,6 +305,22 @@ namespace neismesk.Controllers.Item
                 var result = await _itemRepo.LeaveLottery(id, userId);
 
                 return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
+        [HttpPost("submitWinnerDetails")]
+        [Authorize]
+        public async Task<IActionResult> SubmitWinnerDetails(ItemWinnerDetails details)
+        {
+            try
+            {
+                // TODO: Send an email to the item poster with winner details.
+
+                return Ok(details);
             }
             catch (Exception ex)
             {

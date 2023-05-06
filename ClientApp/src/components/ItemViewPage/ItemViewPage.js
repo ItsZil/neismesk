@@ -216,7 +216,7 @@ export const ItemViewPage = () => {
                         <button className="update" onClick={() => ''}>Redaguoti</button>
                         </Link>
                         )}
-                                <hr className="mb-2" />
+                                <hr></hr>
                                 {item.type === 'Keitimas' && (
                                     <Form onSubmit={handleSubmit}>
                                         <Form.Group>

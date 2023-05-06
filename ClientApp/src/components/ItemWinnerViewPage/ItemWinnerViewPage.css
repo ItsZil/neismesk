@@ -22,3 +22,9 @@
     font-size: 16px;
     margin-right: 10px;
 }
+
+hr {
+    margin-top: 5%;
+    margin-bottom: 5%;
+    border: grey solid 1px;
+}

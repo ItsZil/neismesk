@@ -9,6 +9,7 @@ export const ItemWinnerViewPage = () => {
     const { itemId } = useParams();
     const [viewerId, setViewerId] = useState(null);
     const [canAccess, setCanAccess] = useState(null);
+    const [phone, setPhone] = useState('');
     const [message, setMessage] = useState('');
     const [item, setItem] = useState(null);
     const [posterEmail, setPosterEmail] = useState(null);
@@ -56,7 +57,6 @@ export const ItemWinnerViewPage = () => {
             try {
                 const response = await axios.get(`api/user/getUserEmail/${item.userId}`);
                 setPosterEmail(response.data);
-                console.log(response.data);
             } catch (error) {
                 toast('Įvyko klaida, susisiekite su administratoriumi!');
             }
@@ -70,8 +70,38 @@ export const ItemWinnerViewPage = () => {
         setMessage(event.target.value);
     };
 
+    const handlePhoneChange = (event) => {
+        setPhone(event.target.value);
+    };
+
     const handleSubmit = (event) => {
         event.preventDefault();
+
+        if (phone === '' || phone.length < 9) {
+            toast('Įveskite telefono numerį!');
+            return;
+        }
+
+        const data = {
+            phone: phone,
+            message: message,
+            itemId: itemId,
+            posterEmail: posterEmail,
+            winnerId: viewerId
+        }
+
+        axios.post('api/item/submitWinnerDetails', data)
+            .then(response => {
+                if (response.data) {
+                    toast('Sėkmingai išsiųstas pranešimas skelbėjui!');
+                }
+                else {
+                    toast('Įvyko klaida, susisiekite su administratoriumi!');
+                }
+            })
+            .catch(error => {
+                toast('Įvyko klaida, susisiekite su administratoriumi!');
+            });
     };
 
     return item && viewerId && canAccess && posterEmail ? (
@@ -101,12 +131,12 @@ export const ItemWinnerViewPage = () => {
                             <Card.Body>
                                 <Card.Title>Laimėjote: {item.name}</Card.Title>
                                 <Card.Text>{item.description}</Card.Text>
-                                <hr className="mb-2" />
-                                <Card.Text>Norint suderinti atsiemimą ar pristatymą, pateikite savo kontaktinius duomenis, kad skelbėjas galėtu su Jumis susisiekti:</Card.Text>
+                                <hr></hr>
+                                <Card.Text>Norint suderinti atsiemimą ar pristatymą, pateikite savo kontaktinius duomenis su kuriais skelbėjas galės su Jumis susisiekti:</Card.Text>
                                 <Form onSubmit={handleSubmit}>
                                     <Form.Group>
                                         <Form.Label>Telefono numeris:</Form.Label>
-                                        <Form.Control as="textarea" rows={1} type="phone" placeholder="Telefono numeris" />
+                                        <Form.Control as="textarea" rows={1} onChange={handlePhoneChange} type="phone" placeholder="Telefono numeris" />
                                         <br></br>
                                         <Form.Label>Žinutė:</Form.Label>
                                         <Form.Control as="textarea" rows={3} onChange={handleMessageChange} placeholder="Papildoma informacija (nebūtina)" />

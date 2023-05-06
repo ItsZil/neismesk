@@ -36,7 +36,8 @@ namespace neismesk.Services
                 {
                     int winnerUserId = await _itemRepo.DrawLotteryWinner(lottery.Id);
                     //await _itemRepo.SetItemWinner(lottery.Id, winnerUserId);
-                    // Send email notification to poster and winner
+
+                    // Send email notification to poster (await details or reach out thru email) and winner (go to laimejimas/id)
 
                     // Update item status to 'Ištrinktas laimėtojas'
                     // await _itemRepo.UpdateItemStatus(lottery.Id, 2);
