@@ -87,7 +87,7 @@ const ChangePasswordPage = () => {
             <Toaster />
             <div className='outerBox'>
                 <div className='innerBox'>
-                    <h2 className='boxLabel'>Registracija</h2>
+                    <h2 className='boxLabel'>Slaptažodžio keitimas</h2>
                     <div className='inputWrapper'>
                         <input type="password" name='password' id='password' value={password} onChange={onChange} placeholder='Slaptažodis'></input>
                     </div>
@@ -100,7 +100,7 @@ const ChangePasswordPage = () => {
                         <button onClick={() => handleSubmit()} type='submit'>Keisti</button>
                     </div>
                     <div className='returnToLogin'>
-                        <a href="/" className='returnToLoginButton'>Grįžti į prisijungimą</a>
+                        <a href="/login" className='returnToLoginButton'>Grįžti į prisijungimą</a>
                     </div>
                 </div>
             </div>

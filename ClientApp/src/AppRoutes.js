@@ -7,6 +7,7 @@ import ItemUpdatePage from './components/ItemUpdatePage/ItemUpdatePage';
 import ProfilePage from "./components/ProfilePage/ProfilePage";
 import HomePage from "./components/HomePage/HomePage";
 import ChangePasswordPage from "./components/ChangePasswordPage/ChangePasswordPage";
+import VerifyEmailPage from "./components/VerifyEmailPage/VerifyEmailPage";
 
 // User authentication
 import { LoginPage } from "./components/LoginPage/LoginPage";
@@ -75,6 +76,10 @@ const AppRoutes = [
   {
       path: '/changepassword',
       element: <ChangePasswordPage />
+  },
+  {
+      path: '/verifyemail',
+      element: <VerifyEmailPage />
   },
 ];
 

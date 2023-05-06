@@ -8,6 +8,7 @@ using System.Security.Claims;
 using neismesk.ViewModels.User;
 using System.Security.Cryptography;
 using System.Web;
+using MySqlX.XDevAPI.Common;
 
 namespace neismesk.Controllers.UserAuthentication
 {
@@ -28,13 +29,18 @@ namespace neismesk.Controllers.UserAuthentication
         public async Task<IActionResult> Login(LoginViewModel login)
         {
             // Retrieve the user's hashed password and salt, then compare it to the hashed plain text version.
-            string sql = "SELECT user_id, name, surname, password_hash, password_salt, user_role FROM users WHERE email = @email";
+            string sql = "SELECT user_id, name, surname, password_hash, password_salt, verification_token, user_role FROM users WHERE email = @email";
             var parameters = new { email = login.Email };
             var result = await _userRepo.LoadData(sql, parameters);
 
             if (result.Rows.Count == 0)
             {
-                return BadRequest();
+                return StatusCode(404);
+            }
+
+            if(!String.Equals(result.Rows[0]["verification_token"].ToString(),""))
+            {
+                return StatusCode(401);
             }
 
             string hashed_password = result.Rows[0]["password_hash"].ToString();
@@ -48,7 +54,7 @@ namespace neismesk.Controllers.UserAuthentication
             catch (Exception ex)
             {
                 _logger.LogError("Error while comparing passwords: {ex}", ex);
-                return StatusCode(500);
+                return StatusCode(404);
             }
            
             if (match)
@@ -88,12 +94,40 @@ namespace neismesk.Controllers.UserAuthentication
             string password_hash = PasswordHasher.hashPassword(registration.Password, out salt);
             string password_salt = Convert.ToBase64String(salt);
 
-            bool success = await _userRepo.SaveData("INSERT INTO users (name, surname, email, password_hash, password_salt) VALUES (@name, @surname, @email, @password_hash, @password_salt)",
-                    new { registration.Name, registration.Surname, registration.Email, password_hash, password_salt });
+            byte[] tokenData = new byte[32]; // 256-bit token
+            using (RNGCryptoServiceProvider rng = new RNGCryptoServiceProvider())
+            {
+                rng.GetBytes(tokenData);
+            }
+
+            string token = BitConverter.ToString(tokenData).Replace("-", ""); // Convert byte array to hex string
+
+            bool success = await _userRepo.SaveData("INSERT INTO users (name, surname, email, password_hash, password_salt, verification_token) VALUES (@name, @surname, @email, @password_hash, @password_salt, @token)",
+                    new { registration.Name, registration.Surname, registration.Email, password_hash, password_salt, token });
 
             if (success)
             {
-                return Ok();
+                string verifyUrl;
+                if (String.Equals(Environment.GetEnvironmentVariable("SERVER_HOST"), "1"))
+                {
+                    verifyUrl = $"https://neismesk.azurewebsites.net/verifyemail?email={HttpUtility.UrlEncode(registration.Email)}&token={HttpUtility.UrlEncode(token)}";
+                }
+                else
+                {
+                    verifyUrl = $"https://localhost:44486/verifyemail?email={HttpUtility.UrlEncode(registration.Email)}&token={HttpUtility.UrlEncode(token)}";
+                }
+
+                Emailer emailer = new Emailer();
+                if (emailer.VerifyEmail(registration.Email, verifyUrl))
+                {
+                    return Ok();
+                }
+                else
+                {
+                    _logger.LogError("Failed to send email");
+                    return StatusCode(401);
+                }
+
             }
             else
             {
@@ -329,7 +363,7 @@ namespace neismesk.Controllers.UserAuthentication
 
             if (result.Rows.Count == 0)
             {
-                return StatusCode(400);
+                return StatusCode(404);
             }
             else
             {
@@ -356,7 +390,7 @@ namespace neismesk.Controllers.UserAuthentication
 
             if (result.Rows.Count == 0)
             {
-                return StatusCode(400);
+                return StatusCode(404);
             }
             else
             {
@@ -376,9 +410,15 @@ namespace neismesk.Controllers.UserAuthentication
 
                 if (!success) { return BadRequest(); }
 
-                // local //localhost:44486/changepassword
-                // Pakeisti į //neismesk.azurewebsites.net/changepassword
-                string resetUrl = $"https://neismesk.azurewebsites.net/changepassword?email={HttpUtility.UrlEncode(resetRequest.Email)}&token={HttpUtility.UrlEncode(token)}";
+                string resetUrl;
+                if (String.Equals(Environment.GetEnvironmentVariable("SERVER_HOST"), "1"))
+                {
+                    resetUrl = $"https://neismesk.azurewebsites.net/changepassword?email={HttpUtility.UrlEncode(resetRequest.Email)}&token={HttpUtility.UrlEncode(token)}";
+                }
+                else
+                {
+                    resetUrl = $"https://localhost:44486/changepassword?email={HttpUtility.UrlEncode(resetRequest.Email)}&token={HttpUtility.UrlEncode(token)}";
+                } 
 
                 Emailer emailer = new Emailer();
                 if (emailer.ChangePassword(result, resetUrl))

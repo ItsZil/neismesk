@@ -20,7 +20,7 @@ const ForgotPasswordPage = () => {
                 if (response.status === 200) {
                     toast('Nuoroda į slaptažodžio pakeitimą sėkmingai išsiųsta');
                 }
-                else if (response.status === 400) {
+                else if (response.status === 404) {
                     toast("Nerastas vartotojas su pateiktais duomenimis!", {
                         style: {
                             backgroundColor: 'red',

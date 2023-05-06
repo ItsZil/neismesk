@@ -27,8 +27,16 @@ export const LoginPage = () => {
                     window.location.reload();
                     window.location.href = "/";
                 }
-                else if (response.status === 400) {
-                    toast("Nerastas vartotojas su pateiktais duomenimis!", {
+                else if (response.status === 404) {
+                    toast("Prisijungimo duomenys neteisingi!", {
+                        style: {
+                            backgroundColor: 'red',
+                            color: 'white',
+                        },
+                    });
+                }
+                else if (response.status === 401) {
+                    toast("Pašto adresas nepatvirtintas. Patikrinkite savo elektroninį paštą!", {
                         style: {
                             backgroundColor: 'red',
                             color: 'white',

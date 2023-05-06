@@ -56,8 +56,16 @@ const RegistrationPage = () => {
             fetch("api/user/register", requestOptions)
                 .then(response => {
                     if (response.status === 200) {
-                        toast('Sėkmingai prisiregistravote!');
+                        toast('Sėkmingai prisiregistravote. Elektroninio pašto patvirtinimas išsiųstas');
                         navigate("/login");
+                    }
+                    else if (response.status === 401) {
+                        toast("Nepavyko išsiųsti patvirtinimo žinutės. Susisiekite su administratoriumi", {
+                            style: {
+                                backgroundColor: 'red',
+                                color: 'white',
+                            },
+                        });
                     }
                     else {
                         toast("Įvyko klaida, susisiekite su administratoriumi!", {
