@@ -1,6 +1,4 @@
-import { Counter } from "./components/Counter";
 import { AboutUs } from "./components/AboutUs";
-import { TestAccessControl } from "./components/TestAccessControl";
 import ForgotPasswordPage from "./components/ForgotPasswordPage/ForgotPasswordPage";
 import HelpPage from "./components/HelpPage/HelpPage";
 import ItemUpdatePage from './components/ItemUpdatePage/ItemUpdatePage';
@@ -39,10 +37,6 @@ const AppRoutes = [
     {
         path: '/help',
         element: <HelpPage />
-    },
-    {
-        path: '/testaccesscontrol',
-        element: <TestAccessControl />
     },
     {
         path: '/profile',
