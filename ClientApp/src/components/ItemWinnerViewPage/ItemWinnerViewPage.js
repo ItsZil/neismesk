@@ -1,5 +1,5 @@
 ﻿import React, { useState, useEffect } from 'react';
-import { useParams, useNavigate, Link } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 import { Carousel, Col, Container, Row, Form, Button, Card, Spinner } from 'react-bootstrap';
 import toast, { Toaster } from 'react-hot-toast';
 import './ItemWinnerViewPage.css'
@@ -11,7 +11,33 @@ export const ItemWinnerViewPage = () => {
     const [canAccess, setCanAccess] = useState(null);
     const [message, setMessage] = useState('');
     const [item, setItem] = useState(null);
+    const [posterEmail, setPosterEmail] = useState(null);
     const navigate = useNavigate();
+
+    useEffect(() => {
+        const fetchViewerId = async () => {
+            try {
+                const response = await axios.get('api/user/getCurrentUserId');
+                setViewerId(response.data);
+
+                if (response.data === item?.winnerId) {
+                    setCanAccess(true);
+                } else if (item && response.data !== item?.winnerId) {
+                    navigate('/');
+                }
+            } catch (error) {
+                if (error.response.status === 401) {
+                    navigate('/login');
+                    toast('Turite būti prisijungęs!');
+                }
+                else {
+                    navigate('/index');
+                    toast('Įvyko klaida, susisiekite su administratoriumi!');
+                }
+            }
+        };
+        fetchViewerId();
+    }, [item]);
 
     useEffect(() => {
         const fetchItem = async () => {
@@ -26,26 +52,18 @@ export const ItemWinnerViewPage = () => {
     }, [itemId, canAccess]);
 
     useEffect(() => {
-        const fetchViewerId = async () => {
+        const fetchPosterEmail = async () => {
             try {
-                const response = await axios.get('api/user/getCurrentUserId');
-                setViewerId(response.data);
-                if (response.data === item?.winnerId) {
-                    setCanAccess(true);
-                }
+                const response = await axios.get(`api/user/getUserEmail/${item.userId}`);
+                setPosterEmail(response.data);
+                console.log(response.data);
             } catch (error) {
-                console.log(error);
-                if (error.response.status === 401) {
-                    navigate('/login');
-                    toast('Turite būti prisijungęs!');
-                }
-                else {
-                    navigate('/index');
-                    toast('Įvyko klaida, susisiekite su administratoriumi!');
-                }
+                toast('Įvyko klaida, susisiekite su administratoriumi!');
             }
         };
-        fetchViewerId();
+        if (item && item.userId) {
+            fetchPosterEmail();
+        }
     }, [item]);
 
     const handleMessageChange = (event) => {
@@ -56,7 +74,7 @@ export const ItemWinnerViewPage = () => {
         event.preventDefault();
     };
 
-    return item && viewerId && canAccess ? (
+    return item && viewerId && canAccess && posterEmail ? (
         <div className='outerBoxWrapper'>
             <Toaster />
             <Container className="my-5">
@@ -81,18 +99,22 @@ export const ItemWinnerViewPage = () => {
                         <Card>
                             <Card.Header>{item.category}</Card.Header>
                             <Card.Body>
-                                <Card.Title>{item.name}</Card.Title>
+                                <Card.Title>Laimėjote: {item.name}</Card.Title>
                                 <Card.Text>{item.description}</Card.Text>
                                 <hr className="mb-2" />
+                                <Card.Text>Norint suderinti atsiemimą ar pristatymą, pateikite savo kontaktinius duomenis, kad skelbėjas galėtu su Jumis susisiekti:</Card.Text>
                                 <Form onSubmit={handleSubmit}>
                                     <Form.Group>
+                                        <Form.Label>Telefono numeris:</Form.Label>
+                                        <Form.Control as="textarea" rows={1} type="phone" placeholder="Telefono numeris" />
+                                        <br></br>
                                         <Form.Label>Žinutė:</Form.Label>
-                                        <Form.Control as="textarea" rows={3} onChange={handleMessageChange} />
+                                        <Form.Control as="textarea" rows={3} onChange={handleMessageChange} placeholder="Papildoma informacija (nebūtina)" />
                                     </Form.Group>
                                     <Button variant="primary" type="submit">Siųsti</Button>
                                 </Form>
                             </Card.Body>
-                            <Card.Footer>{item.location}</Card.Footer>
+                            <Card.Footer>{item.location} | Skelbėjo el. paštas: {posterEmail}</Card.Footer>
                         </Card>
                     </Col>
                 </Row>

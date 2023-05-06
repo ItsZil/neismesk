@@ -480,7 +480,6 @@ namespace neismesk.Repositories.Item
                 {
                     winner = reader.GetInt32("fk_user");
                 }
-                _logger.Information($"Lottery {itemId} winner is user id {winner}");
                 return winner;
             }
             catch (Exception ex)
