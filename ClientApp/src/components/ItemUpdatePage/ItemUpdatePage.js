@@ -70,7 +70,8 @@ useEffect(() => {
             setViewerId(response.data);
         } catch (error) {
           if (error.response.status === 401) {
-            setViewerId(2147483647);
+            navigate('/prisijungimas');
+            toast('Turite būti prisijungęs!');
           }
           else
           {
@@ -87,8 +88,8 @@ useEffect(() => {
 if (!isLoggedInAsAdmin)
 {
     if (item && viewerId && item.userId !== viewerId) {
-      alert('Jūs nesate šio skelbimo savininkas!');
-      navigate(`/`);
+      navigate('/');
+      toast('Jūs nesate šio skelbimo savininkas');
     }
 }
 
