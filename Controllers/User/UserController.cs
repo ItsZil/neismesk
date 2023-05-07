@@ -118,7 +118,7 @@ namespace neismesk.Controllers.UserAuthentication
                 }
 
                 Emailer emailer = new Emailer();
-                if (emailer.VerifyEmail(registration.Email, verifyUrl))
+                if (await emailer.verifyEmail(registration.Email, verifyUrl))
                 {
                     return Ok();
                 }
@@ -421,7 +421,7 @@ namespace neismesk.Controllers.UserAuthentication
                 } 
 
                 Emailer emailer = new Emailer();
-                if (emailer.ChangePassword(result, resetUrl))
+                if (await emailer.changePassword(result, resetUrl))
                 {
                     return Ok();
                 }

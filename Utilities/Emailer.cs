@@ -1,6 +1,7 @@
 ﻿using System.Net.Mail;
 using System.Net;
 using System.Data;
+using Microsoft.AspNetCore.Mvc;
 
 namespace neismesk.Utilities
 {
@@ -9,6 +10,7 @@ namespace neismesk.Utilities
        private string fromMail = "informacija.neismesk@gmail.com";
        private string fromPassword = Environment.GetEnvironmentVariable("EMAIL_PASSWORD");
        private SmtpClient smtpClient;
+       private MailMessage message;
 
         public Emailer()
         {
@@ -19,12 +21,14 @@ namespace neismesk.Utilities
             smtpClient.UseDefaultCredentials = false;
             smtpClient.Credentials = new NetworkCredential(fromMail, fromPassword);
             smtpClient.Host = "smtp.gmail.com";
+
+            message = new MailMessage();
+            message.From = new MailAddress(fromMail);
+            
         }
 
-        public bool ChangePassword(DataTable result,string resetURL)
+        public async Task<bool> changePassword(DataTable result,string resetURL)
         {
-            MailMessage message = new MailMessage();
-            message.From = new MailAddress(fromMail);
             message.To.Add(new MailAddress(result.Rows[0]["email"].ToString()));
             message.Subject = "Pasikeiskite slaptažodį";
             message.Body = $"<html><body><p>Norėdami pasikeisti slaptažodį, spauskite <a href=\"{resetURL}\">čia</a>.</p></body></html>";
@@ -34,7 +38,7 @@ namespace neismesk.Utilities
             {
                 smtpClient.Send(message);
                 // Email was sent successfully
-                return true;
+                return true;   
             }
             catch (Exception ex)
             {
@@ -43,10 +47,8 @@ namespace neismesk.Utilities
             }
         }
 
-        public bool VerifyEmail(string email, string verifyURL)
+        public async Task<bool> verifyEmail(string email, string verifyURL)
         {
-            MailMessage message = new MailMessage();
-            message.From = new MailAddress(fromMail);
             message.To.Add(new MailAddress(email));
             message.Subject = "Patvirtinkite savo pašto adresą";
             message.Body = $"<html><body><p>Norėdami patvirtinti savo pašto adresą, spauskite <a href=\"{verifyURL}\">čia</a>.</p></body></html>";
