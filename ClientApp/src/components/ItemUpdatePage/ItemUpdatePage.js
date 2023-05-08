@@ -17,6 +17,7 @@ function ItemUpdatePage() {
   const [imagesToDelete, setImagesToDelete] = useState([]);
   const [item, setItem] = useState(null);
   const [showMessage, setShowMessage] = useState(false);
+  const [isLoggedInAsAdmin, setIsLoggedInAsAdmin] = useState(false);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -28,6 +29,27 @@ function ItemUpdatePage() {
             console.log(error);
             toast("Įvyko klaida, susisiekite su administratoriumi!");
         })
+}, []);
+
+useEffect(() => {
+  const fetchUserRole = async () => {
+      try {
+          const response = await axios.get('api/user/isloggedin/1');
+          if (response.status == 200)
+          {
+            setIsLoggedInAsAdmin(true);
+          }
+      } catch (error) {
+        if (error.response.status === 401) {
+          setIsLoggedInAsAdmin(false);
+        }
+        else
+        {
+          toast('Įvyko klaida, susisiekite su administratoriumi!');
+        }
+      }
+  };
+  fetchUserRole();
 }, []);
 
   useEffect(() => {
@@ -47,7 +69,14 @@ function ItemUpdatePage() {
             const response = await axios.get('api/user/getCurrentUserId');
             setViewerId(response.data);
         } catch (error) {
+          if (error.response.status === 401) {
+            navigate('/prisijungimas');
+            toast('Turite būti prisijungęs!');
+          }
+          else
+          {
             toast('Įvyko klaida, susisiekite su administratoriumi!');
+          }
         }
     };
     fetchViewerId();
@@ -55,10 +84,15 @@ function ItemUpdatePage() {
 
 
 
-if (item && viewerId && item.userId !== viewerId) {
-  alert('Jūs nesate šio skelbimo savininkas!');
-  navigate(`/`);
+
+if (!isLoggedInAsAdmin)
+{
+    if (item && viewerId && item.userId !== viewerId) {
+      navigate('/');
+      toast('Jūs nesate šio skelbimo savininkas');
+    }
 }
+
   
   const handleSubmit = async (event) => {
     
@@ -165,6 +199,9 @@ function handleDeleteImage(id) {
         console.log(error);
     }
 }
+const handleCancel = () => {
+  navigate(`/skelbimas/${itemId}`);
+}
 
   if (!item || !categories) {
       return <div><Spinner>Loading...</Spinner></div>;
@@ -201,10 +238,14 @@ function handleDeleteImage(id) {
         {showMessage && 
         <><h1 className='Message'>Paspauskite atnaujinti mygtuką, kad išsisaugotų pašalintos nuotraukos</h1></>
         }
-        <div className ='submitButton' style={{ display: 'flex', paddingTop: '20px' }}>
-        <button type="submit" onClick={(event) => handleSubmit(event)}>Atnaujinti</button>
-        
+        <div style={{ display: 'flex', paddingTop: '20px' }}>
+          <div className ='submitButton'>
+            <button type="submit" onClick={(event) => handleSubmit(event)}>Atnaujinti</button>
+          </div>
+          <div className='cancelButton'>
+            <button className='cancel' onClick={() => handleCancel()} type='button'>Atšaukti</button>
         </div>
+      </div>
         </form>
     </div>
 </div>

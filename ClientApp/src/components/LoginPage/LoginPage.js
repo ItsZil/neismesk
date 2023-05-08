@@ -20,14 +20,20 @@ export const LoginPage = () => {
         fetch("api/user/login", requestOptions)
             .then(response => {
                 if (response.status === 200) {
-                    toast('Sėkmingai prisijungėte!');
-
                     // Hack to make the NavMenu update the user avatar.
                     window.location.reload();
                     window.location.href = "/";
                 }
-                else if (response.status === 400) {
-                    toast("Nerastas vartotojas su pateiktais duomenimis!", {
+                else if (response.status === 404) {
+                    toast("Prisijungimo duomenys neteisingi!", {
+                        style: {
+                            backgroundColor: 'red',
+                            color: 'white',
+                        },
+                    });
+                }
+                else if (response.status === 401) {
+                    toast("El. pašto adresas nepatvirtintas. Patikrinkite savo elektroninį paštą!", {
                         style: {
                             backgroundColor: 'red',
                             color: 'white',
@@ -61,7 +67,7 @@ export const LoginPage = () => {
                         <button className='loginButton' onClick={() => handleSubmit()} type='submit'>Prisijungti</button>
                     </div>
                     <div className='forgotPassword'>
-                        <a href='\forgotpassword' className='forgotPasswordButton' >Pamiršau slaptažodį</a>
+                        <a href='\pamirsau-slaptazodi' className='forgotPasswordButton' >Pamiršau slaptažodį</a>
                     </div>
                     <hr></hr>
                     <div className='register'>

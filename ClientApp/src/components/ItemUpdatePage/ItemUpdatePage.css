@@ -13,12 +13,28 @@
     border-radius: 20px;
 }
 
+.submit, .cancel {
+    width: 40%;
+}
+
+
+.submitButton, .cancelButton {
+    flex: 1;   
+    width: 20%;
+    display: flex;
+}
+
+.submit:hover, .cancel:hover, .addQuestionButton:hover {
+    background-color: rgb(229, 225, 225);
+}
+
+.cancelButton {
+    justify-content: flex-end;
+}
+
+
 .ItemInnerBox {
     padding: 20px 10px;
-}
-.submitButton
-{
-    justify-content: center;
 }
 .itemInputWrapper {
     margin-bottom: 1.5em;
@@ -53,23 +69,6 @@ button {
     border-radius: 5px;
 }
 
-.create, .cancel {
-    width: 40%;
-}
-
-.createButton, .cancelButton {
-    flex: 1;   
-    width: 20%;
-    display: flex;
-}
-
-.create:hover, .cancel:hover {
-    background-color: rgb(229, 225, 225);
-}
-
-.cancelButton {
-    justify-content: flex-end;
-}
 
 .itemBoxLabel {
     color:white;

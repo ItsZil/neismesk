@@ -6,7 +6,8 @@
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development",
         "ASPNETCORE_HOSTINGSTARTUPASSEMBLIES": "Microsoft.AspNetCore.SpaProxy",
-        "DATABASE_CONN_STRING": "server=74.234.32.45;user=neismesk;password=hfhAh$h#sa23v2;database=neismesk-dev;port=3306"
+        "DATABASE_CONN_STRING": "server=74.234.32.45;user=neismesk;password=hfhAh$h#sa23v2;database=neismesk-dev;port=3306",
+        "EMAIL_PASSWORD": "mobicqvvjspdffff"
       },
       "applicationUrl": "https://localhost:7185;http://localhost:5278"
     },

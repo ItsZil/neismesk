@@ -246,7 +246,7 @@ namespace neismesk.Controllers.Item
             }
         }
 
-        [HttpGet]
+        [HttpGet("search")]
         public async Task<IActionResult> Search([FromQuery] string searchWord)
         {
             try
@@ -269,6 +269,26 @@ namespace neismesk.Controllers.Item
             try
             {
                 var result = await _itemRepo.IsUserParticipatingInLottery(id, userId);
+                
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
+        [HttpGet("search/category/{categoryId}")]
+        public async Task<IActionResult> GetItemsByCategory(int categoryId)
+        {
+            try
+            {
+                var result = await _itemRepo.GetAllByCategory(categoryId);
+
+                if (result == null)
+                {
+                    return BadRequest();
+                }
 
                 return Ok(result);
             }
@@ -294,7 +314,7 @@ namespace neismesk.Controllers.Item
                 return BadRequest(ex.Message);
             }
         }
-        
+
         [HttpPost("leaveLottery/{id}")]
         [Authorize]
         public async Task<IActionResult> LeaveLottery(int id)
@@ -303,6 +323,31 @@ namespace neismesk.Controllers.Item
             try
             {
                 var result = await _itemRepo.LeaveLottery(id, userId);
+
+                if (result == null)
+                {
+                    return BadRequest();
+                }
+
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
+        [HttpGet("category/{categoryId}")]
+        public async Task<IActionResult> GetCategory(int categoryId)
+        {
+            try
+            {
+                var result = await _itemRepo.GetCategoryById(categoryId);
+
+                if (result == null)
+                {
+                    return BadRequest();
+                }
 
                 return Ok(result);
             }

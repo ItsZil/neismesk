@@ -177,6 +177,57 @@ namespace neismesk.Repositories.Item
             }
         }
 
+
+        public async Task<List<ItemViewModel>> GetAllByCategory(int categoryId)
+        {
+            List<ItemViewModel> items = new List<ItemViewModel>();
+
+
+            using (var connection = new MySqlConnection(_connectionString))
+            {
+                using (MySqlCommand command = new MySqlCommand("SELECT ads.*, ad_type.type AS ad_type, " +
+                    "categories.name AS category_name, status.name AS status_name, " +
+                    "COUNT(ad_lottery_participants.id) AS participants_count " +
+                    "FROM ads " +
+                    "JOIN ad_type ON ads.fk_type = ad_type.id " +
+                    "JOIN categories ON ads.fk_category = categories.id " +
+                    "JOIN status ON ads.fk_status = status.id " +
+                    "LEFT JOIN ad_lottery_participants ON ads.id = ad_lottery_participants.fk_ad " +
+                    "WHERE ads.fk_category = @categoryId " +
+                    "GROUP BY ads.id, ad_type.type, categories.name", connection))
+                {
+                    await connection.OpenAsync();
+                    command.Parameters.AddWithValue("@categoryId", categoryId);
+
+                    using (DbDataReader reader = await command.ExecuteReaderAsync())
+                    {
+                        while (await reader.ReadAsync())
+                        {
+                            var item = new ItemViewModel()
+                            {
+                                Id = Convert.ToInt32(reader["id"]),
+                                UserId = Convert.ToInt32(reader["fk_user"]),
+                                Name = reader["name"].ToString(),
+                                Description = reader["description"].ToString(),
+                                Status = reader["status_name"].ToString(),
+                                Type = reader["ad_type"].ToString(),
+                                Participants = Convert.ToInt32(reader["participants_count"]),
+                                Location = reader["location"].ToString(),
+                                Category = reader["category_name"].ToString(),
+                                CreationDateTime = Convert.ToDateTime(reader["creation_datetime"]),
+                                EndDateTime = Convert.ToDateTime(reader["end_datetime"]),
+                                Images = await _imageRepo.GetByAd(Convert.ToInt32(reader["id"])),
+                                Questions = await GetQuestions(Convert.ToInt32(reader["id"]))
+                            };
+
+                            items.Add(item);
+                        }
+                    }
+
+                    return items;
+                }
+            }
+        }
         public async Task<int> Create(ItemModel item)
         {
             using MySqlConnection connection = GetConnection();
@@ -227,6 +278,7 @@ namespace neismesk.Repositories.Item
                 }
             }
         }
+
 
         public async Task<bool> Update(ItemModel item)
         {
@@ -534,6 +586,25 @@ namespace neismesk.Repositories.Item
             {
                 _logger.Error(ex, $"Error setting item winner for item id {itemId}!");
                 return false;
+            }
+        }
+
+        public async Task<ItemCategoryViewModel> GetCategoryById(int categoryId)
+        {
+            var category = new ItemCategoryViewModel();
+            using MySqlConnection connection = GetConnection();
+            await connection.OpenAsync();
+
+            using MySqlCommand command = new MySqlCommand(
+                "SELECT name FROM categories where id=@categoryId", connection);
+            command.Parameters.AddWithValue("@categoryId", categoryId);
+
+            using (DbDataReader reader = await command.ExecuteReaderAsync())
+            {
+                await reader.ReadAsync();
+                category.Name = reader["name"].ToString();
+
+                return category;
             }
         }
     }
