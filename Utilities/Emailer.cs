@@ -2,18 +2,22 @@
 using System.Net;
 using System.Data;
 using Microsoft.AspNetCore.Mvc;
+using Serilog;
 
 namespace neismesk.Utilities
 {
     public class Emailer
     {
-       private string fromMail = "informacija.neismesk@gmail.com";
-       private string fromPassword = Environment.GetEnvironmentVariable("EMAIL_PASSWORD");
-       private SmtpClient smtpClient;
-       private MailMessage message;
+        private Serilog.ILogger _logger;
+        private string fromMail = "informacija.neismesk@gmail.com";
+        private string fromPassword = Environment.GetEnvironmentVariable("EMAIL_PASSWORD");
+        private SmtpClient smtpClient;
+        private MailMessage message;
 
         public Emailer()
         {
+            CreateLogger();
+            
             smtpClient = new SmtpClient();
             smtpClient.Port = 587;
             smtpClient.EnableSsl = true;
@@ -24,10 +28,16 @@ namespace neismesk.Utilities
 
             message = new MailMessage();
             message.From = new MailAddress(fromMail);
-            
         }
 
-        public async Task<bool> changePassword(DataTable result,string resetURL)
+        private void CreateLogger()
+        {
+            _logger = new LoggerConfiguration()
+                .WriteTo.Console()
+                .CreateLogger();
+        }
+
+        public async Task<bool> changePassword(DataTable result, string resetURL)
         {
             message.To.Add(new MailAddress(result.Rows[0]["email"].ToString()));
             message.Subject = "Pasikeiskite slaptažodį";
@@ -37,12 +47,11 @@ namespace neismesk.Utilities
             try
             {
                 smtpClient.Send(message);
-                // Email was sent successfully
                 return true;   
             }
             catch (Exception ex)
             {
-                // There was an error sending the email
+                _logger.Error("Error sending email for password change: {0}", ex.Message);
                 return false;
             }
         }
@@ -57,12 +66,11 @@ namespace neismesk.Utilities
             try
             {
                 smtpClient.Send(message);
-                // Email was sent successfully
                 return true;
             }
             catch (Exception ex)
             {
-                // There was an error sending the email
+                _logger.Error("Error sending email for verification: {0}", ex.Message);
                 return false;
             }
         }

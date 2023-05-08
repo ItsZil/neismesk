@@ -28,6 +28,10 @@ const ChangePasswordPage = () => {
             setMessage("");
             return true;
         }
+        else if (password.length === 0 || confirmPassword.length === 0) {
+            setMatchMessage("Slaptažodžių laukai turi būti užpildyti!");
+            return false;
+        }
         else {
             setMatchMessage("Slaptažodiai turi sutapti!");
             return false;
@@ -48,7 +52,7 @@ const ChangePasswordPage = () => {
                     token: token
                 }),
             };
-            fetch("api/user/change-password", requestOptions)
+            fetch("api/user/changePassword", requestOptions)
                 .then(response => {
                     if (response.status === 200) {
                         toast('Slaptažodis sėkmingai pakeistas!');

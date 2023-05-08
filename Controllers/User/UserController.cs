@@ -354,7 +354,7 @@ namespace neismesk.Controllers.UserAuthentication
             return Ok(new { user_id, avatar });
         }
 
-        [HttpPost("verify-email")]
+        [HttpPost("verifyEmail")]
         public async Task<IActionResult> VerifyEmail(EmailVerificationViewModel emailVerify)
         {
             string sql = "SELECT verification_token FROM users WHERE email = @email AND verification_token = @token";
@@ -380,7 +380,7 @@ namespace neismesk.Controllers.UserAuthentication
             }
         }
 
-        [HttpPost("forgot-password")]
+        [HttpPost("forgotPassword")]
         public async Task<IActionResult> ForgotPassword(PasswordResetRequestViewModel resetRequest)
         {
             // Retrieve the user's hashed password and salt, then compare it to the hashed plain text version.
@@ -433,7 +433,7 @@ namespace neismesk.Controllers.UserAuthentication
             }
         }
 
-        [HttpPost("change-password")]
+        [HttpPost("changePassword")]
         public async Task<IActionResult> ChangePassword(PasswordChangeViewModel passwordChange)
         {
             // Retrieve the user's hashed password and salt, then compare it to the hashed plain text version.

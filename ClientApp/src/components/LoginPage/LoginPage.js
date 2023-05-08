@@ -21,8 +21,6 @@ export const LoginPage = () => {
         fetch("api/user/login", requestOptions)
             .then(response => {
                 if (response.status === 200) {
-                    toast('Sėkmingai prisijungėte!');
-
                     // Hack to make the NavMenu update the user avatar.
                     window.location.reload();
                     window.location.href = "/";
@@ -36,7 +34,7 @@ export const LoginPage = () => {
                     });
                 }
                 else if (response.status === 401) {
-                    toast("Pašto adresas nepatvirtintas. Patikrinkite savo elektroninį paštą!", {
+                    toast("El. pašto adresas nepatvirtintas. Patikrinkite savo elektroninį paštą!", {
                         style: {
                             backgroundColor: 'red',
                             color: 'white',

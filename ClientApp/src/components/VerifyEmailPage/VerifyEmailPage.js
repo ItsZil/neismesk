@@ -23,7 +23,7 @@ const VerifyEmailPage = () => {
                     token: token
                 }),
             };
-            fetch("api/user/verify-email", requestOptions)
+            fetch("api/user/verifyEmail", requestOptions)
                 .then(response => {
                     if (response.status === 200) {
                         toast('Pašto adresas sėkmingai patvirtintas!');
