@@ -69,7 +69,6 @@ export class NavMenu extends Component {
         fetch("api/user/logout", { method: "GET" })
         .then(response => {
             if (response.status === 200) { // 200 - Ok
-                toast('Logged out');
                 this.setState({ isLogged: false});
             }
             else if (response.status === 401) { // 401 - Unauthorized
@@ -117,7 +116,7 @@ export class NavMenu extends Component {
                     <li><Button tag={Link} to="/login" color="primary" onClick={this.handleClick} className="mb-2">Prisijungti</Button></li>
                     )}
                     {!this.state.isLogged && (
-                    <li><Button tag={Link} to="/registration" color="primary" onClick={this.handleClick} className="mb-2">Registruotis</Button></li>
+                    <li><Button tag={Link} to="/register" color="primary" onClick={this.handleClick} className="mb-2">Registruotis</Button></li>
                     )}
                     {this.state.isLogged && (
                     <li><Button tag={Link} to="/login" color="primary" onClick={() => {this.handleLogoutClick()}} className="mb-2">Atsijungti</Button></li>
