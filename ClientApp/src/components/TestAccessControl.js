@@ -20,7 +20,7 @@ export const TestAccessControl = () => {
                 else if (response.status === 401) { // 401 - Unauthorized, we are not logged in.
                     // Do not render the page and rediret to login.
                     toast('Not logged in or incorrect role, redirecting to login'); // Only for testing.
-                    navigate("/login");
+                    navigate("/prisijungimas");
                 }
                 else { // 500 - Internal server error
                     toast('Unexpected response, check console logs');
@@ -48,7 +48,7 @@ export const TestAccessControl = () => {
             .then(response => {
                 if (response.status === 200) { // 200 - Ok
                     toast('Logged out');
-                    navigate('/login')
+                    navigate('/prisijungimas')
                 }
                 else if (response.status === 401) { // 401 - Unauthorized
                     toast('Already logged out');

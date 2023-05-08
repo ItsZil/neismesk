@@ -8,6 +8,9 @@ import ProfilePage from "./components/ProfilePage/ProfilePage";
 import HomePage from "./components/HomePage/HomePage";
 import SearchResultsPage  from "./components/SearchResultsPage/SearchResultsPage";
 import SearchResultsByCategoryPage  from "./components/SearchResultsByCategoryPage/SearchResultsByCategoryPage";
+import ChangePasswordPage from "./components/ChangePasswordPage/ChangePasswordPage";
+import VerifyEmailPage from "./components/VerifyEmailPage/VerifyEmailPage";
+
 // User authentication
 import { LoginPage } from "./components/LoginPage/LoginPage";
 import RegistrationPage from "./components/RegistrationPage/RegistrationPage";
@@ -79,6 +82,14 @@ const AppRoutes = [
   {
     path: '/search/category/:categoryId',
     element: <SearchResultsByCategoryPage />
+  },
+  {
+    path: '/changepassword',
+    element: <ChangePasswordPage />
+  },
+  {
+      path: '/verifyemail',
+      element: <VerifyEmailPage />
   }
 ];
 

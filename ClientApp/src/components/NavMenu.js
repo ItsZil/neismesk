@@ -122,7 +122,6 @@ getItemsByCategory(categoryId) {
         fetch("api/user/logout", { method: "GET" })
         .then(response => {
             if (response.status === 200) { // 200 - Ok
-                toast('Logged out');
                 this.setState({ isLogged: false});
             }
             else if (response.status === 401) { // 401 - Unauthorized

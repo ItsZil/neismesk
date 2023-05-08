@@ -1,13 +1,10 @@
-import React, { useState } from 'react';
+﻿import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router';
-import './RegistrationPage.css'
+import './ChangePasswordPage.css'
 import toast, { Toaster } from 'react-hot-toast';
 
-const RegistrationPage = () => {
+const ChangePasswordPage = () => {
 
-    const [name, setName] = useState('');
-    const [surname, setSurname] = useState('');
-    const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [confirmPassword, setConfirmPassword] = useState('');
     const [message, setMessage] = useState('');
@@ -27,13 +24,13 @@ const RegistrationPage = () => {
 
     function checkFields() {
         if (password === confirmPassword) {
-            if (name === '' || surname === '' || email === '') {
-                setMessage('Reikia užpildyti visus laukus!');
-                return false;
-            }
             setMatchMessage("");
             setMessage("");
             return true;
+        }
+        else if (password.length === 0 || confirmPassword.length === 0) {
+            setMatchMessage("Slaptažodžių laukai turi būti užpildyti!");
+            return false;
         }
         else {
             setMatchMessage("Slaptažodiai turi sutapti!");
@@ -43,24 +40,34 @@ const RegistrationPage = () => {
 
     const handleSubmit = () => {
         if (checkFields()) {
+            const urlParams = new URLSearchParams(window.location.search);
+            const email = urlParams.get('email');
+            const token = urlParams.get('token');
             const requestOptions = {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({
-                    name: name,
-                    surname: surname,
                     password: password,
                     email: email,
+                    token: token
                 }),
             };
-            fetch("api/user/register", requestOptions)
+            fetch("api/user/changePassword", requestOptions)
                 .then(response => {
                     if (response.status === 200) {
-                        toast('Sėkmingai prisiregistravote. Elektroninio pašto patvirtinimas išsiųstas.');
+                        toast('Slaptažodis sėkmingai pakeistas!');
                         navigate("/prisijungimas");
                     }
                     else if (response.status === 401) {
-                        toast("Nepavyko išsiųsti patvirtinimo laiško! Susisiekite su administratoriumi.", {
+                        toast("Neteisingi nuorodos duomenys. Pakartokite slaptažodžio pakeitimo užklausą.", {
+                            style: {
+                                backgroundColor: 'red',
+                                color: 'white',
+                            },
+                        });
+                    }
+                    else if (response.status === 300) {
+                        toast("Pasibaigė laikotarpios pakeisti slaptažodžiui. Pakartokite slaptažodžio pakeitimo užklausą.", {
                             style: {
                                 backgroundColor: 'red',
                                 color: 'white',
@@ -74,9 +81,8 @@ const RegistrationPage = () => {
                                 color: 'white',
                             },
                         });
-                    }
-                })
-
+                }
+            })
         }
     }
 
@@ -85,16 +91,7 @@ const RegistrationPage = () => {
             <Toaster />
             <div className='outerBox'>
                 <div className='innerBox'>
-                    <h2 className='boxLabel'>Registracija</h2>
-                    <div className='inputWrapper'>
-                        <input type='text' name='name' id='name' value={name} onChange={(e) => setName(e.target.value)} placeholder='Vardas'></input>
-                    </div>
-                    <div className='inputWrapper'>
-                        <input type='text' name='surname' id='surname' value={surname} onChange={(e) => setSurname(e.target.value)} placeholder='Pavardė'></input>
-                    </div>
-                    <div className='inputWrapper'>
-                        <input type='email' name='email' id='email' value={email} onChange={(e) => setEmail(e.target.value)} placeholder='El. paštas'></input>
-                    </div>
+                    <h2 className='boxLabel'>Slaptažodžio keitimas</h2>
                     <div className='inputWrapper'>
                         <input type="password" name='password' id='password' value={password} onChange={onChange} placeholder='Slaptažodis'></input>
                     </div>
@@ -103,8 +100,8 @@ const RegistrationPage = () => {
                     </div>
                     <label className='warningText'>{message}</label>
                     <label className='warningText'>{matchMessage}</label>
-                    <div className='registration'>
-                        <button onClick={() => handleSubmit()} type='submit'>Registruotis</button>
+                    <div className='change'>
+                        <button onClick={() => handleSubmit()} type='submit'>Keisti</button>
                     </div>
                     <div className='returnToLogin'>
                         <a href="/prisijungimas" className='returnToLoginButton'>Grįžti į prisijungimą</a>
@@ -114,4 +111,4 @@ const RegistrationPage = () => {
         </div>
     )
 }
-export default RegistrationPage
+export default ChangePasswordPage
