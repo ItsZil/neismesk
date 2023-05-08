@@ -44,10 +44,6 @@ const AppRoutes = [
   element: <HelpPage />
   },
   {
-    path: '/testaccesscontrol',
-    element: <TestAccessControl />
-  },
-  {
     path: '/profile',
     element: <ProfilePage />
   },

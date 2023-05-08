@@ -607,5 +607,32 @@ namespace neismesk.Repositories.Item
                 return category;
             }
         }
+
+        public async Task<int> GetPosterId(int itemId)
+        {
+            int posterId = -1;
+            try
+            {
+                using MySqlConnection connection = GetConnection();
+                await connection.OpenAsync();
+
+                using MySqlCommand command = new MySqlCommand(
+                    "SELECT fk_user FROM ads " +
+                    "WHERE id = @id", connection);
+                command.Parameters.AddWithValue("@id", itemId);
+
+                using DbDataReader reader = await command.ExecuteReaderAsync();
+                while (await reader.ReadAsync())
+                {
+                    posterId = reader.GetInt32("fk_user");
+                }
+                return posterId;
+            }
+            catch (Exception ex)
+            {
+                _logger.Error(ex, $"Error getting poster id for item id {itemId}!");
+                return posterId;
+            }
+        }
     }
 }

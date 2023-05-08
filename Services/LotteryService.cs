@@ -1,4 +1,6 @@
 ﻿using neismesk.Repositories.Item;
+using neismesk.Repositories.User;
+using neismesk.Utilities;
 using neismesk.ViewModels.Item;
 
 namespace neismesk.Services
@@ -7,10 +9,12 @@ namespace neismesk.Services
     {
         private Timer _timer;
         private ItemRepo _itemRepo;
+        private UserRepo _userRepo;
 
         public LotteryService()
         {
             _itemRepo = new ItemRepo();
+            _userRepo = new UserRepo();
         }
 
         public Task StartAsync(CancellationToken cancellationToken)
@@ -32,19 +36,33 @@ namespace neismesk.Services
 
             foreach (var lottery in dueLotteriesList)
             {
+                Emailer emailer = new Emailer();
+                
+                int posterUserId = lottery.UserId;
+                string posterUserEmail = await _userRepo.GetUserEmail(posterUserId);
+                
                 if (lottery.Participants > 0)
                 {
                     int winnerUserId = await _itemRepo.DrawLotteryWinner(lottery.Id);
-                    //await _itemRepo.SetItemWinner(lottery.Id, winnerUserId);
+                    string winnerUserEmail = await _userRepo.GetUserEmail(winnerUserId);
 
-                    // Send email notification to poster (await details or reach out thru email) and winner (go to laimejimas/id)
+                    await _itemRepo.SetItemWinner(lottery.Id, winnerUserId);
 
+                    // Send email notifications to poster and winner
+
+                    await emailer.notifyLotteryPosterWin(posterUserEmail, lottery.Name, winnerUserEmail);
+                    await emailer.notifyLotteryWinner(winnerUserEmail, lottery.Name, lottery.Id);
+                    
                     // Update item status to 'Ištrinktas laimėtojas'
-                    // await _itemRepo.UpdateItemStatus(lottery.Id, 2);
+                    await _itemRepo.UpdateItemStatus(lottery.Id, 2);
                 }
                 else
                 {
-                    // TODO: Send notification to user that there were no participants. Also extend?
+                    // Send email notification to poster that the item ad has expired due to not enough participants.
+                    await emailer.notifyUserItemExpiration(posterUserEmail, lottery.Name);
+
+                    // Update item status to 'Atšauktas'
+                    await _itemRepo.UpdateItemStatus(lottery.Id, 4);
                 }
             }
         }

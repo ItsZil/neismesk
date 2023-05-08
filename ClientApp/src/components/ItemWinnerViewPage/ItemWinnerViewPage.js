@@ -13,6 +13,7 @@ export const ItemWinnerViewPage = () => {
     const [message, setMessage] = useState('');
     const [item, setItem] = useState(null);
     const [posterEmail, setPosterEmail] = useState(null);
+    const [sending, setSending] = useState(false);
     const navigate = useNavigate();
 
     useEffect(() => {
@@ -21,7 +22,7 @@ export const ItemWinnerViewPage = () => {
                 const response = await axios.get('api/user/getCurrentUserId');
                 setViewerId(response.data);
 
-                if (response.data === item?.winnerId) {
+                if (response.data === item?.winnerId && item?.status === 'Išrinktas laimėtojas') {
                     setCanAccess(true);
                 } else if (item && response.data !== item?.winnerId) {
                     navigate('/');
@@ -77,7 +78,7 @@ export const ItemWinnerViewPage = () => {
     const handleSubmit = (event) => {
         event.preventDefault();
 
-        if (phone === '' || phone.length < 9) {
+        if (phone.length < 9) {
             toast('Įveskite telefono numerį!');
             return;
         }
@@ -86,10 +87,12 @@ export const ItemWinnerViewPage = () => {
             phone: phone,
             message: message,
             itemId: itemId,
+            itemName: item.name,
             posterEmail: posterEmail,
             winnerId: viewerId
         }
 
+        setSending(true);
         axios.post('api/item/submitWinnerDetails', data)
             .then(response => {
                 if (response.data) {
@@ -97,10 +100,12 @@ export const ItemWinnerViewPage = () => {
                 }
                 else {
                     toast('Įvyko klaida, susisiekite su administratoriumi!');
+                    setSending(false);
                 }
             })
             .catch(error => {
                 toast('Įvyko klaida, susisiekite su administratoriumi!');
+                setSending(false);
             });
     };
 
@@ -141,7 +146,7 @@ export const ItemWinnerViewPage = () => {
                                         <Form.Label>Žinutė:</Form.Label>
                                         <Form.Control as="textarea" rows={3} onChange={handleMessageChange} placeholder="Papildoma informacija (nebūtina)" />
                                     </Form.Group>
-                                    <Button variant="primary" type="submit">Siųsti</Button>
+                                    <Button variant="primary" disabled={sending} type="submit">Siųsti</Button>
                                 </Form>
                                 <br></br>
                                 <Card.Text>Jeigu norite paremti <i>neismesk.lt</i> veiklą spauskite <a href="https://www.sandbox.paypal.com/donate/?hosted_button_id=CSYYU9CP8BSG6">čia.</a></Card.Text>

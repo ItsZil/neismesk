@@ -7,6 +7,8 @@ using neismesk.Repositories.Item;
 using neismesk.Repositories.Image;
 using Microsoft.AspNetCore.Authorization;
 using neismesk.ViewModels.Item;
+using neismesk.Utilities;
+using neismesk.Repositories.User;
 
 namespace neismesk.Controllers.Item
 {
@@ -18,6 +20,7 @@ namespace neismesk.Controllers.Item
         private readonly CategoryRepo _categoryRepo;
         private readonly ItemRepo _itemRepo;
         private readonly ImageRepo _imageRepo;
+        private readonly UserRepo _userRepo;
 
         public ItemController()
         {
@@ -25,6 +28,7 @@ namespace neismesk.Controllers.Item
             _categoryRepo = new CategoryRepo();
             _itemRepo = new ItemRepo();
             _imageRepo = new ImageRepo();
+            _userRepo = new UserRepo();
         }
 
         [HttpGet("getItems")]
@@ -363,9 +367,14 @@ namespace neismesk.Controllers.Item
         {
             try
             {
-                // TODO: Send an email to the item poster with winner details.
+                // Send an email to the item poster with winner details.
+                Emailer emailer = new Emailer();
+                bool result = await emailer.sendWinnerDetails(details.PosterEmail, details.ItemName, details.Phone, details.Message);
 
-                return Ok(details);
+                // Set item status to 'Užbaigtas'
+                await _itemRepo.UpdateItemStatus(details.ItemId, 3);
+
+                return Ok(result);
             }
             catch (Exception ex)
             {
