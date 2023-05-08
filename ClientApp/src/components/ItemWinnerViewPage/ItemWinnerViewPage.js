@@ -143,6 +143,8 @@ export const ItemWinnerViewPage = () => {
                                     </Form.Group>
                                     <Button variant="primary" type="submit">Siųsti</Button>
                                 </Form>
+                                <br></br>
+                                <Card.Text>Jeigu norite paremti <i>neismesk.lt</i> veiklą spauskite <a href="https://www.sandbox.paypal.com/donate/?hosted_button_id=CSYYU9CP8BSG6">čia.</a></Card.Text>
                             </Card.Body>
                             <Card.Footer>{item.location} | Skelbėjo el. paštas: {posterEmail}</Card.Footer>
                         </Card>
