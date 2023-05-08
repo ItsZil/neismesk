@@ -29,6 +29,7 @@ export class NavMenu extends Component {
     componentDidMount() {
         this.getUserAvatar();
         this.getCategories();
+        this.handleLoginClick();
     }
 
     getUserAvatar() {
@@ -158,7 +159,6 @@ getItemsByCategory(categoryId) {
                     </Navbar.Brand>
                     <Navbar.Toggle aria-controls="basic-navbar-nav" />
                     <Navbar.Collapse id="basic-navbar-nav" style={{ backgroundColor: '#3183ab' }}>
-
                         <Form inline className="d-flex">
                             <FormControl style={{ width: '250px', height: '50px', margin: '5px 0px 0px 0px' }} type="text" placeholder="Įveskite..." value={this.state.searchQuery} onChange={this.handleSearchInputChange} />
                             <Button className="buttonsearch" variant="primary" onClick={this.handleSearch} >Ieškoti</Button>
