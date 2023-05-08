@@ -6,6 +6,8 @@ import HelpPage from "./components/HelpPage/HelpPage";
 import ItemUpdatePage from './components/ItemUpdatePage/ItemUpdatePage';
 import ProfilePage from "./components/ProfilePage/ProfilePage";
 import HomePage from "./components/HomePage/HomePage";
+import SearchResultsPage  from "./components/SearchResultsPage/SearchResultsPage";
+import SearchResultsByCategoryPage  from "./components/SearchResultsByCategoryPage/SearchResultsByCategoryPage";
 import ChangePasswordPage from "./components/ChangePasswordPage/ChangePasswordPage";
 import VerifyEmailPage from "./components/VerifyEmailPage/VerifyEmailPage";
 
@@ -22,11 +24,11 @@ const AppRoutes = [
     element: <Counter />
   },
   {
-    path: '/about-us',
+    path: '/apie-mus',
     element: <AboutUs />
   },
   {
-    path: '/login',
+    path: '/prisijungimas',
     element: <LoginPage />
   },
   {
@@ -34,15 +36,15 @@ const AppRoutes = [
     element: <HomePage />
   },
   {
-    path: '/register',
+    path: '/registracija',
     element: <RegistrationPage />
   },
   {
-  path: '/forgotpassword',
+  path: '/pamirsau-slaptazodi',
   element: <ForgotPasswordPage />
   },
   {
-  path: '/help',
+  path: '/pagalba',
   element: <HelpPage />
   },
   {
@@ -54,7 +56,7 @@ const AppRoutes = [
     element: <ProfilePage />
   },
   {
-    path: '/forgotpassword',
+    path: '/pamirsau-slaptazodi',
     element: <ForgotPasswordPage />
   },
   {
@@ -74,13 +76,21 @@ const AppRoutes = [
       element: <DetailedItemInfoPage />
   },
   {
-      path: '/changepassword',
-      element: <ChangePasswordPage />
+    path: '/search/:searchQuery',
+    element: <SearchResultsPage />
+  },
+  {
+    path: '/search/category/:categoryId',
+    element: <SearchResultsByCategoryPage />
+  },
+  {
+    path: '/changepassword',
+    element: <ChangePasswordPage />
   },
   {
       path: '/verifyemail',
       element: <VerifyEmailPage />
-  },
+  }
 ];
 
 export default AppRoutes;

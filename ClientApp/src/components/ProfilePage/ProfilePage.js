@@ -22,7 +22,7 @@ const ProfilePage = () => {
             }
             catch (error) {
                 if (error.response && error.response.status === 401) {
-                    navigate('/login');
+                    navigate('/prisijungimas');
                 }
             };
         }

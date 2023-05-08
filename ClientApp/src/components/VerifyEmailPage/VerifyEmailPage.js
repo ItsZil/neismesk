@@ -26,8 +26,8 @@ const VerifyEmailPage = () => {
             fetch("api/user/verifyEmail", requestOptions)
                 .then(response => {
                     if (response.status === 200) {
-                        toast('Pašto adresas sėkmingai patvirtintas!');
-                        navigate("/login");
+                        toast('El. pašto adresas sėkmingai patvirtintas!');
+                        navigate("/prisijungimas");
                     }
                     else if (response.status === 404) {
                         toast("Neteisingi nuorodos duomenys. Bandykite iš naujo arba susisiekite su administratoriumi.", {

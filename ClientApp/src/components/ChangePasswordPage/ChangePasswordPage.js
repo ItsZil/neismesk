@@ -56,7 +56,7 @@ const ChangePasswordPage = () => {
                 .then(response => {
                     if (response.status === 200) {
                         toast('Slaptažodis sėkmingai pakeistas!');
-                        navigate("/login");
+                        navigate("/prisijungimas");
                     }
                     else if (response.status === 401) {
                         toast("Neteisingi nuorodos duomenys. Pakartokite slaptažodžio pakeitimo užklausą.", {
@@ -104,7 +104,7 @@ const ChangePasswordPage = () => {
                         <button onClick={() => handleSubmit()} type='submit'>Keisti</button>
                     </div>
                     <div className='returnToLogin'>
-                        <a href="/login" className='returnToLoginButton'>Grįžti į prisijungimą</a>
+                        <a href="/prisijungimas" className='returnToLoginButton'>Grįžti į prisijungimą</a>
                     </div>
                 </div>
             </div>

@@ -56,11 +56,11 @@ const RegistrationPage = () => {
             fetch("api/user/register", requestOptions)
                 .then(response => {
                     if (response.status === 200) {
-                        toast('Sėkmingai prisiregistravote. Elektroninio pašto patvirtinimas išsiųstas');
-                        navigate("/login");
+                        toast('Sėkmingai prisiregistravote. Elektroninio pašto patvirtinimas išsiųstas.');
+                        navigate("/prisijungimas");
                     }
                     else if (response.status === 401) {
-                        toast("Nepavyko išsiųsti patvirtinimo žinutės. Susisiekite su administratoriumi", {
+                        toast("Nepavyko išsiųsti patvirtinimo laiško! Susisiekite su administratoriumi.", {
                             style: {
                                 backgroundColor: 'red',
                                 color: 'white',
@@ -107,7 +107,7 @@ const RegistrationPage = () => {
                         <button onClick={() => handleSubmit()} type='submit'>Registruotis</button>
                     </div>
                     <div className='returnToLogin'>
-                        <a href="/" className='returnToLoginButton'>Grįžti į prisijungimą</a>
+                        <a href="/prisijungimas" className='returnToLoginButton'>Grįžti į prisijungimą</a>
                     </div>
                 </div>
             </div>
