@@ -6,18 +6,6 @@ import axios from 'axios';
 import toast, { Toaster } from 'react-hot-toast';
 import './NavMenu.css';
 
-const testLogout = () => {
-    fetch("api/user/logout", { method: "GET" })
-        .then(response => {
-            if (response.status === 200) { // 200 - Ok
-                // Hack to make the NavMenu update the user avatar.
-                window.location.reload();
-            }
-        });
-}
-
-
-
 export class NavMenu extends Component {
     static displayName = NavMenu.name;
 
@@ -159,7 +147,7 @@ getItemsByCategory(categoryId) {
         return (
             <>
                 <Toaster></Toaster>
-                <Navbar style={{ backgroundColor: '#3183ab', height: '100px' }} expand="lg" sticky="top">
+                <Navbar style={{ backgroundColor: '#3183ab', height: '95px' }} expand="lg" sticky="top">
                     <Navbar.Brand href="/">
                         <img
                             src="./images/logo.png"
