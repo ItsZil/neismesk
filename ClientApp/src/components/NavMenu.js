@@ -1,5 +1,5 @@
 ﻿import { useState, React, Component } from 'react';
-import { Collapse, Navbar, NavbarBrand, NavItem, NavLink, Button, Nav, Input, Dropdown, DropdownToggle, DropdownMenu, DropdownItem  } from 'reactstrap';
+import { Navbar, Nav, NavDropdown, Form, FormControl, Button, Image, Collapse } from 'react-bootstrap';
 import { Link, useNavigate } from 'react-router-dom';
 import { withRouter } from './withRouter';
 import axios from 'axios';
@@ -29,7 +29,7 @@ export class NavMenu extends Component {
             isLogged: false,
             isLoggedIn: false, // Assume the user is not logged in by default
             dropdownOpen: false,
-            selectedCategory: 'Kategorijos',
+            selectedCategory: 'Filtras',
             userAvatar: './images/profile.png',
             categories: [],
             items: [],
@@ -149,89 +149,73 @@ getItemsByCategory(categoryId) {
     render() {
         const { userAvatar } = this.state;
         const avatar = userAvatar.length < 100 ? userAvatar : `data:image/jpeg;base64,${userAvatar}`;
-        const maxCategoryLength = 15; // Maximum number of characters to display in dropdown toggle
+        const maxCategoryLength = 20; // Maximum number of characters to display in dropdown toggle
 
         let displayCategory = this.state.selectedCategory;
         if (displayCategory.length > maxCategoryLength) {
             displayCategory = displayCategory.substring(0, maxCategoryLength) + '...';
         }
-        const toolbar = this.state.isLoggedIn ? (
-            <Collapse isOpen={this.state.isClicked}  className="toolbar" style={{ flexDirection: 'column' }}>
-                <ul className="no-bullets">
-                    <li><Button tag={Link} to="/dashboard" color="primary" onClick={this.handleClick} className="mb-2">Profilis</Button></li>
-                    <li><Button tag={Link} to="/settings" color="primary" onClick={this.handleClick} className="mb-2">Atsijungti</Button></li>
-                </ul>
-            </Collapse>
-        ) : (
-            <Collapse isOpen={this.state.isClicked} className="toolbar" style={{ flexDirection: 'column' }}>
-                <ul className="no-bullets">
-                    {!this.state.isLogged && (
-                    <li><Button tag={Link} to="/prisijungimas" color="primary" onClick={this.handleClick} className="mb-2">Prisijungti</Button></li>
-                    )}
-                    {!this.state.isLogged && (
-                    <li><Button tag={Link} to="/registracija" color="primary" onClick={this.handleClick} className="mb-2">Registruotis</Button></li>
-                    )}
-                    {this.state.isLogged && (
-                    <li><Button tag={Link} to="/prisijungimas" color="primary" onClick={() => {this.handleLogoutClick()}} className="mb-2">Atsijungti</Button></li>
-                    )
-                    }
-                </ul>
-            </Collapse>
-        );
 
         return (
             <>
-                <header>
                 <Toaster></Toaster>
-                    <Navbar className="header" expand="md">
-                        <NavbarBrand tag={Link} to="/">
-                            <img alt="logo" src="./images/logo.png" />
-                        </NavbarBrand>
-                        <div className="d-flex align-items-center">
-                        <div className="search-container">
-                        <Input
-                        type="search"
-                        placeholder="Ieškoti"
-                        style={{ width: '350px' }}
-                        value={this.state.searchQuery}
-                        onChange={this.handleSearchInputChange}
+                <Navbar style={{ backgroundColor: '#3183ab', height: '100px' }} expand="lg" sticky="top">
+                    <Navbar.Brand href="/">
+                        <img
+                            src="./images/logo.png"
+                            height="100"
+                            className="d-inline-block align-top"
+                            alt="logo"
                         />
-                        <Nav navbar>
-                            <Dropdown nav isOpen={this.state.dropdownOpen} toggle={this.toggleDropdown}>
-                                        <DropdownToggle nav caret className="categories">{displayCategory}</DropdownToggle>
-                                <DropdownMenu>
-                                <DropdownItem onClick={() => this.getAllItems()}>Visi</DropdownItem>
+                    </Navbar.Brand>
+                    <Navbar.Toggle aria-controls="basic-navbar-nav" />
+                    <Navbar.Collapse id="basic-navbar-nav" style={{ backgroundColor: '#3183ab' }}>
+
+                        <Form inline className="d-flex">
+                            <FormControl style={{ width: '250px', height: '50px', margin: '5px 0px 0px 0px' }} type="text" placeholder="Įveskite..." value={this.state.searchQuery} onChange={this.handleSearchInputChange} />
+                            <Button className="buttonsearch" variant="primary" onClick={this.handleSearch} >Ieškoti</Button>
+                        </Form>
+                        <Nav className="ms-auto">
+                            <NavDropdown title={displayCategory} className="categories">
                                 {this.state.categories.map(category => (
-                                <DropdownItem key={category.id} onClick={() => this.getItemsByCategory(category.id)}>{category.name}</DropdownItem>
-            ))}
-                                </DropdownMenu>
-                            </Dropdown>
-                            </Nav>
-                        </div>    
-                            <Button className="buttonsearch" onClick={this.handleSearch}>Ieškoti</Button>
-                        </div>
-                        <NavLink tag={Link} className="buttongive" to="/skelbimas/naujas">Dovanoti!</NavLink>
-                        <NavItem className="profileContainer">
-                            <img alt="Profilio nuotrauka" src={avatar} onClick={this.handleLoginClick}/>
-                            {toolbar}
-                        </NavItem>
-                    </Navbar>
-                </header>
+                                    <NavDropdown.Item key={category.id} onClick={() => this.getItemsByCategory(category.id)}>{category.name}</NavDropdown.Item>
+                                ))}
+                                <NavDropdown.Divider />
+                                <NavDropdown.Item onClick={() => this.getAllItems()}>Visi</NavDropdown.Item>
+                            </NavDropdown>
+                            <div className="d-inline-block align-middle">
+                                <Button className="buttoncreate" variant="primary" size="sm" href="/skelbimas/naujas">Dovanoti!</Button>
+                            </div>
+
+                            {this.state.isLogged ? (
+                                <NavDropdown title={<Image alt="Profilio nuotrauka" src={avatar} roundedCircle style={{ height: '75px', width: '75px' }} />} onClick={this.handleLoginClick}>
+                                    <NavDropdown.Item href="/profile" onClick={this.handleClick}>Profilis</NavDropdown.Item>
+                                    <NavDropdown.Item href="/prisijungimas" onClick={() => { this.handleLogoutClick() }}>Atsijungti</NavDropdown.Item>
+                                </NavDropdown>
+                            ) : (
+                                <NavDropdown className="custom-dropdown" title={<Image alt="Profilio nuotrauka" src={avatar} roundedCircle style={{ height: '75px', width: '75px' }} />} onClick={this.handleLoginClick}>
+                                    <NavDropdown.Item href="/prisijungimas" onClick={this.handleClick}>Prisijungti</NavDropdown.Item>
+                                    <NavDropdown.Item href="/registracija" onClick={this.handleClick}>Registruotis</NavDropdown.Item>
+                                </NavDropdown>
+                            )}
+                        </Nav>
+                    </Navbar.Collapse>
+                </Navbar>
                 <footer>
                     <div className="links">
-                        <NavLink tag={Link} to="/pagalba">
+                        <Link tag={Link} to="/help">
                             Pagalba
-                        </NavLink>
-                        <NavLink tag={Link} className="links" to="/">
+                        </Link>
+                        <Link tag={Link} className="links" to="/">
                             Populiariausi klausimai
-                        </NavLink>
-                        <NavLink tag={Link} className="links" to="/apie-mus">
+                        </Link>
+                        <Link tag={Link} className="links" to="/about-us">
                             Apie mus
-                        </NavLink>
-                        <NavLink tag={Link} className="links" to="/">
+                        </Link>
+                        <Link tag={Link} className="links" to="/">
                             Privatumo politika
-                        </NavLink>
-                        <NavLink tag={Link} to="https://www.sandbox.paypal.com/donate/?hosted_button_id=CSYYU9CP8BSG6" className="links">Parama</NavLink>
+                        </Link>
+                        <Link tag={Link} to="https://www.sandbox.paypal.com/donate/?hosted_button_id=CSYYU9CP8BSG6" className="links">Parama</Link>
                     </div>
                 </footer>
             </>
