@@ -4,6 +4,7 @@ using neismesk.Repositories.Image;
 using neismesk.ViewModels.Item;
 using Org.BouncyCastle.Cms;
 using Serilog;
+using System.Collections.Generic;
 using System.Data;
 using System.Data.Common;
 
@@ -177,7 +178,6 @@ namespace neismesk.Repositories.Item
             }
         }
 
-
         public async Task<List<ItemViewModel>> GetAllByCategory(int categoryId)
         {
             List<ItemViewModel> items = new List<ItemViewModel>();
@@ -279,7 +279,6 @@ namespace neismesk.Repositories.Item
             }
         }
 
-
         public async Task<bool> Update(ItemModel item)
         {
             using MySqlConnection connection = GetConnection();
@@ -333,6 +332,38 @@ namespace neismesk.Repositories.Item
             return questions;
         }
 
+        public async Task<List<QuestionnaireViewModel>> GetQuestionsAndAnswers(int itemId)
+        {
+            List<QuestionnaireViewModel> results = new List<QuestionnaireViewModel>();
+            
+            using MySqlConnection connection = GetConnection();
+            await connection.OpenAsync();
+
+            using MySqlCommand command = new MySqlCommand(
+                "SELECT a.answer_id AS id, a.answer, q.question_text, CONCAT(u.name, ' ', u.surname) AS user " +
+                "FROM answers AS a " +
+                "INNER JOIN questions AS q ON a.fk_question = q.id " +
+                "INNER JOIN users AS u ON a.fk_user = u.user_id " +
+                "WHERE a.fk_ad=@itemId",
+                 connection);
+            command.Parameters.AddWithValue("@itemId", itemId);
+
+            using (DbDataReader reader = await command.ExecuteReaderAsync())
+            {
+                while (await reader.ReadAsync())
+                {
+                    int id = reader.GetInt32("id");
+                    string text = reader.GetString("question_text");
+                    string answer = reader.GetString("answer");
+                    string user = reader.GetString("user");
+                    QuestionnaireViewModel result = new QuestionnaireViewModel { Id = id, Question = text, Answer = answer, User = user };
+                    results.Add(result);
+                }
+            }
+
+            return results;
+        }
+
         public async Task<bool> InsertQuestions(ItemModel item)
         {
             try
@@ -359,6 +390,28 @@ namespace neismesk.Repositories.Item
                 _logger.Error(ex, "Error saving questions to database!");
                 return false;
             }
+        }
+
+        public async Task<bool> InsertAnswers(int itemId, List<Answer> answers, int userId)
+        {
+            using MySqlConnection connection = GetConnection();
+            await connection.OpenAsync();
+
+            foreach (Answer answer in answers)
+            {
+                using MySqlCommand command = new MySqlCommand(
+                    "INSERT INTO answers (answer, fk_question, fk_user, fk_ad) VALUES (@answer, @fk_question, @fk_user, @fk_ad)", connection);
+            
+                // Add parameters
+                command.Parameters.AddWithValue("@answer", answer.Text);
+                command.Parameters.AddWithValue("@fk_question", answer.Question);
+                command.Parameters.AddWithValue("@fk_user", userId);
+                command.Parameters.AddWithValue("@fk_ad", itemId);
+
+                await command.ExecuteNonQueryAsync();
+            }
+
+            return true;
         }
 
         public async Task<List<ItemViewModel>> Search(string searchWord)

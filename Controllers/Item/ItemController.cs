@@ -9,6 +9,7 @@ using Microsoft.AspNetCore.Authorization;
 using neismesk.ViewModels.Item;
 using neismesk.Utilities;
 using neismesk.Repositories.User;
+using Newtonsoft.Json.Linq;
 
 namespace neismesk.Controllers.Item
 {
@@ -373,6 +374,45 @@ namespace neismesk.Controllers.Item
 
                 // Set item status to 'Užbaigtas'
                 await _itemRepo.UpdateItemStatus(details.ItemId, 3);
+
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
+        [HttpGet("getQuestionsAndAnswers/{itemId}")]
+        [Authorize]
+        public async Task<IActionResult> GetQuestionsAndAnswers(int itemId)
+        {
+            try
+            {
+                var result = await _itemRepo.GetQuestionsAndAnswers(itemId);
+
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
+        [HttpPost("submitAnswers/{itemId}")]
+        [Authorize]
+        public async Task<IActionResult> SubmitAnswers(int itemId, [FromBody] List<Answer> answers)
+        {
+            int userId = Convert.ToInt32(HttpContext.User.FindFirst("user_id").Value);
+
+            if (userId == null)
+            {
+                return Unauthorized();
+            }
+
+            try
+            {
+                var result = await _itemRepo.InsertAnswers(itemId, answers, userId);
 
                 return Ok(result);
             }

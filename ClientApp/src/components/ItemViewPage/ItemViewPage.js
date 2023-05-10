@@ -191,6 +191,32 @@ export const ItemViewPage = () => {
                     });
             }
         }
+        else if (item.type === 'Klausimynas') {
+            const answersList = Object.entries(data.answers).map(([key, value]) => ({ question: parseInt(key), text: value }));
+            axios.post(`api/item/submitAnswers/${itemId}`, answersList )
+                    .then(response => {
+                        if (response.data) {
+                            toast('Sėkmingai atsakėte į klausimus!');
+                            
+                            setIsUserParticipating(true);
+                            setItem({
+                                ...item,
+                                participants: item.participants + 1,
+                            });
+                        }
+                        else {
+                            toast('Įvyko klaida, susisiekite su administratoriumi!');
+                        }
+                    })
+                    .catch(error => {
+                        if (error.response.status === 401) {
+                            toast('Turite būti prisijungęs!');
+                        }
+                        else {
+                            toast('Įvyko klaida, susisiekite su administratoriumi!');   
+                        }
+                    });
+        }
     };
 
 

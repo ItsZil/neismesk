@@ -83,11 +83,11 @@ export const DetailedItemInfoPage = () => {
     }
 }
 
-    /* Palieku kaip atskirus, bet gal bekuriant endpointus iseis kazkaip apjungt ar kaip tik reiks ju daugiau?
+    //Palieku kaip atskirus, bet gal bekuriant endpointus iseis kazkaip apjungt ar kaip tik reiks ju daugiau?
     useEffect(() => {
         const fetchItemQuestions_Answers = async () => {
             try {
-                const response = await axios.get('api/item/endpointas_klausimynui_ir_atsakymams');
+                const response = await axios.get(`api/item/getQuestionsAndAnswers/${itemId}`);
                 setItemQuestions_Answers(response.data);
             } catch (error) {
                 toast('Įvyko klaida, susisiekite su administratoriumi!');
@@ -96,7 +96,7 @@ export const DetailedItemInfoPage = () => {
 
         fetchItemQuestions_Answers();
     }, []);
-
+/* 
     useEffect(() => {
         const fetchItemOffers = async () => {
             try { 
@@ -184,42 +184,19 @@ export const DetailedItemInfoPage = () => {
             {item.type === 'Klausimynas' && (
 
                 <ListGroup>
-                    {/* 
+                    
                     {itemQuestions_Answers.questionnaires.map((questionnaire) => ( 
-                        <Button type="submit" style={{ height: "40px", width: "90px" }} variant="primary">Atiduoti</Button>
-                        <ListGroupItem variant="info"> Klausimyno atsakymai : {questionnaire.user} </ListGroupItem>
-                        {questionnaire.questions.map((question) => (
-                          <ListGroupItem key={question.id}> {question.question} </ListGroupItem>
-                          <ListGroupItem key={question.id}> {question.answer} </ListGroupItem>
-                        ))}
-
-                    ))} */}
-                    <Container className="my-container">
-                    <Button style={{ height: "40px", width: "90px" }} variant="primary">Atiduoti</Button>
-                    <ListGroupItem variant="info"> Klausimyno atsakymai : Justas Andriusis </ListGroupItem>
-                    <ListGroupItem variant="primary"> Klausimas nr 1 </ListGroupItem>
-                    <ListGroupItem> Atsakymas Nr1.1 </ListGroupItem>
-                    <ListGroupItem variant="primary"> Klausimas nr 2 </ListGroupItem>
-                    <ListGroupItem> Atsakymas Nr2.1 </ListGroupItem>
-                    </Container>
-
-                    <Container className="my-container">
-                    <Button style={{ height: "40px", width: "90px" }} variant="primary">Atiduoti</Button>
-                    <ListGroupItem variant="info"> Klausimyno atsakymai : Justas Andriusis </ListGroupItem>
-                    <ListGroupItem variant="primary"> Klausimas nr 1 </ListGroupItem>
-                    <ListGroupItem> Atsakymas Nr1.1 </ListGroupItem>
-                    <ListGroupItem variant="primary"> Klausimas nr 2 </ListGroupItem>
-                    <ListGroupItem> Atsakymas Nr2.1 </ListGroupItem>
-                    </Container>
-
-                    <Container className="my-container">
-                    <Button style={{ height: "40px", width: "90px" }} variant="primary">Atiduoti</Button>
-                    <ListGroupItem variant="info"> Klausimyno atsakymai : Justas Andriusis </ListGroupItem>
-                    <ListGroupItem variant="primary"> Klausimas nr 1 </ListGroupItem>
-                    <ListGroupItem> Atsakymas Nr1.1 </ListGroupItem>
-                    <ListGroupItem variant="primary"> Klausimas nr 2 </ListGroupItem>
-                    <ListGroupItem> Atsakymas Nr2.1 </ListGroupItem>
-                    </Container>
+                        <Container>
+                            <Button type="submit" style={{ height: "40px", width: "90px" }} variant="primary">Atiduoti</Button>
+                            <ListGroupItem variant="info"> Klausimyno atsakymai : {questionnaire.user} </ListGroupItem>
+                            {questionnaire.questions.map((question) => (
+                                <Container>
+                                <ListGroupItem key={question.id}> {question.question} </ListGroupItem>
+                                <ListGroupItem key={question.id}> {question.answer} </ListGroupItem>
+                                </Container>
+                            ))}
+                        </Container>
+                    ))}
                 </ListGroup>
 
             )}
