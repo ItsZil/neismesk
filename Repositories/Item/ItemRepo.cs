@@ -364,38 +364,29 @@ namespace neismesk.Repositories.Item
         public async Task<List<ItemViewModel>> Search(string searchWord)
         {
             List<ItemViewModel> foundItems = new List<ItemViewModel>();
-            try
+            using MySqlConnection connection = GetConnection();
+            await connection.OpenAsync();
+
+            using MySqlCommand command = new MySqlCommand(
+                "SELECT id, name, description, fk_user FROM ads " +
+                "WHERE name LIKE CONCAT('%', @searchWord, '%') " +
+                "OR description LIKE CONCAT('%', @searchWord, '%')", connection);
+            command.Parameters.AddWithValue("@searchWord", searchWord);
+
+            using DbDataReader reader = await command.ExecuteReaderAsync();
+            while (await reader.ReadAsync())
             {
-                using MySqlConnection connection = GetConnection();
-                await connection.OpenAsync();
-
-                using MySqlCommand command = new MySqlCommand(
-                    "SELECT id, name, description, fk_user FROM ads " +
-                    "WHERE name LIKE CONCAT('%', @searchWord, '%') " +
-                    "OR description LIKE CONCAT('%', @searchWord, '%')", connection);
-                command.Parameters.AddWithValue("@searchWord", searchWord);
-
-                using DbDataReader reader = await command.ExecuteReaderAsync();
-                while (await reader.ReadAsync())
+                ItemViewModel item = new()
                 {
-                    ItemViewModel item = new()
-                    {
-                        Id = reader.GetInt32("id"),
-                        Name = reader.GetString("name"),
-                        Description = reader.GetString("description"),
-                        UserId = reader.GetInt32("fk_user"),
-                        Images = await _imageRepo.GetByAdFirst(reader.GetInt32("id"))
-                    };
-                    foundItems.Add(item);
-                }
-
-                return foundItems;
+                    Id = reader.GetInt32("id"),
+                    Name = reader.GetString("name"),
+                    Description = reader.GetString("description"),
+                    UserId = reader.GetInt32("fk_user"),
+                    Images = await _imageRepo.GetByAdFirst(reader.GetInt32("id"))
+                };
+                foundItems.Add(item);
             }
-            catch (Exception ex)
-            {
-                _logger.Error(ex, "Error getting items by search word from database!");
-                return foundItems;
-            }
+            return foundItems;
         }
 
         public async Task<bool> IsUserParticipatingInLottery(int itemId, int userId)
