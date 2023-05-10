@@ -1,6 +1,8 @@
 ﻿using System.Data;
+using System.Data.Common;
 using System.Reflection;
 using MySql.Data.MySqlClient;
+using Org.BouncyCastle.Cms;
 using Serilog;
 
 namespace neismesk.Repositories.User
@@ -191,19 +193,29 @@ namespace neismesk.Repositories.User
             }
         }
 
-        public bool TestConnection()
+        public async Task<string> GetUserEmail(int userId)
         {
-            // Return true if the connection is successful
-            using MySqlConnection connection = GetConnection();
-            connection.Open();
-            // Check if the connection was  oppened successfully
-            if (connection.State == ConnectionState.Open)
+            try
             {
-                return true;
+                MySqlConnection connection = GetConnection();
+                await connection.OpenAsync();
+
+                using MySqlCommand command = new MySqlCommand(
+                    "SELECT email FROM users " +
+                    "WHERE user_id = @id", connection);
+                command.Parameters.AddWithValue("@id", userId);
+
+                using DbDataReader reader = await command.ExecuteReaderAsync();
+                while (await reader.ReadAsync())
+                {
+                    return reader.GetString("email");
+                }
+                return null;
             }
-            else
+            catch (Exception ex)
             {
-                return false;
+                _logger.Error(ex, "Error getting user email!");
+                return null;
             }
         }
     }

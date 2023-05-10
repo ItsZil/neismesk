@@ -1,6 +1,4 @@
-import { Counter } from "./components/Counter";
 import { AboutUs } from "./components/AboutUs";
-import { TestAccessControl } from "./components/TestAccessControl";
 import ForgotPasswordPage from "./components/ForgotPasswordPage/ForgotPasswordPage";
 import HelpPage from "./components/HelpPage/HelpPage";
 import ItemUpdatePage from './components/ItemUpdatePage/ItemUpdatePage';
@@ -18,11 +16,9 @@ import { ItemViewPage } from "./components/ItemViewPage/ItemViewPage";
 import { DetailedItemInfoPage } from "./components/DetailedItemInfoPage/DetailedItemInfoPage";
 
 import ItemCreationPage from "./components/ItemCreation/ItemCreationPage";
+import { ItemWinnerViewPage } from "./components/ItemWinnerViewPage/ItemWinnerViewPage";
+
 const AppRoutes = [
-  {
-    path: '/counter',
-    element: <Counter />
-  },
   {
     path: '/apie-mus',
     element: <AboutUs />
@@ -46,10 +42,6 @@ const AppRoutes = [
   {
   path: '/pagalba',
   element: <HelpPage />
-  },
-  {
-    path: '/testaccesscontrol',
-    element: <TestAccessControl />
   },
   {
     path: '/profile',
@@ -90,7 +82,10 @@ const AppRoutes = [
   {
       path: '/verifyemail',
       element: <VerifyEmailPage />
+  },
+  {
+      path: '/laimejimas/:itemId',
+      element: <ItemWinnerViewPage />
   }
 ];
-
 export default AppRoutes;
