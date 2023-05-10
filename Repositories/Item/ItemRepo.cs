@@ -400,193 +400,136 @@ namespace neismesk.Repositories.Item
 
         public async Task<bool> IsUserParticipatingInLottery(int itemId, int userId)
         {
-            try
-            {
-                using MySqlConnection connection = GetConnection();
-                await connection.OpenAsync();
+            using MySqlConnection connection = GetConnection();
+            await connection.OpenAsync();
 
-                using MySqlCommand command = new MySqlCommand(
-                    "SELECT id FROM ad_lottery_participants " +
-                    "WHERE fk_ad = @fk_ad AND fk_user = @fk_user ", connection);
-                command.Parameters.AddWithValue("@fk_ad", itemId);
-                command.Parameters.AddWithValue("@fk_user", userId);
+            using MySqlCommand command = new MySqlCommand(
+                "SELECT id FROM ad_lottery_participants " +
+                "WHERE fk_ad = @fk_ad AND fk_user = @fk_user ", connection);
+            command.Parameters.AddWithValue("@fk_ad", itemId);
+            command.Parameters.AddWithValue("@fk_user", userId);
 
 
-                using DbDataReader reader = await command.ExecuteReaderAsync();
-                return reader.HasRows;
-            }
-            catch (Exception ex)
-            {
-                _logger.Error(ex, "Error checking if user is participating in lottery from database!");
-                return false;
-            }
+            using DbDataReader reader = await command.ExecuteReaderAsync();
+            return reader.HasRows;
         }
 
         public async Task<bool> EnterLottery(int itemId, int userId)
         {
-            try
-            {
-                using MySqlConnection connection = GetConnection();
-                await connection.OpenAsync();
+            using MySqlConnection connection = GetConnection();
+            await connection.OpenAsync();
 
-                using MySqlCommand command = new MySqlCommand(
-                    "INSERT INTO ad_lottery_participants " +
-                    "(fk_ad, fk_user) VALUES (@fk_ad, @fk_user)", connection);
-                command.Parameters.AddWithValue("@fk_ad", itemId);
-                command.Parameters.AddWithValue("@fk_user", userId);
+            using MySqlCommand command = new MySqlCommand(
+                "INSERT INTO ad_lottery_participants " +
+                "(fk_ad, fk_user) VALUES (@fk_ad, @fk_user)", connection);
+            command.Parameters.AddWithValue("@fk_ad", itemId);
+            command.Parameters.AddWithValue("@fk_user", userId);
 
-                await command.ExecuteNonQueryAsync();
-                return true;
-            }
-            catch (Exception ex)
-            {
-                _logger.Error(ex, "Error entering user into lottery!");
-                return false;
-            }
+            await command.ExecuteNonQueryAsync();
+            return true;
         }
 
         public async Task<bool> LeaveLottery(int itemId, int userId)
         {
-            try
-            {
-                using MySqlConnection connection = GetConnection();
-                await connection.OpenAsync();
+            using MySqlConnection connection = GetConnection();
+            await connection.OpenAsync();
 
-                using MySqlCommand command = new MySqlCommand(
-                    "DELETE FROM ad_lottery_participants " +
-                    "WHERE fk_ad = @fk_ad AND fk_user = @fk_user ", connection);
-                command.Parameters.AddWithValue("@fk_ad", itemId);
-                command.Parameters.AddWithValue("@fk_user", userId);
+            using MySqlCommand command = new MySqlCommand(
+                "DELETE FROM ad_lottery_participants " +
+                "WHERE fk_ad = @fk_ad AND fk_user = @fk_user ", connection);
+            command.Parameters.AddWithValue("@fk_ad", itemId);
+            command.Parameters.AddWithValue("@fk_user", userId);
 
-                await command.ExecuteNonQueryAsync();
-                return true;
-            }
-            catch (Exception ex)
-            {
-                _logger.Error(ex, "Error exiting user from lottery!");
-                return false;
-            }
+            await command.ExecuteNonQueryAsync();
+            return true;
         }
 
         public async Task<List<ItemLotteryViewModel>> GetDueLotteries()
         {
             List<ItemLotteryViewModel> lotteriesList = new List<ItemLotteryViewModel>();
-            try
+            DateTime dateTimeNow = DateTime.Now;
+
+            using MySqlConnection connection = GetConnection();
+            await connection.OpenAsync();
+
+            using (MySqlCommand command = new MySqlCommand("SELECT ads.id, ads.fk_user AS UserId, ads.name AS Name, ads.description AS Description, COUNT(ad_lottery_participants.id) " +
+                "AS Participants, ads.location AS Location, categories.name AS Category " +
+                "FROM ads " +
+                "JOIN categories ON ads.fk_category = categories.id " +
+                "LEFT JOIN ad_lottery_participants ON ads.id = ad_lottery_participants.fk_ad " +
+                "WHERE ads.end_datetime <= @dateTimeNow AND ads.fk_status = 1 AND ads.fk_type = 1 " +
+                "GROUP BY ads.id, ads.fk_user, ads.name, ads.description, ads.location, categories.name", connection))
             {
-                DateTime dateTimeNow = DateTime.Now;
+            command.Parameters.AddWithValue("@dateTimeNow", dateTimeNow);
 
-                using MySqlConnection connection = GetConnection();
-                await connection.OpenAsync();
+            using DbDataReader reader = await command.ExecuteReaderAsync();
+            while (await reader.ReadAsync())
+            {
+                ItemLotteryViewModel item = new ItemLotteryViewModel();
+                    item.Id = reader.GetInt32("id");
+                    item.UserId = reader.GetInt32("UserId");
+                    item.Name = reader.GetString("Name");
+                    item.Description = reader.GetString("Description");
+                    item.Participants = reader.GetInt32("Participants");
+                    item.Location = reader.GetString("Location");
+                    item.Category = reader.GetString("Category");
 
-                using (MySqlCommand command = new MySqlCommand("SELECT ads.id, ads.fk_user AS UserId, ads.name AS Name, ads.description AS Description, COUNT(ad_lottery_participants.id) " +
-                    "AS Participants, ads.location AS Location, categories.name AS Category " +
-                    "FROM ads " +
-                    "JOIN categories ON ads.fk_category = categories.id " +
-                    "LEFT JOIN ad_lottery_participants ON ads.id = ad_lottery_participants.fk_ad " +
-                    "WHERE ads.end_datetime <= @dateTimeNow AND ads.fk_status = 1 AND ads.fk_type = 1 " +
-                    "GROUP BY ads.id, ads.fk_user, ads.name, ads.description, ads.location, categories.name", connection))
-                {
-                command.Parameters.AddWithValue("@dateTimeNow", dateTimeNow);
-
-                using DbDataReader reader = await command.ExecuteReaderAsync();
-                while (await reader.ReadAsync())
-                {
-                    ItemLotteryViewModel item = new ItemLotteryViewModel();
-                        item.Id = reader.GetInt32("id");
-                        item.UserId = reader.GetInt32("UserId");
-                        item.Name = reader.GetString("Name");
-                        item.Description = reader.GetString("Description");
-                        item.Participants = reader.GetInt32("Participants");
-                        item.Location = reader.GetString("Location");
-                        item.Category = reader.GetString("Category");
-
-                        lotteriesList.Add(item);
-                    }
+                    lotteriesList.Add(item);
                 }
-                return lotteriesList;
             }
-            catch (Exception ex)
-            {
-                _logger.Error(ex, "Error getting due lotteries!");
-                return lotteriesList;
-            }
+            return lotteriesList;
         }
 
         public async Task<int> DrawLotteryWinner(int itemId)
         {
-            int winner = -1;
-            try
-            {
-                using MySqlConnection connection = GetConnection();
-                await connection.OpenAsync();
+            using MySqlConnection connection = GetConnection();
+            await connection.OpenAsync();
 
-                using MySqlCommand command = new MySqlCommand(
-                    "SELECT fk_user FROM ad_lottery_participants " +
-                    "WHERE fk_ad = @fk_ad " +
-                    "ORDER BY RAND() " +
-                    "LIMIT 1", connection);
-                command.Parameters.AddWithValue("@fk_ad", itemId);
+            using MySqlCommand command = new MySqlCommand(
+                "SELECT fk_user FROM ad_lottery_participants " +
+                "WHERE fk_ad = @fk_ad " +
+                "ORDER BY RAND() " +
+                "LIMIT 1", connection);
+            command.Parameters.AddWithValue("@fk_ad", itemId);
 
-                using DbDataReader reader = await command.ExecuteReaderAsync();
-                while (await reader.ReadAsync())
-                {
-                    winner = reader.GetInt32("fk_user");
-                }
-                return winner;
-            }
-            catch (Exception ex)
+            using DbDataReader reader = await command.ExecuteReaderAsync();
+            while (await reader.ReadAsync())
             {
-                _logger.Error(ex, $"Error drawing lottery winner for lottery id {itemId}!");
-                return winner;
+                return reader.GetInt32("fk_user");
             }
+            throw new Exception("Failed to draw lottery winner from database!");
         }
 
         public async Task<bool> UpdateItemStatus(int itemId, int newStatusId)
         {
-            try
-            {
-                using MySqlConnection connection = GetConnection();
-                await connection.OpenAsync();
+            using MySqlConnection connection = GetConnection();
+            await connection.OpenAsync();
 
-                using MySqlCommand command = new MySqlCommand(
-                    "UPDATE ads " +
-                    "SET fk_status = @fk_status " +
-                    "WHERE id = @id", connection);
-                command.Parameters.AddWithValue("@fk_status", newStatusId);
-                command.Parameters.AddWithValue("@id", itemId);
+            using MySqlCommand command = new MySqlCommand(
+                "UPDATE ads " +
+                "SET fk_status = @fk_status " +
+                "WHERE id = @id", connection);
+            command.Parameters.AddWithValue("@fk_status", newStatusId);
+            command.Parameters.AddWithValue("@id", itemId);
 
-                await command.ExecuteNonQueryAsync();
-                return true;
-            }
-            catch (Exception ex)
-            {
-                _logger.Error(ex, $"Error updating item status for item id {itemId}!");
-                return false;
-            }
+            await command.ExecuteNonQueryAsync();
+            return true;
         }
 
         public async Task<bool> SetItemWinner(int itemId, int winnerId)
         {
-            try
-            {
-                using MySqlConnection connection = GetConnection();
-                await connection.OpenAsync();
+            using MySqlConnection connection = GetConnection();
+            await connection.OpenAsync();
 
-                using MySqlCommand command = new MySqlCommand(
-                    "UPDATE ads " +
-                    "SET fk_winner = @fk_winner " +
-                    "WHERE id = @id", connection);
-                command.Parameters.AddWithValue("@fk_winner", winnerId);
-                command.Parameters.AddWithValue("@id", itemId);
+            using MySqlCommand command = new MySqlCommand(
+                "UPDATE ads " +
+                "SET fk_winner = @fk_winner " +
+                "WHERE id = @id", connection);
+            command.Parameters.AddWithValue("@fk_winner", winnerId);
+            command.Parameters.AddWithValue("@id", itemId);
 
-                await command.ExecuteNonQueryAsync();
-                return true;
-            }
-            catch (Exception ex)
-            {
-                _logger.Error(ex, $"Error setting item winner for item id {itemId}!");
-                return false;
-            }
+            await command.ExecuteNonQueryAsync();
+            return true;
         }
 
         public async Task<ItemCategoryViewModel> GetCategoryById(int categoryId)
@@ -605,33 +548,6 @@ namespace neismesk.Repositories.Item
                 category.Name = reader["name"].ToString();
 
                 return category;
-            }
-        }
-
-        public async Task<int> GetPosterId(int itemId)
-        {
-            int posterId = -1;
-            try
-            {
-                using MySqlConnection connection = GetConnection();
-                await connection.OpenAsync();
-
-                using MySqlCommand command = new MySqlCommand(
-                    "SELECT fk_user FROM ads " +
-                    "WHERE id = @id", connection);
-                command.Parameters.AddWithValue("@id", itemId);
-
-                using DbDataReader reader = await command.ExecuteReaderAsync();
-                while (await reader.ReadAsync())
-                {
-                    posterId = reader.GetInt32("fk_user");
-                }
-                return posterId;
-            }
-            catch (Exception ex)
-            {
-                _logger.Error(ex, $"Error getting poster id for item id {itemId}!");
-                return posterId;
             }
         }
     }
