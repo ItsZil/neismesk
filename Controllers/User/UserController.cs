@@ -354,6 +354,21 @@ namespace neismesk.Controllers.UserAuthentication
             return Ok(new { user_id, avatar });
         }
 
+        [HttpGet("getUserEmail/{userId?}")]
+        public async Task<IActionResult> GetUserEmail(int? userId)
+        {
+            if (HttpContext.User.Identity.IsAuthenticated && userId == null)
+            {
+                return Ok(HttpContext.User.FindFirst("email").Value);
+            }
+            else if (userId != null)
+            {
+                string email = await _userRepo.GetUserEmail((int)userId);
+                return Ok(email);
+            }
+            return BadRequest();
+        }
+
         [HttpPost("verifyEmail")]
         public async Task<IActionResult> VerifyEmail(EmailVerificationViewModel emailVerify)
         {

@@ -1,3 +1,4 @@
+using neismesk.Services;
 using Serilog;
 
 namespace neismesk
@@ -9,6 +10,8 @@ namespace neismesk
             var builder = WebApplication.CreateBuilder(args);
             // Add services to the container.
             builder.Services.AddControllersWithViews();
+            builder.Services.AddHostedService<LotteryService>();
+            
             builder.Logging.AddSerilog(new LoggerConfiguration()
                 .MinimumLevel.Information()
                 .Enrich.FromLogContext()

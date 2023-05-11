@@ -2,6 +2,7 @@
 using neismesk.Models;
 using neismesk.Repositories.Image;
 using neismesk.ViewModels.Item;
+using Org.BouncyCastle.Cms;
 using Serilog;
 using System.Data;
 using System.Data.Common;
@@ -115,6 +116,7 @@ namespace neismesk.Repositories.Item
                         item.Category = reader["category_name"].ToString();
                         item.CreationDateTime = Convert.ToDateTime(reader["creation_datetime"]);
                         item.EndDateTime = Convert.ToDateTime(reader["end_datetime"]);
+                        item.WinnerId = reader["fk_winner"] == DBNull.Value ? null : (int?)Convert.ToInt32(reader["fk_winner"]);
                         item.Images = images;
                         item.Questions = questions;
 
@@ -161,6 +163,7 @@ namespace neismesk.Repositories.Item
                                 Category = reader["category_name"].ToString(),
                                 CreationDateTime = Convert.ToDateTime(reader["creation_datetime"]),
                                 EndDateTime = Convert.ToDateTime(reader["end_datetime"]),
+                                WinnerId = reader["fk_winner"] == DBNull.Value ? null : (int?)Convert.ToInt32(reader["fk_winner"]),
                                 Images = await _imageRepo.GetByAd(Convert.ToInt32(reader["id"])),
                                 Questions = await GetQuestions(Convert.ToInt32(reader["id"]))
                             };
@@ -361,38 +364,163 @@ namespace neismesk.Repositories.Item
         public async Task<List<ItemViewModel>> Search(string searchWord)
         {
             List<ItemViewModel> foundItems = new List<ItemViewModel>();
-            try
+            using MySqlConnection connection = GetConnection();
+            await connection.OpenAsync();
+
+            using MySqlCommand command = new MySqlCommand(
+                "SELECT id, name, description, fk_user FROM ads " +
+                "WHERE name LIKE CONCAT('%', @searchWord, '%') " +
+                "OR description LIKE CONCAT('%', @searchWord, '%')", connection);
+            command.Parameters.AddWithValue("@searchWord", searchWord);
+
+            using DbDataReader reader = await command.ExecuteReaderAsync();
+            while (await reader.ReadAsync())
             {
-                using MySqlConnection connection = GetConnection();
-                await connection.OpenAsync();
-
-                using MySqlCommand command = new MySqlCommand(
-                    "SELECT id, name, description, fk_user FROM ads " +
-                    "WHERE name LIKE CONCAT('%', @searchWord, '%') " +
-                    "OR description LIKE CONCAT('%', @searchWord, '%')", connection);
-                command.Parameters.AddWithValue("@searchWord", searchWord);
-
-                using DbDataReader reader = await command.ExecuteReaderAsync();
-                while (await reader.ReadAsync())
+                ItemViewModel item = new()
                 {
-                    ItemViewModel item = new()
-                    {
-                        Id = reader.GetInt32("id"),
-                        Name = reader.GetString("name"),
-                        Description = reader.GetString("description"),
-                        UserId = reader.GetInt32("fk_user"),
-                        Images = await _imageRepo.GetByAdFirst(reader.GetInt32("id"))
-                    };
-                    foundItems.Add(item);
-                }
+                    Id = reader.GetInt32("id"),
+                    Name = reader.GetString("name"),
+                    Description = reader.GetString("description"),
+                    UserId = reader.GetInt32("fk_user"),
+                    Images = await _imageRepo.GetByAdFirst(reader.GetInt32("id"))
+                };
+                foundItems.Add(item);
+            }
+            return foundItems;
+        }
 
-                return foundItems;
-            }
-            catch (Exception ex)
+        public async Task<bool> IsUserParticipatingInLottery(int itemId, int userId)
+        {
+            using MySqlConnection connection = GetConnection();
+            await connection.OpenAsync();
+
+            using MySqlCommand command = new MySqlCommand(
+                "SELECT id FROM ad_lottery_participants " +
+                "WHERE fk_ad = @fk_ad AND fk_user = @fk_user ", connection);
+            command.Parameters.AddWithValue("@fk_ad", itemId);
+            command.Parameters.AddWithValue("@fk_user", userId);
+
+
+            using DbDataReader reader = await command.ExecuteReaderAsync();
+            return reader.HasRows;
+        }
+
+        public async Task<bool> EnterLottery(int itemId, int userId)
+        {
+            using MySqlConnection connection = GetConnection();
+            await connection.OpenAsync();
+
+            using MySqlCommand command = new MySqlCommand(
+                "INSERT INTO ad_lottery_participants " +
+                "(fk_ad, fk_user) VALUES (@fk_ad, @fk_user)", connection);
+            command.Parameters.AddWithValue("@fk_ad", itemId);
+            command.Parameters.AddWithValue("@fk_user", userId);
+
+            await command.ExecuteNonQueryAsync();
+            return true;
+        }
+
+        public async Task<bool> LeaveLottery(int itemId, int userId)
+        {
+            using MySqlConnection connection = GetConnection();
+            await connection.OpenAsync();
+
+            using MySqlCommand command = new MySqlCommand(
+                "DELETE FROM ad_lottery_participants " +
+                "WHERE fk_ad = @fk_ad AND fk_user = @fk_user ", connection);
+            command.Parameters.AddWithValue("@fk_ad", itemId);
+            command.Parameters.AddWithValue("@fk_user", userId);
+
+            await command.ExecuteNonQueryAsync();
+            return true;
+        }
+
+        public async Task<List<ItemLotteryViewModel>> GetDueLotteries()
+        {
+            List<ItemLotteryViewModel> lotteriesList = new List<ItemLotteryViewModel>();
+            DateTime dateTimeNow = DateTime.Now;
+
+            using MySqlConnection connection = GetConnection();
+            await connection.OpenAsync();
+
+            using (MySqlCommand command = new MySqlCommand("SELECT ads.id, ads.fk_user AS UserId, ads.name AS Name, ads.description AS Description, COUNT(ad_lottery_participants.id) " +
+                "AS Participants, ads.location AS Location, categories.name AS Category " +
+                "FROM ads " +
+                "JOIN categories ON ads.fk_category = categories.id " +
+                "LEFT JOIN ad_lottery_participants ON ads.id = ad_lottery_participants.fk_ad " +
+                "WHERE ads.end_datetime <= @dateTimeNow AND ads.fk_status = 1 AND ads.fk_type = 1 " +
+                "GROUP BY ads.id, ads.fk_user, ads.name, ads.description, ads.location, categories.name", connection))
             {
-                _logger.Error(ex, "Error getting items by search word from database!");
-                return foundItems;
+            command.Parameters.AddWithValue("@dateTimeNow", dateTimeNow);
+
+            using DbDataReader reader = await command.ExecuteReaderAsync();
+            while (await reader.ReadAsync())
+            {
+                ItemLotteryViewModel item = new ItemLotteryViewModel();
+                    item.Id = reader.GetInt32("id");
+                    item.UserId = reader.GetInt32("UserId");
+                    item.Name = reader.GetString("Name");
+                    item.Description = reader.GetString("Description");
+                    item.Participants = reader.GetInt32("Participants");
+                    item.Location = reader.GetString("Location");
+                    item.Category = reader.GetString("Category");
+
+                    lotteriesList.Add(item);
+                }
             }
+            return lotteriesList;
+        }
+
+        public async Task<int> DrawLotteryWinner(int itemId)
+        {
+            using MySqlConnection connection = GetConnection();
+            await connection.OpenAsync();
+
+            using MySqlCommand command = new MySqlCommand(
+                "SELECT fk_user FROM ad_lottery_participants " +
+                "WHERE fk_ad = @fk_ad " +
+                "ORDER BY RAND() " +
+                "LIMIT 1", connection);
+            command.Parameters.AddWithValue("@fk_ad", itemId);
+
+            using DbDataReader reader = await command.ExecuteReaderAsync();
+            while (await reader.ReadAsync())
+            {
+                return reader.GetInt32("fk_user");
+            }
+            throw new Exception("Failed to draw lottery winner from database!");
+        }
+
+        public async Task<bool> UpdateItemStatus(int itemId, int newStatusId)
+        {
+            using MySqlConnection connection = GetConnection();
+            await connection.OpenAsync();
+
+            using MySqlCommand command = new MySqlCommand(
+                "UPDATE ads " +
+                "SET fk_status = @fk_status " +
+                "WHERE id = @id", connection);
+            command.Parameters.AddWithValue("@fk_status", newStatusId);
+            command.Parameters.AddWithValue("@id", itemId);
+
+            await command.ExecuteNonQueryAsync();
+            return true;
+        }
+
+        public async Task<bool> SetItemWinner(int itemId, int winnerId)
+        {
+            using MySqlConnection connection = GetConnection();
+            await connection.OpenAsync();
+
+            using MySqlCommand command = new MySqlCommand(
+                "UPDATE ads " +
+                "SET fk_winner = @fk_winner " +
+                "WHERE id = @id", connection);
+            command.Parameters.AddWithValue("@fk_winner", winnerId);
+            command.Parameters.AddWithValue("@id", itemId);
+
+            await command.ExecuteNonQueryAsync();
+            return true;
         }
 
         public async Task<ItemCategoryViewModel> GetCategoryById(int categoryId)
@@ -413,6 +541,5 @@ namespace neismesk.Repositories.Item
                 return category;
             }
         }
-
     }
 }

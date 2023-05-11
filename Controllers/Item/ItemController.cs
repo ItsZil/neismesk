@@ -5,6 +5,10 @@ using neismesk.Repositories.Category;
 using neismesk.Repositories.Type;
 using neismesk.Repositories.Item;
 using neismesk.Repositories.Image;
+using Microsoft.AspNetCore.Authorization;
+using neismesk.ViewModels.Item;
+using neismesk.Utilities;
+using neismesk.Repositories.User;
 
 namespace neismesk.Controllers.Item
 {
@@ -16,6 +20,7 @@ namespace neismesk.Controllers.Item
         private readonly CategoryRepo _categoryRepo;
         private readonly ItemRepo _itemRepo;
         private readonly ImageRepo _imageRepo;
+        private readonly UserRepo _userRepo;
 
         public ItemController()
         {
@@ -23,6 +28,7 @@ namespace neismesk.Controllers.Item
             _categoryRepo = new CategoryRepo();
             _itemRepo = new ItemRepo();
             _imageRepo = new ImageRepo();
+            _userRepo = new UserRepo();
         }
 
         [HttpGet("getItems")]
@@ -258,6 +264,24 @@ namespace neismesk.Controllers.Item
                 return BadRequest(ex.Message);
             }
         }
+
+        [HttpGet("isUserParticipatingInLottery/{id}")]
+        [Authorize]
+        public async Task<IActionResult> IsUserParticipatingInLottery(int id)
+        {
+            int userId = Convert.ToInt32(HttpContext.User.FindFirst("user_id").Value);
+            try
+            {
+                var result = await _itemRepo.IsUserParticipatingInLottery(id, userId);
+                
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
         [HttpGet("search/category/{categoryId}")]
         public async Task<IActionResult> GetItemsByCategory(int categoryId)
         {
@@ -277,6 +301,46 @@ namespace neismesk.Controllers.Item
                 return BadRequest(ex.Message);
             }
         }
+
+        [HttpPost("enterLottery/{id}")]
+        [Authorize]
+        public async Task<IActionResult> EnterLottery(int id)
+        {
+            int userId = Convert.ToInt32(HttpContext.User.FindFirst("user_id").Value);
+            try
+            {
+                var result = await _itemRepo.EnterLottery(id, userId);
+                
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
+        [HttpPost("leaveLottery/{id}")]
+        [Authorize]
+        public async Task<IActionResult> LeaveLottery(int id)
+        {
+            int userId = Convert.ToInt32(HttpContext.User.FindFirst("user_id").Value);
+            try
+            {
+                var result = await _itemRepo.LeaveLottery(id, userId);
+
+                if (result == null)
+                {
+                    return BadRequest();
+                }
+
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
         [HttpGet("category/{categoryId}")]
         public async Task<IActionResult> GetCategory(int categoryId)
         {
@@ -288,6 +352,27 @@ namespace neismesk.Controllers.Item
                 {
                     return BadRequest();
                 }
+
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
+        [HttpPost("submitWinnerDetails")]
+        [Authorize]
+        public async Task<IActionResult> SubmitWinnerDetails(ItemWinnerDetails details)
+        {
+            try
+            {
+                // Send an email to the item poster with winner details.
+                Emailer emailer = new Emailer();
+                bool result = await emailer.sendWinnerDetails(details.PosterEmail, details.ItemName, details.Phone, details.Message);
+
+                // Set item status to 'Užbaigtas'
+                await _itemRepo.UpdateItemStatus(details.ItemId, 3);
 
                 return Ok(result);
             }

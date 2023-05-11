@@ -16,6 +16,7 @@ export const ItemViewPage = () => {
     const [viewerId, setViewerId] = useState(null);
     const [currentTime, setCurrentTime] = useState(new Date());
     const [isPastEndTime, setIsPastEndTime] = useState(true);
+    const [isUserParticipating, setIsUserParticipating] = useState(false);
     const [isLoggedInAsAdmin, setIsLoggedInAsAdmin] = useState(false);
     const navigate = useNavigate();
 
@@ -54,6 +55,17 @@ export const ItemViewPage = () => {
                 }
             };
             fetchUserItems();
+        }
+        else if (item && item.type === 'Loterija') {
+            const fetchIsUserParticipating = async () => {
+                try {
+                    const response = await axios.get(`api/item/isUserParticipatingInLottery/${itemId}`);
+                    setIsUserParticipating(response.data);
+                } catch (error) {
+                    //toast('Įvyko klaida, susisiekite su administratoriumi!');
+                }
+            };
+            fetchIsUserParticipating();
         }
     }, [item]);
 
@@ -105,14 +117,14 @@ export const ItemViewPage = () => {
         });
     };
 
-    const handleSubmit = (event) => {
+    const handleSubmit = (event, isParticipating) => {
         event.preventDefault();
 
-        if (item.type === 'exchange' && !selectedItem) {
+        if (item.type === 'Keitimas' && !selectedItem) {
             toast('Pasirinkite skelbimą, kurį norite pasiūlyti keitimui.');
             return;
         }
-        else if (item.type === 'questionnaire') {
+        else if (item.type === 'Klausimynas') {
             const unansweredQuestions = item.questions.filter(q => !answers[q.id]);
 
             if (unansweredQuestions.length > 0) {
@@ -124,17 +136,61 @@ export const ItemViewPage = () => {
         const data = {
             selectedItem,
             message,
-            ...(item.type === 'questionnaire' && { answers })
+            ...(item.type === 'Klausimynas' && { answers })
         };
 
-        // Submit
-        axios.post('api/item/endpoint', data)
-            .then(response => {
-                console.log(response);
-            })
-            .catch(error => {
-                console.error(error);
-            });
+        if (item.type === 'Loterija') {
+            if (isParticipating) {
+                axios.post(`api/item/enterLottery/${itemId}`, data)
+                    .then(response => {
+                        if (response.data) {
+                            toast('Sėkmingai prisijungėte prie loterijos!');
+                            
+                            setIsUserParticipating(true);
+                            setItem({
+                                ...item,
+                                participants: item.participants + 1,
+                            });
+                        }
+                        else {
+                            toast('Įvyko klaida, susisiekite su administratoriumi!');
+                        }
+                    })
+                    .catch(error => {
+                        if (error.response.status === 401) {
+                            toast('Turite būti prisijungęs!');
+                        }
+                        else {
+                            toast('Įvyko klaida, susisiekite su administratoriumi!');   
+                        }
+                    });
+            }
+            else {
+                axios.post(`api/item/leaveLottery/${itemId}`, data)
+                    .then(response => {
+                        if (response.data) {
+                            toast('Sėkmingai nebedalyvaujate loterijoje!');
+                            
+                            setIsUserParticipating(false);
+                            setItem({
+                                ...item,
+                                participants: item.participants - 1,
+                            });
+                        }
+                        else {
+                            toast('Įvyko klaida, susisiekite su administratoriumi!');
+                        }
+                    })
+                    .catch(error => {
+                        if (error.response.status === 401) {
+                            toast('Turite būti prisijungęs!');
+                        }
+                        else {
+                            toast('Įvyko klaida, susisiekite su administratoriumi!');
+                        }
+                    });
+            }
+        }
     };
 
 
@@ -150,22 +206,20 @@ export const ItemViewPage = () => {
             <Container className="my-5">
                 <Row>
                     <Col md={4}>
-                        <Carousel>
-                            {item.images && item.images.length > 0 && (
-                                <Carousel>
-                                    {item.images.map((image, index) => (
-                                        <Carousel.Item key={index}>
-                                            <img className="d-block w-100" 
-                                            src={`data:image/png;base64,${image.data}`}
-                                            alt={`Image ${index + 1}`}
-                                            height="320"
-                                            style={{ border: '1px solid white' }}
-                                             />
-                                        </Carousel.Item>
-                                    ))}
-                                </Carousel>
-                            )}
-                        </Carousel>
+                        {item.images && item.images.length > 0 && (
+                            <Carousel>
+                                {item.images.map((image, index) => (
+                                    <Carousel.Item key={index}>
+                                        <img className="d-block w-100" 
+                                        src={`data:image/png;base64,${image.data}`}
+                                        alt={`Image ${index + 1}`}
+                                        height="320"
+                                        style={{ border: '1px solid white' }}
+                                            />
+                                    </Carousel.Item>
+                                ))}
+                            </Carousel>
+                        )}
                     </Col>
                     <Col md={8}>
                         <Card>
@@ -177,14 +231,16 @@ export const ItemViewPage = () => {
                                 ) : null}
                                 <Card.Text>{item.description}</Card.Text>
                                 {isLoggedInAsAdmin || item.userId === viewerId ? (
-                                <button className="delete" onClick={() => handleDelete(item.id)}>Ištrinti</button>
-                                ) : null}
-                                {isLoggedInAsAdmin || item.userId === viewerId ? (
-                                <Link to={`/skelbimas/redaguoti/${item.id}`}>
-                                <button className="update" onClick={() => ''}>Redaguoti</button>
-                                </Link>
-                                ) : null}
-                                <hr className="mb-2" />
+                                        <button className="delete" onClick={() => handleDelete(item.id)}>Ištrinti</button>
+                                ) : null }
+                                {
+                                    isLoggedInAsAdmin || item.userId === viewerId ? (
+                                        <Link to={`/skelbimas/redaguoti/${item.id}`}>
+                                            <button className="update" onClick={() => ''}>Redaguoti</button>
+                                        </Link>
+                                    ) : null
+                                }
+                                <hr></hr>
                                 {item.type === 'Keitimas' && (
                                     <Form onSubmit={handleSubmit}>
                                         <Form.Group>
@@ -218,7 +274,11 @@ export const ItemViewPage = () => {
                                     <Form onSubmit={handleSubmit}>
                                         <p>Dalyvių skaičius: {item.participants}</p>
                                         <p>Laimėtojas bus išrinktas {new Date(item.endDateTime).toLocaleString('lt-LT')}</p>
-                                        <Button variant="primary" type="submit" disabled={isPastEndTime || item.userId === viewerId}>Dalyvauti</Button>
+                                        {!isUserParticipating ? (
+                                            <Button variant="primary" type="submit" disabled={isPastEndTime || item.userId === viewerId} onClick={(event) => handleSubmit(event, true)}>Dalyvauti</Button>
+                                        ) : (
+                                            <Button variant="primary" type="submit" disabled={isPastEndTime || item.userId === viewerId} onClick={(event) => handleSubmit(event, false)}>Nebedalyvauti</Button>
+                                        )}
                                     </Form>
                                 )}
                             </Card.Body>
