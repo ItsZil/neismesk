@@ -228,6 +228,7 @@ namespace neismesk.Repositories.Item
                 }
             }
         }
+
         public async Task<int> Create(ItemModel item)
         {
             using MySqlConnection connection = GetConnection();
@@ -310,6 +311,29 @@ namespace neismesk.Repositories.Item
             return true;
         }
 
+        public async Task<string> GetItemName(int itemId)
+        {
+            using (MySqlConnection connection = new MySqlConnection(_connectionString))
+            {
+                await connection.OpenAsync();
+                using (MySqlCommand command = new MySqlCommand(
+                    "SELECT name " +
+                    "FROM ads " +
+                    "WHERE id = @itemId ", connection))
+                {
+                    command.Parameters.AddWithValue("@itemId", itemId);
+                    using (DbDataReader reader = await command.ExecuteReaderAsync())
+                    {
+                        await reader.ReadAsync();
+
+                        string name = reader["name"].ToString();
+
+                        return name;
+                    }
+                }
+            }
+        }
+
         public async Task<List<ItemQuestionViewModel>> GetQuestions(int itemId)
         {
             List<ItemQuestionViewModel> questions = new List<ItemQuestionViewModel>();
@@ -332,10 +356,8 @@ namespace neismesk.Repositories.Item
             return questions;
         }
 
-        public async Task<List<QuestionnaireViewModel>> GetQuestionsAndAnswers(int itemId)
+        public async Task<Dictionary<string, List<QuestionnaireViewModel>>> GetQuestionsAndAnswers(int itemId)
         {
-            List<QuestionnaireViewModel> results = new List<QuestionnaireViewModel>();
-            
             using MySqlConnection connection = GetConnection();
             await connection.OpenAsync();
 
@@ -344,24 +366,26 @@ namespace neismesk.Repositories.Item
                 "FROM answers AS a " +
                 "INNER JOIN questions AS q ON a.fk_question = q.id " +
                 "INNER JOIN users AS u ON a.fk_user = u.user_id " +
-                "WHERE a.fk_ad=@itemId",
-                 connection);
+                "WHERE a.fk_ad=@itemId", connection);
             command.Parameters.AddWithValue("@itemId", itemId);
 
-            using (DbDataReader reader = await command.ExecuteReaderAsync())
+            using DbDataReader reader = await command.ExecuteReaderAsync();
+
+            List<QuestionnaireViewModel> results = new List<QuestionnaireViewModel>();
+            while (await reader.ReadAsync())
             {
-                while (await reader.ReadAsync())
-                {
-                    int id = reader.GetInt32("id");
-                    string text = reader.GetString("question_text");
-                    string answer = reader.GetString("answer");
-                    string user = reader.GetString("user");
-                    QuestionnaireViewModel result = new QuestionnaireViewModel { Id = id, Question = text, Answer = answer, User = user };
-                    results.Add(result);
-                }
+                int id = reader.GetInt32("id");
+                string text = reader.GetString("question_text");
+                string answer = reader.GetString("answer");
+                string user = reader.GetString("user");
+                QuestionnaireViewModel result = new QuestionnaireViewModel { Id = id, Question = text, Answer = answer, User = user };
+                results.Add(result);
             }
 
-            return results;
+            Dictionary<string, List<QuestionnaireViewModel>> groupedResults = results.GroupBy(r => r.User)
+                .ToDictionary(g => g.Key, g => g.ToList());
+
+            return groupedResults;
         }
 
         public async Task<bool> InsertQuestions(ItemModel item)

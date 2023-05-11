@@ -10,6 +10,7 @@ using neismesk.ViewModels.Item;
 using neismesk.Utilities;
 using neismesk.Repositories.User;
 using Newtonsoft.Json.Linq;
+using neismesk.Services;
 
 namespace neismesk.Controllers.Item
 {
@@ -22,6 +23,7 @@ namespace neismesk.Controllers.Item
         private readonly ItemRepo _itemRepo;
         private readonly ImageRepo _imageRepo;
         private readonly UserRepo _userRepo;
+        private readonly QuestionnaireService _questionnaireService;
 
         public ItemController()
         {
@@ -30,6 +32,7 @@ namespace neismesk.Controllers.Item
             _itemRepo = new ItemRepo();
             _imageRepo = new ImageRepo();
             _userRepo = new UserRepo();
+            _questionnaireService = new QuestionnaireService();
         }
 
         [HttpGet("getItems")]
@@ -391,7 +394,7 @@ namespace neismesk.Controllers.Item
             {
                 var result = await _itemRepo.GetQuestionsAndAnswers(itemId);
 
-                return Ok(result);
+                return Ok(new { questionnaires = result });
             }
             catch (Exception ex)
             {
@@ -415,6 +418,29 @@ namespace neismesk.Controllers.Item
                 var result = await _itemRepo.InsertAnswers(itemId, answers, userId);
 
                 return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
+        [HttpPost("chooseQuestionnaireWinner")]
+        [Authorize]
+        public async Task<IActionResult> ChooseQuestionnaireWinner([FromBody] QuestionnaireWinner winner)
+        {
+            int userId = Convert.ToInt32(HttpContext.User.FindFirst("user_id").Value);
+
+            if (userId == null)
+            {
+                return Unauthorized();
+            }
+
+            try
+            {
+                _questionnaireService.NotifyWinner(winner, userId);
+
+                return Ok();
             }
             catch (Exception ex)
             {
