@@ -209,9 +209,9 @@ export const DetailedItemInfoPage = () => {
                         <Container key={user}>
                             <Button type="submit" style={{ height: "40px", width: "90px" }} variant="primary" onClick={() => handleChosenWinner(user)}>Atiduoti</Button>
                             <ListGroupItem variant="primary"><b> Klausimyno atsakymai :</b> {user} </ListGroupItem>
-                            {itemQuestions_Answers.questionnaires[user].map((questionnaire) => (
+                            {itemQuestions_Answers.questionnaires[user].map((questionnaire, index) => (
                                 <ListGroup key={questionnaire.id}>
-                                    <ListGroupItem variant="info"><b>Klausimas nr. {questionnaire.id}</b> {questionnaire.question} </ListGroupItem>
+                                    <ListGroupItem variant="info"><b>Klausimas nr. {index + 1}</b> {questionnaire.question} </ListGroupItem>
                                     <ListGroupItem variant="light"><b>Atsakymas:</b> {questionnaire.answer} </ListGroupItem>
                                 </ListGroup>
                             ))}
