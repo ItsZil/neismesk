@@ -2,6 +2,7 @@
 using neismesk.Models;
 using neismesk.Repositories.Image;
 using neismesk.ViewModels.Item;
+using neismesk.ViewModels.User;
 using Org.BouncyCastle.Cms;
 using Serilog;
 using System.Collections.Generic;
@@ -617,6 +618,33 @@ namespace neismesk.Repositories.Item
 
                 return category;
             }
+        }
+
+        public async Task<List<UserViewModel>> GetLotteryParticipants(int itemId)
+        {
+            List<UserViewModel> lotteryParticipants = new List<UserViewModel>();
+
+            using MySqlConnection connection = GetConnection();
+            await connection.OpenAsync();
+
+            using MySqlCommand command = new MySqlCommand("SELECT users.user_id, users.name, users.surname, users.email " +
+                "FROM users " +
+                "JOIN ad_lottery_participants ON users.user_id = ad_lottery_participants.fk_user " +
+                "WHERE ad_lottery_participants.fk_ad = @itemId", connection);
+            command.Parameters.AddWithValue("@itemId", itemId);
+
+            using DbDataReader reader = await command.ExecuteReaderAsync();
+            while (await reader.ReadAsync())
+            {
+                UserViewModel user = new UserViewModel();
+                user.Id = reader.GetInt32("user_id");
+                user.Name = reader.GetString("name");
+                user.Surname = reader.GetString("surname");
+                user.Email = reader.GetString("email");
+
+                lotteryParticipants.Add(user);
+            }
+            return lotteryParticipants;
         }
     }
 }

@@ -106,12 +106,14 @@ export const DetailedItemInfoPage = () => {
     
             fetchItemOffers();
         }, []);
+        */
     
         useEffect(() => {
             const fetchItemLotteryParticipants = async () => {
                 try {
-                    const response = await axios.get('api/item/endpointas_loterijos_dalyviams');
+                    const response = await axios.get(`api/item/getLotteryParticipants/${itemId}`);
                     setItemLotteryParticipants(response.data);
+                    console.log(response.data);
                 } catch (error) {
                     toast('Įvyko klaida, susisiekite su administratoriumi!');
                 }
@@ -119,8 +121,6 @@ export const DetailedItemInfoPage = () => {
     
             fetchItemLotteryParticipants();
         }, []);
-        */
-
 
         const handleChosenWinner = async (user) => {
             const requestBody = {
@@ -150,8 +150,8 @@ export const DetailedItemInfoPage = () => {
             setSubmitting(false);
         };
 
-    return item ? (
-        <div className="my-div" style={{ marginTop: "100px" }}>
+    return item && ((item.type === 'Klausimynas' && itemQuestions_Answers) || (item.type === 'Loterija' && itemLotteryParticipants))? (
+        <div className="my-div" style={{ marginTop: "120px" }}>
             {item.type === 'Keitimas' && (
                 <div style={{ textAlign: 'center' }}> <h2>Siūlomi daiktai mainams</h2>
                     <div className="row row-cols-1 row-cols-md-3 g-4">
@@ -209,29 +209,37 @@ export const DetailedItemInfoPage = () => {
 
             {item.type === 'Klausimynas' && (
                 <ListGroup>
-                    {Object.keys(itemQuestions_Answers.questionnaires).map((user) => (
-                        <Container key={user}>
-                            <Button type="submit" variant="primary" disabled={isSubmitting} onClick={() => handleChosenWinner(user)}>Atiduoti</Button>
-                            <ListGroupItem variant="primary"><b> Klausimyno atsakymai :</b> {user} </ListGroupItem>
-                            {itemQuestions_Answers.questionnaires[user].map((questionnaire, index) => (
-                                <ListGroup key={questionnaire.id}>
-                                    <ListGroupItem variant="info"><b>Klausimas nr. {index + 1}</b> {questionnaire.question} </ListGroupItem>
-                                    <ListGroupItem variant="light"><b>Atsakymas:</b> {questionnaire.answer} </ListGroupItem>
-                                </ListGroup>
-                            ))}
+                    {Object.keys(itemQuestions_Answers.questionnaires).length > 0 ? (
+                        Object.keys(itemQuestions_Answers.questionnaires).map((user) => (
+                            <Container key={user}>
+                                <Button type="submit" variant="primary" disabled={isSubmitting} onClick={() => handleChosenWinner(user)}>Atiduoti</Button>
+                                <ListGroupItem variant="primary"><b>Klausimyno atsakymai:</b> {user} </ListGroupItem>
+                                {itemQuestions_Answers.questionnaires[user].map((questionnaire, index) => (
+                                    <ListGroup key={questionnaire.id}>
+                                        <ListGroupItem variant="info"><b>Klausimas nr. {index + 1}</b> {questionnaire.question} </ListGroupItem>
+                                        <ListGroupItem variant="light"><b>Atsakymas:</b> {questionnaire.answer} </ListGroupItem>
+                                    </ListGroup>
+                                ))}
+                            </Container>
+                        ))
+                    ) : (
+                        <Container>
+                            <ListGroupItem variant="primary"><b>Klausimyno atsakymai</b></ListGroupItem>
+                            <ListGroupItem>Klausimyno atsakymų nėra.</ListGroupItem>
                         </Container>
-                    ))}
+                    )}
                 </ListGroup>
             )}
             {item.type === 'Loterija' && (
                 <ListGroup>
-                    <ListGroupItem variant="primary"> Loterijos dalyviai </ListGroupItem>
-                    {/* 
-                    {itemLotteryParticipants.users.map((user) => ( 
-                        <ListGroupItem key={user.id}> {user.name} {user.surname} </ListGroupItem>
-                    ))} */}
-                    <ListGroupItem> Jonas Jonauskas </ListGroupItem>
-                    <ListGroupItem> Jonas Jonauskas </ListGroupItem>
+                    <ListGroupItem variant="primary"><b>Loterijos dalyviai</b></ListGroupItem>
+                    {itemLotteryParticipants.length > 0 ? (
+                        itemLotteryParticipants.map((user) => (
+                            <ListGroupItem key={user.id}>{user.name} {user.surname}</ListGroupItem>
+                        ))
+                    ) : (
+                        <ListGroupItem>Loterijos dalyvių nėra.</ListGroupItem>
+                    )}
                 </ListGroup>
             )}
         </div>

@@ -447,5 +447,21 @@ namespace neismesk.Controllers.Item
                 return BadRequest(ex.Message);
             }
         }
+
+        [HttpGet("getLotteryParticipants/{itemId}")]
+        [Authorize]
+        public async Task<IActionResult> GetLotteryParticipants(int itemId)
+        {
+            try
+            {
+                var result = await _itemRepo.GetLotteryParticipants(itemId);
+
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
     }
 }
