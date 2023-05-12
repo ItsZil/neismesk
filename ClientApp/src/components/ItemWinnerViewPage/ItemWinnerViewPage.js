@@ -137,7 +137,7 @@ export const ItemWinnerViewPage = () => {
                                 <Card.Title>Laimėjote: {item.name}</Card.Title>
                                 <Card.Text>{item.description}</Card.Text>
                                 <hr></hr>
-                                <Card.Text>Norint suderinti atsiemimą ar pristatymą, pateikite savo kontaktinius duomenis su kuriais skelbėjas galės su Jumis susisiekti:</Card.Text>
+                                <Card.Text>Norint suderinti atsiėmimą ar pristatymą, pateikite savo kontaktinius duomenis, su kuriais skelbėjas galės su Jumis susisiekti:</Card.Text>
                                 <Form onSubmit={handleSubmit}>
                                     <Form.Group>
                                         <Form.Label>Telefono numeris:</Form.Label>

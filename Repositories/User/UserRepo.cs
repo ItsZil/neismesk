@@ -2,6 +2,7 @@
 using System.Data.Common;
 using System.Reflection;
 using MySql.Data.MySqlClient;
+using neismesk.ViewModels.User;
 using Org.BouncyCastle.Cms;
 using Serilog;
 
@@ -216,6 +217,34 @@ namespace neismesk.Repositories.User
             {
                 _logger.Error(ex, "Error getting user email!");
                 return null;
+            }
+        }
+
+        public async Task<UserViewModel> GetUser(string name)
+        {
+ 
+
+            MySqlConnection connection = GetConnection();
+            await connection.OpenAsync();
+
+            using MySqlCommand command = new MySqlCommand(
+                "SELECT user_id, name, surname, email FROM users " +
+                "WHERE CONCAT(name, ' ', surname) = @name", connection);
+            command.Parameters.AddWithValue("@name", name);
+
+            using (DbDataReader reader = await command.ExecuteReaderAsync())
+            {
+                await reader.ReadAsync();
+
+                UserViewModel user = new UserViewModel()
+                {
+                    Id = Convert.ToInt32(reader["user_id"]),
+                    Name = reader["name"].ToString(),
+                    Surname = reader["surname"].ToString(),
+                    Email = reader["email"].ToString()
+                };
+
+                return user;
             }
         }
     }
