@@ -14,6 +14,7 @@ export const DetailedItemInfoPage = () => {
     const [itemQuestions_Answers, setItemQuestions_Answers] = useState(null);
     const [itemOffers, setItemOffers] = useState(null);
     const [itemLotteryParticipants, setItemLotteryParticipants] = useState(null);
+    const [isSubmitting, setSubmitting] = useState(false);
     const navigate = useNavigate();
 
     useEffect(() => {
@@ -126,6 +127,8 @@ export const DetailedItemInfoPage = () => {
                 itemId,
                 user
             };
+            setSubmitting(true);
+            
             await axios.post(`/api/item/chooseQuestionnaireWinner`, requestBody)
             .then(response => {
                 if (response) {
@@ -144,6 +147,7 @@ export const DetailedItemInfoPage = () => {
                     toast('Įvyko klaida, susisiekite su administratoriumi!');   
                 }
             });
+            setSubmitting(false);
         };
 
     return item ? (
@@ -158,7 +162,7 @@ export const DetailedItemInfoPage = () => {
                                     <Card.Body>
                                         <Card.Title>{item.name}</Card.Title>
                                         <Card.Text>{item.description}</Card.Text>
-                                        <Button variant="primary" type="submit">Mainyti</Button>
+                                        <Button variant="primary" disabled={isSubmitting} type="submit">Mainyti</Button>
                                     </Card.Body>
                                 </Card>
                             </Col>
@@ -207,7 +211,7 @@ export const DetailedItemInfoPage = () => {
                 <ListGroup>
                     {Object.keys(itemQuestions_Answers.questionnaires).map((user) => (
                         <Container key={user}>
-                            <Button type="submit" style={{ height: "40px", width: "90px" }} variant="primary" onClick={() => handleChosenWinner(user)}>Atiduoti</Button>
+                            <Button type="submit" variant="primary" disabled={isSubmitting} onClick={() => handleChosenWinner(user)}>Atiduoti</Button>
                             <ListGroupItem variant="primary"><b> Klausimyno atsakymai :</b> {user} </ListGroupItem>
                             {itemQuestions_Answers.questionnaires[user].map((questionnaire, index) => (
                                 <ListGroup key={questionnaire.id}>
