@@ -16,14 +16,31 @@
 .submit, .cancel {
     width: 40%;
 }
+.form-group
+{
+    margin-bottom: 20px;
+}
 
-
+.itemBoxLabel
+{
+    text-align: center;
+}
+.outerBoxWrapper
+{
+    margin-top: 100px;
+}
+.header {
+    color: black;
+  }
 .submitButton, .cancelButton {
     flex: 1;   
     width: 20%;
     display: flex;
 }
-
+.input
+{
+    margin-bottom: 10px;
+}
 .submit:hover, .cancel:hover, .addQuestionButton:hover {
     background-color: rgb(229, 225, 225);
 }
@@ -40,7 +57,6 @@
     margin-bottom: 1.5em;
     display: flex;
 }
-
 
 input, input:focus, #description, select {
     border: none;

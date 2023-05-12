@@ -205,7 +205,7 @@ getItemsByCategory(categoryId) {
                         </Link>
                         <Link tag={Link} to="https://www.sandbox.paypal.com/donate/?hosted_button_id=CSYYU9CP8BSG6" className="links">Parama</Link>
                         <Link tag={Link} className="links" to="/taisykla/nauja">
-                            Reklamuoti taisyklą
+                            Reklamos registracija
                         </Link>
                     </div>
                 </footer>
