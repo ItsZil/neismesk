@@ -1,12 +1,36 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router';
 import './LoginPage.css'
 import toast, { Toaster } from 'react-hot-toast';
+import axios from 'axios';
 
 export const LoginPage = () => {
 
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
+    const navigate = useNavigate();
+
+    useEffect(() => {
+        const fetchUserLogin = async () => {
+            try {
+                const response = await axios.get('api/user/isloggedin/0');
+                if (response.status == 200)
+                {
+                  toast.error("Jūs jau esate prisijungęs!")
+                  navigate('/');
+                }
+            } catch (error) {
+              if (error.response.status === 401) {
+                return true;
+              }
+              else
+              {
+                toast('Įvyko klaida, susisiekite su administratoriumi!');
+              }
+            }
+        };
+        fetchUserLogin();
+      }, []);
 
     const handleSubmit = () => {
         const requestOptions = {
@@ -50,6 +74,7 @@ export const LoginPage = () => {
                 }
             })
     }
+    
 
     return (
         <div className='outerBoxWrapper'>
