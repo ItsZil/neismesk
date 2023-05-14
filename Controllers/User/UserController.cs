@@ -82,7 +82,7 @@ namespace neismesk.Controllers.UserAuthentication
             }
             else
             {
-                return BadRequest();
+                return StatusCode(404);
             }
         }
 

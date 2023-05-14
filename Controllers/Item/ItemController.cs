@@ -24,6 +24,7 @@ namespace neismesk.Controllers.Item
         private readonly ImageRepo _imageRepo;
         private readonly UserRepo _userRepo;
         private readonly QuestionnaireService _questionnaireService;
+        private readonly OfferService _offerService;
 
         public ItemController()
         {
@@ -33,6 +34,7 @@ namespace neismesk.Controllers.Item
             _imageRepo = new ImageRepo();
             _userRepo = new UserRepo();
             _questionnaireService = new QuestionnaireService();
+            _offerService = new OfferService();
         }
 
         [HttpGet("getItems")]
@@ -448,6 +450,29 @@ namespace neismesk.Controllers.Item
             }
         }
 
+        [HttpPost("chooseOfferWinner")]
+        [Authorize]
+        public async Task<IActionResult> ChooseOfferWinner([FromBody] OfferWinner winner)
+        {
+            int userId = Convert.ToInt32(HttpContext.User.FindFirst("user_id").Value);
+
+            if (userId == null)
+            {
+                return Unauthorized();
+            }
+
+            try
+            {
+                _offerService.NotifyWinner(winner, userId);
+
+                return Ok();
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
         [HttpGet("getLotteryParticipants/{itemId}")]
         [Authorize]
         public async Task<IActionResult> GetLotteryParticipants(int itemId)
@@ -455,6 +480,51 @@ namespace neismesk.Controllers.Item
             try
             {
                 var result = await _itemRepo.GetLotteryParticipants(itemId);
+
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
+        [HttpPost("submitOffer/{itemId}")]
+        [Authorize]
+        public async Task<IActionResult> SubmitOffer(int itemId)
+        {
+            var form = await Request.ReadFormAsync();
+            OfferModel offer = new OfferModel()
+            {
+                SelectedItem = Convert.ToInt32(form["selectedItem"]),
+                Message = form["message"].ToString(),
+            };
+
+            if (!User.Identity.IsAuthenticated)
+            {
+                return Unauthorized();
+            }
+
+            try
+            {
+                var result = await _itemRepo.InsertOffer(itemId, offer);
+
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
+
+        [HttpGet("getOffers/{itemId}")]
+        [Authorize]
+        public async Task<IActionResult> GetOffers(int itemId)
+        {
+            try
+            {
+                var result = await _itemRepo.GetOffers(itemId);
 
                 return Ok(result);
             }
