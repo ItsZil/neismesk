@@ -687,24 +687,16 @@ namespace neismesk.Repositories.Item
             {
                 while (await reader.ReadAsync())
                 {
-                    int id = reader.GetInt32("fk_offer_item");
-                    string message = reader.GetString("offer_message");
-                    string name = reader.GetString("name");
-                    string description = reader.GetString("description");
-                    string location = reader.GetString("location");
-                    DateTime end_time = reader.GetDateTime("end_datetime");
-                    string user = reader.GetString("user");
-
                     TradingViewModel result = new TradingViewModel
                     {
-                        Id = id,
-                        Message = message,
-                        Name = name,
-                        Description = description,
-                        Location = location,
-                        EndDateTime = end_time,
-                        Images = await _imageRepo.GetByAd(Convert.ToInt32(reader["fk_offer_item"])),
-                        User = user
+                        Id = reader.GetInt32("fk_offer_item");
+                        Message = reader.GetString("offer_message");
+                        Name = reader.GetString("name");
+                        Description = reader.GetString("description");
+                        Location = reader.GetString("location");
+                        EndDateTime = reader.GetDateTime("end_datetime");
+                        Images = await _imageRepo.GetByAd(Convert.ToInt32(reader["fk_offer_item"]));
+                        User = reader.GetString("user");
                     };
                 results.Add(result);
             }
