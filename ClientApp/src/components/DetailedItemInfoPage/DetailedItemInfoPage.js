@@ -14,6 +14,7 @@ export const DetailedItemInfoPage = () => {
     const [itemQuestions_Answers, setItemQuestions_Answers] = useState(null);
     const [itemOffers, setItemOffers] = useState(null);
     const [itemLotteryParticipants, setItemLotteryParticipants] = useState(null);
+    const [isSubmitting, setSubmitting] = useState(false);
     const navigate = useNavigate();
 
     useEffect(() => {
@@ -34,37 +35,34 @@ export const DetailedItemInfoPage = () => {
         const fetchUserRole = async () => {
             try {
                 const response = await axios.get('api/user/isloggedin/1');
-                if (response.status == 200)
-                {
-                  setIsLoggedInAsAdmin(true);
+                if (response.status == 200) {
+                    setIsLoggedInAsAdmin(true);
                 }
             } catch (error) {
-              if (error.response.status === 401) {
-                setIsLoggedInAsAdmin(false);
-              }
-              else
-              {
-                toast('Įvyko klaida, susisiekite su administratoriumi!');
-              }
+                if (error.response.status === 401) {
+                    setIsLoggedInAsAdmin(false);
+                }
+                else {
+                    toast('Įvyko klaida, susisiekite su administratoriumi!');
+                }
             }
         };
         fetchUserRole();
-      }, []);
+    }, []);
 
-      useEffect(() => {
+    useEffect(() => {
         const fetchViewerId = async () => {
             try {
                 const response = await axios.get('api/user/getCurrentUserId');
                 setViewerId(response.data);
             } catch (error) {
-              if (error.response.status === 401) {
-                navigate('/prisijungimas');
-                toast('Turite būti prisijungęs!');
-              }
-              else
-              {
-                toast('Įvyko klaida, susisiekite su administratoriumi!');
-              }
+                if (error.response.status === 401) {
+                    navigate('/prisijungimas');
+                    toast('Turite būti prisijungęs!');
+                }
+                else {
+                    toast('Įvyko klaida, susisiekite su administratoriumi!');
+                }
             }
         };
         fetchViewerId();
@@ -75,19 +73,18 @@ export const DetailedItemInfoPage = () => {
 
     };
 
-    if (!isLoggedInAsAdmin)
-{
-    if (item && viewerId && item.userId !== viewerId) {
-      alert('Jūs nesate šio skelbimo savininkas!');
-      navigate(`/`);
+    if (!isLoggedInAsAdmin) {
+        if (item && viewerId && item.userId !== viewerId) {
+            alert('Jūs nesate šio skelbimo savininkas!');
+            navigate(`/`);
+        }
     }
-}
 
-    /* Palieku kaip atskirus, bet gal bekuriant endpointus iseis kazkaip apjungt ar kaip tik reiks ju daugiau?
+    //Palieku kaip atskirus, bet gal bekuriant endpointus iseis kazkaip apjungt ar kaip tik reiks ju daugiau?
     useEffect(() => {
         const fetchItemQuestions_Answers = async () => {
             try {
-                const response = await axios.get('api/item/endpointas_klausimynui_ir_atsakymams');
+                const response = await axios.get(`api/item/getQuestionsAndAnswers/${itemId}`);
                 setItemQuestions_Answers(response.data);
             } catch (error) {
                 toast('Įvyko klaida, susisiekite su administratoriumi!');
@@ -96,37 +93,65 @@ export const DetailedItemInfoPage = () => {
 
         fetchItemQuestions_Answers();
     }, []);
+    /* 
+        useEffect(() => {
+            const fetchItemOffers = async () => {
+                try { 
+                    const response = await axios.get('api/item/endpointas_mainams'); 
+                    setItemOffers(response.data);
+                } catch (error) {
+                    toast('Įvyko klaida, susisiekite su administratoriumi!');
+                }
+            };
+    
+            fetchItemOffers();
+        }, []);
+        */
+    
+        useEffect(() => {
+            const fetchItemLotteryParticipants = async () => {
+                try {
+                    const response = await axios.get(`api/item/getLotteryParticipants/${itemId}`);
+                    setItemLotteryParticipants(response.data);
+                    console.log(response.data);
+                } catch (error) {
+                    toast('Įvyko klaida, susisiekite su administratoriumi!');
+                }
+            };
+    
+            fetchItemLotteryParticipants();
+        }, []);
 
-    useEffect(() => {
-        const fetchItemOffers = async () => {
-            try { 
-                const response = await axios.get('api/item/endpointas_mainams'); 
-                setItemOffers(response.data);
-            } catch (error) {
-                toast('Įvyko klaida, susisiekite su administratoriumi!');
-            }
+        const handleChosenWinner = async (user) => {
+            const requestBody = {
+                itemId,
+                user
+            };
+            setSubmitting(true);
+            
+            await axios.post(`/api/item/chooseQuestionnaireWinner`, requestBody)
+            .then(response => {
+                if (response) {
+                    toast('Išsirinkote, kam padovanoti! Laimėtojui išsiųstas el. laiškas dėl susisiekimo.');
+                    navigate(`/`);
+                }
+                else {
+                    toast('Įvyko klaida, susisiekite su administratoriumi!');
+                }
+            })
+            .catch(error => {
+                if (error.response.status === 401) {
+                    toast('Turite būti prisijungęs!');
+                }
+                else {
+                    toast('Įvyko klaida, susisiekite su administratoriumi!');   
+                }
+            });
+            setSubmitting(false);
         };
 
-        fetchItemOffers();
-    }, []);
-
-    useEffect(() => {
-        const fetchItemLotteryParticipants = async () => {
-            try {
-                const response = await axios.get('api/item/endpointas_loterijos_dalyviams');
-                setItemLotteryParticipants(response.data);
-            } catch (error) {
-                toast('Įvyko klaida, susisiekite su administratoriumi!');
-            }
-        };
-
-        fetchItemLotteryParticipants();
-    }, []);
-    */
-
-
-    return item ? (
-        <div className="my-div" style={{ marginTop: "100px" }}>
+    return item && ((item.type === 'Klausimynas' && itemQuestions_Answers) || (item.type === 'Loterija' && itemLotteryParticipants))? (
+        <div className="my-div" style={{ marginTop: "120px" }}>
             {item.type === 'Keitimas' && (
                 <div style={{ textAlign: 'center' }}> <h2>Siūlomi daiktai mainams</h2>
                     <div className="row row-cols-1 row-cols-md-3 g-4">
@@ -137,7 +162,7 @@ export const DetailedItemInfoPage = () => {
                                     <Card.Body>
                                         <Card.Title>{item.name}</Card.Title>
                                         <Card.Text>{item.description}</Card.Text>
-                                        <Button variant="primary" type="submit">Mainyti</Button>
+                                        <Button variant="primary" disabled={isSubmitting} type="submit">Mainyti</Button>
                                     </Card.Body>
                                 </Card>
                             </Col>
@@ -181,57 +206,40 @@ export const DetailedItemInfoPage = () => {
                     </div>
                 </div>
             )}
+
             {item.type === 'Klausimynas' && (
-
                 <ListGroup>
-                    {/* 
-                    {itemQuestions_Answers.questionnaires.map((questionnaire) => ( 
-                        <Button type="submit" style={{ height: "40px", width: "90px" }} variant="primary">Atiduoti</Button>
-                        <ListGroupItem variant="info"> Klausimyno atsakymai : {questionnaire.user} </ListGroupItem>
-                        {questionnaire.questions.map((question) => (
-                          <ListGroupItem key={question.id}> {question.question} </ListGroupItem>
-                          <ListGroupItem key={question.id}> {question.answer} </ListGroupItem>
-                        ))}
-
-                    ))} */}
-                    <Container className="my-container">
-                    <Button style={{ height: "40px", width: "90px" }} variant="primary">Atiduoti</Button>
-                    <ListGroupItem variant="info"> Klausimyno atsakymai : Justas Andriusis </ListGroupItem>
-                    <ListGroupItem variant="primary"> Klausimas nr 1 </ListGroupItem>
-                    <ListGroupItem> Atsakymas Nr1.1 </ListGroupItem>
-                    <ListGroupItem variant="primary"> Klausimas nr 2 </ListGroupItem>
-                    <ListGroupItem> Atsakymas Nr2.1 </ListGroupItem>
-                    </Container>
-
-                    <Container className="my-container">
-                    <Button style={{ height: "40px", width: "90px" }} variant="primary">Atiduoti</Button>
-                    <ListGroupItem variant="info"> Klausimyno atsakymai : Justas Andriusis </ListGroupItem>
-                    <ListGroupItem variant="primary"> Klausimas nr 1 </ListGroupItem>
-                    <ListGroupItem> Atsakymas Nr1.1 </ListGroupItem>
-                    <ListGroupItem variant="primary"> Klausimas nr 2 </ListGroupItem>
-                    <ListGroupItem> Atsakymas Nr2.1 </ListGroupItem>
-                    </Container>
-
-                    <Container className="my-container">
-                    <Button style={{ height: "40px", width: "90px" }} variant="primary">Atiduoti</Button>
-                    <ListGroupItem variant="info"> Klausimyno atsakymai : Justas Andriusis </ListGroupItem>
-                    <ListGroupItem variant="primary"> Klausimas nr 1 </ListGroupItem>
-                    <ListGroupItem> Atsakymas Nr1.1 </ListGroupItem>
-                    <ListGroupItem variant="primary"> Klausimas nr 2 </ListGroupItem>
-                    <ListGroupItem> Atsakymas Nr2.1 </ListGroupItem>
-                    </Container>
+                    {Object.keys(itemQuestions_Answers.questionnaires).length > 0 ? (
+                        Object.keys(itemQuestions_Answers.questionnaires).map((user) => (
+                            <Container key={user}>
+                                <Button type="submit" variant="primary" disabled={isSubmitting} onClick={() => handleChosenWinner(user)}>Atiduoti</Button>
+                                <ListGroupItem variant="primary"><b>Klausimyno atsakymai:</b> {user} </ListGroupItem>
+                                {itemQuestions_Answers.questionnaires[user].map((questionnaire, index) => (
+                                    <ListGroup key={questionnaire.id}>
+                                        <ListGroupItem variant="info"><b>Klausimas nr. {index + 1}</b> {questionnaire.question} </ListGroupItem>
+                                        <ListGroupItem variant="light"><b>Atsakymas:</b> {questionnaire.answer} </ListGroupItem>
+                                    </ListGroup>
+                                ))}
+                            </Container>
+                        ))
+                    ) : (
+                        <Container>
+                            <ListGroupItem variant="primary"><b>Klausimyno atsakymai</b></ListGroupItem>
+                            <ListGroupItem>Klausimyno atsakymų nėra.</ListGroupItem>
+                        </Container>
+                    )}
                 </ListGroup>
-
             )}
             {item.type === 'Loterija' && (
                 <ListGroup>
-                    <ListGroupItem variant="primary"> Loterijos dalyviai </ListGroupItem>
-                    {/* 
-                    {itemLotteryParticipants.users.map((user) => ( 
-                        <ListGroupItem key={user.id}> {user.name} {user.surname} </ListGroupItem>
-                    ))} */}      
-                    <ListGroupItem> Jonas Jonauskas </ListGroupItem>
-                    <ListGroupItem> Jonas Jonauskas </ListGroupItem>
+                    <ListGroupItem variant="primary"><b>Loterijos dalyviai</b></ListGroupItem>
+                    {itemLotteryParticipants.length > 0 ? (
+                        itemLotteryParticipants.map((user) => (
+                            <ListGroupItem key={user.id}>{user.name} {user.surname}</ListGroupItem>
+                        ))
+                    ) : (
+                        <ListGroupItem>Loterijos dalyvių nėra.</ListGroupItem>
+                    )}
                 </ListGroup>
             )}
         </div>

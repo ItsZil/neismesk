@@ -2,8 +2,10 @@
 using neismesk.Models;
 using neismesk.Repositories.Image;
 using neismesk.ViewModels.Item;
+using neismesk.ViewModels.User;
 using Org.BouncyCastle.Cms;
 using Serilog;
+using System.Collections.Generic;
 using System.Data;
 using System.Data.Common;
 
@@ -177,7 +179,6 @@ namespace neismesk.Repositories.Item
             }
         }
 
-
         public async Task<List<ItemViewModel>> GetAllByCategory(int categoryId)
         {
             List<ItemViewModel> items = new List<ItemViewModel>();
@@ -228,6 +229,7 @@ namespace neismesk.Repositories.Item
                 }
             }
         }
+
         public async Task<int> Create(ItemModel item)
         {
             using MySqlConnection connection = GetConnection();
@@ -279,7 +281,6 @@ namespace neismesk.Repositories.Item
             }
         }
 
-
         public async Task<bool> Update(ItemModel item)
         {
             using MySqlConnection connection = GetConnection();
@@ -311,6 +312,29 @@ namespace neismesk.Repositories.Item
             return true;
         }
 
+        public async Task<string> GetItemName(int itemId)
+        {
+            using (MySqlConnection connection = new MySqlConnection(_connectionString))
+            {
+                await connection.OpenAsync();
+                using (MySqlCommand command = new MySqlCommand(
+                    "SELECT name " +
+                    "FROM ads " +
+                    "WHERE id = @itemId ", connection))
+                {
+                    command.Parameters.AddWithValue("@itemId", itemId);
+                    using (DbDataReader reader = await command.ExecuteReaderAsync())
+                    {
+                        await reader.ReadAsync();
+
+                        string name = reader["name"].ToString();
+
+                        return name;
+                    }
+                }
+            }
+        }
+
         public async Task<List<ItemQuestionViewModel>> GetQuestions(int itemId)
         {
             List<ItemQuestionViewModel> questions = new List<ItemQuestionViewModel>();
@@ -331,6 +355,38 @@ namespace neismesk.Repositories.Item
             }
 
             return questions;
+        }
+
+        public async Task<Dictionary<string, List<QuestionnaireViewModel>>> GetQuestionsAndAnswers(int itemId)
+        {
+            using MySqlConnection connection = GetConnection();
+            await connection.OpenAsync();
+
+            using MySqlCommand command = new MySqlCommand(
+                "SELECT a.answer_id AS id, a.answer, q.question_text, CONCAT(u.name, ' ', u.surname) AS user " +
+                "FROM answers AS a " +
+                "INNER JOIN questions AS q ON a.fk_question = q.id " +
+                "INNER JOIN users AS u ON a.fk_user = u.user_id " +
+                "WHERE a.fk_ad=@itemId", connection);
+            command.Parameters.AddWithValue("@itemId", itemId);
+
+            using DbDataReader reader = await command.ExecuteReaderAsync();
+
+            List<QuestionnaireViewModel> results = new List<QuestionnaireViewModel>();
+            while (await reader.ReadAsync())
+            {
+                int id = reader.GetInt32("id");
+                string text = reader.GetString("question_text");
+                string answer = reader.GetString("answer");
+                string user = reader.GetString("user");
+                QuestionnaireViewModel result = new QuestionnaireViewModel { Id = id, Question = text, Answer = answer, User = user };
+                results.Add(result);
+            }
+
+            Dictionary<string, List<QuestionnaireViewModel>> groupedResults = results.GroupBy(r => r.User)
+                .ToDictionary(g => g.Key, g => g.ToList());
+
+            return groupedResults;
         }
 
         public async Task<bool> InsertQuestions(ItemModel item)
@@ -359,6 +415,28 @@ namespace neismesk.Repositories.Item
                 _logger.Error(ex, "Error saving questions to database!");
                 return false;
             }
+        }
+
+        public async Task<bool> InsertAnswers(int itemId, List<Answer> answers, int userId)
+        {
+            using MySqlConnection connection = GetConnection();
+            await connection.OpenAsync();
+
+            foreach (Answer answer in answers)
+            {
+                using MySqlCommand command = new MySqlCommand(
+                    "INSERT INTO answers (answer, fk_question, fk_user, fk_ad) VALUES (@answer, @fk_question, @fk_user, @fk_ad)", connection);
+            
+                // Add parameters
+                command.Parameters.AddWithValue("@answer", answer.Text);
+                command.Parameters.AddWithValue("@fk_question", answer.Question);
+                command.Parameters.AddWithValue("@fk_user", userId);
+                command.Parameters.AddWithValue("@fk_ad", itemId);
+
+                await command.ExecuteNonQueryAsync();
+            }
+
+            return true;
         }
 
         public async Task<List<ItemViewModel>> Search(string searchWord)
@@ -540,6 +618,33 @@ namespace neismesk.Repositories.Item
 
                 return category;
             }
+        }
+
+        public async Task<List<UserViewModel>> GetLotteryParticipants(int itemId)
+        {
+            List<UserViewModel> lotteryParticipants = new List<UserViewModel>();
+
+            using MySqlConnection connection = GetConnection();
+            await connection.OpenAsync();
+
+            using MySqlCommand command = new MySqlCommand("SELECT users.user_id, users.name, users.surname, users.email " +
+                "FROM users " +
+                "JOIN ad_lottery_participants ON users.user_id = ad_lottery_participants.fk_user " +
+                "WHERE ad_lottery_participants.fk_ad = @itemId", connection);
+            command.Parameters.AddWithValue("@itemId", itemId);
+
+            using DbDataReader reader = await command.ExecuteReaderAsync();
+            while (await reader.ReadAsync())
+            {
+                UserViewModel user = new UserViewModel();
+                user.Id = reader.GetInt32("user_id");
+                user.Name = reader.GetString("name");
+                user.Surname = reader.GetString("surname");
+                user.Email = reader.GetString("email");
+
+                lotteryParticipants.Add(user);
+            }
+            return lotteryParticipants;
         }
     }
 }

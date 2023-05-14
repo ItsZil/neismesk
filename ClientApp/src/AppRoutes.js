@@ -65,7 +65,7 @@ const AppRoutes = [
       element: <ItemCreationPage />
   },
   {
-      path: '/detaileditem/:itemId',
+      path: '/skelbimas/detailedItem/:itemId',
       element: <DetailedItemInfoPage />
   },
   {
