@@ -50,6 +50,7 @@ export const ItemViewPage = () => {
                 try {
                     const response = await axios.get('api/item/getUserItems');
                     setUserItems(response.data);
+                    console.log(userItems);
                 } catch (error) {
                     //toast('Įvyko klaida, susisiekite su administratoriumi!');
                 }
@@ -215,6 +216,34 @@ export const ItemViewPage = () => {
                     }
                 });
         }
+        else if (item.type === 'Keitimas') {
+
+            const formData = new FormData();
+            formData.append('selectedItem', data.selectedItem);
+            formData.append('message', data.message);
+            axios.post(`api/item/submitOffer/${itemId}`, formData)
+                .then(response => {
+                    if (response.data) {
+                        toast('Jūsų pasiūlymas sėkmingai išsiųstas!');
+
+                        setItem({
+                            ...item,
+                            participants: item.participants + 1,
+                        });
+                    }
+                    else {
+                        toast('Įvyko klaida, susisiekite su administratoriumi!');
+                    }
+                })
+                .catch(error => {
+                    if (error.response.status === 401) {
+                        toast('Turite būti prisijungęs!');
+                    }
+                    else {
+                        toast('Įvyko klaida, susisiekite su administratoriumi!');
+                    }
+                });
+        }
     };
 
 
@@ -259,16 +288,16 @@ export const ItemViewPage = () => {
                                     <Form onSubmit={handleSubmit}>
                                         <Form.Group>
                                             <Form.Label>Pasirinkite savo prietaisą, kurį norite pasiūlyti:</Form.Label>
-                                            <Form.Control as="select" onChange={handleItemSelect}>
+                                            <Form.Control as="select" id='selectedItem' value={selectedItem} onChange={(e) => setSelectedItem(e.target.value)} >
                                                 <option value="">Pasirinkti skelbimą</option>
-                                                {userItems && userItems.map(item => (
+                                                {userItems && userItems.filter(item => item.type === `Keitimas`).map(item => (
                                                     <option key={item.id} value={item.id}>{item.name}</option>
                                                 ))}
                                             </Form.Control>
                                         </Form.Group>
                                         <Form.Group>
                                             <Form.Label>Žinutė:</Form.Label>
-                                            <Form.Control as="textarea" rows={3} onChange={handleMessageChange} />
+                                            <Form.Control as="textarea" rows={3} id='message' value={message} onChange={(e) => setMessage(e.target.value)} />
                                         </Form.Group>
                                         <Row>
                                             <Col>

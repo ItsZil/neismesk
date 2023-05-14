@@ -1,7 +1,7 @@
 ﻿import React, { useState, useEffect } from "react";
 import { useParams } from 'react-router-dom';
 import { useNavigate } from 'react-router';
-import { Container, Row, Col, Card, ListGroup, ListGroupItem, Button, Spinner } from "react-bootstrap";
+import { Container, Row, Col, Card, ListGroup, ListGroupItem, Button, Spinner, Carousel } from "react-bootstrap";
 import toast, { Toaster } from 'react-hot-toast';
 import axios from 'axios';
 import './DetailedItemInfoPage.css';
@@ -93,20 +93,20 @@ export const DetailedItemInfoPage = () => {
 
         fetchItemQuestions_Answers();
     }, []);
-    /* 
-        useEffect(() => {
-            const fetchItemOffers = async () => {
-                try { 
-                    const response = await axios.get('api/item/endpointas_mainams'); 
-                    setItemOffers(response.data);
-                } catch (error) {
-                    toast('Įvyko klaida, susisiekite su administratoriumi!');
-                }
-            };
     
-            fetchItemOffers();
-        }, []);
-        */
+     useEffect(() => {
+         const fetchItemOffers = async () => {
+             try { 
+                 const response = await axios.get(`api/item/getOffers/${itemId}`);
+                 setItemOffers(response.data);
+             } catch (error) {
+                 toast('Įvyko klaida, susisiekite su administratoriumi!');
+             }
+         };
+    
+         fetchItemOffers();
+     }, []);
+        
     
         useEffect(() => {
             const fetchItemLotteryParticipants = async () => {
@@ -148,63 +148,83 @@ export const DetailedItemInfoPage = () => {
                 }
             });
             setSubmitting(false);
-        };
+    };
 
-    return item && ((item.type === 'Klausimynas' && itemQuestions_Answers) || (item.type === 'Loterija' && itemLotteryParticipants))? (
+    const handleOfferWinner = async (user, itemName, userItemId) => {
+        const requestBody = {
+            itemId,
+            user,
+            itemName,
+            userItemId
+        };
+        setSubmitting(true);
+
+        await axios.post(`/api/item/chooseOfferWinner`, requestBody)
+            .then(response => {
+                if (response) {
+                    toast('Išsirinkote, su kuo mainyti! Laimėtojui išsiųstas el. laiškas dėl susisiekimo.');
+                    navigate(`/`);
+                }
+                else {
+                    toast('Įvyko klaida, susisiekite su administratoriumi!');
+                }
+            })
+            .catch(error => {
+                if (error.response.status === 401) {
+                    toast('Turite būti prisijungęs!');
+                }
+                else {
+                    console.log(error);
+                    toast('Įvyko klaida, susisiekite su administratoriumi!');
+                }
+            });
+        setSubmitting(false);
+    };
+
+    return item && ((item.type === 'Klausimynas' && itemQuestions_Answers) || (item.type === 'Loterija' && itemLotteryParticipants) || (item.type === 'Keitimas' && itemOffers)) ? (
         <div className="my-div" style={{ marginTop: "120px" }}>
             {item.type === 'Keitimas' && (
-                <div style={{ textAlign: 'center' }}> <h2>Siūlomi daiktai mainams</h2>
-                    <div className="row row-cols-1 row-cols-md-3 g-4">
-                        {/* {itemOffers.offers.map((item) => (
-                            <Col>
-                                <Card key={item.id}>
-                                    <Card.Img className="d-block mx-auto" src={item.imageUrl} style={{ height: "300px", width: "200px" }} />
+                <Container className="home">
+                    <h3 style={{ textAlign: "center", marginBottom: "50px" }}>Pasiūlymai mainams</h3>
+                    <Row>
+                        {itemOffers.map((item) => (
+                            <Col sm={4} key={item.id}>
+                                <Card className="mb-4">
+                                    <Carousel style={{ height: "250px" }} >
+                                        {item.images && item.images.map((image, index) => (
+                                            <Carousel.Item key={index}>
+                                                <img
+                                                    className="d-block w-100"
+                                                    style={{ objectFit: "cover" }}
+                                                    src={`data:image/png;base64,${image.data}`}
+                                                    alt={item.name}
+                                                />
+                                            </Carousel.Item>
+                                        ))}
+                                    </Carousel>
                                     <Card.Body>
                                         <Card.Title>{item.name}</Card.Title>
                                         <Card.Text>{item.description}</Card.Text>
-                                        <Button variant="primary" disabled={isSubmitting} type="submit">Mainyti</Button>
+                                        <Card.Text>{item.message}</Card.Text>
+                                        <Card.Text>-{item.user}</Card.Text>
+                                        <ul className="list-group list-group-flush mb-3">
+                                            <li className="list-group-item d-flex justify-content-between align-items-center">
+                                                <span>{item.location}</span>
+                                            </li>
+                                            <li className="list-group-item d-flex justify-content-between align-items-center">
+                                                <span>Baigiasi:</span>
+                                                <span>{new Date(item.endDateTime).toLocaleString('lt-LT').slice(5, -3)}</span>
+                                            </li>
+                                        </ul>
+                                        <div className="d-flex justify-content-end">
+                                            <Button variant="primary" disabled={isSubmitting} onClick={() => handleOfferWinner(item.user, item.name, item.id)}>Mainyti!</Button>
+                                        </div>
                                     </Card.Body>
                                 </Card>
                             </Col>
-                        ))} */}
-                        <Col>
-                            <Card>
-                                <Card.Img className="d-block mx-auto" src="./images/phone.png" style={{ height: "300px", width: "200px" }} />
-                                <Card.Body>
-                                    <Card.Title>Samsungas</Card.Title>
-                                    <Card.Text>
-                                        Biski padauzytas, siek tiek ekranas neveikia, gali sprogt
-                                    </Card.Text>
-                                    <Button variant="primary">Mainyti</Button>
-                                </Card.Body>
-                            </Card>
-                        </Col>
-                        <Col>
-                            <Card>
-                                <Card.Img className="d-block mx-auto" src="./images/phone.png" style={{ height: "300px", width: "200px" }} />
-                                <Card.Body>
-                                    <Card.Title>Samsungas</Card.Title>
-                                    <Card.Text>
-                                        Biski padauzytas, siek tiek ekranas neveikia, gali sprogt
-                                    </Card.Text>
-                                    <Button variant="primary">Mainyti</Button>
-                                </Card.Body>
-                            </Card>
-                        </Col>
-                        <Col>
-                            <Card>
-                                <Card.Img className="d-block mx-auto" src="./images/phone.png" style={{ height: "300px", width: "200px" }} />
-                                <Card.Body>
-                                    <Card.Title>Samsungas</Card.Title>
-                                    <Card.Text>
-                                        Biski padauzytas, siek tiek ekranas neveikia, gali sprogt
-                                    </Card.Text>
-                                    <Button variant="primary">Mainyti</Button>
-                                </Card.Body>
-                            </Card>
-                        </Col>
-                    </div>
-                </div>
+                        ))}
+                    </Row>
+                </Container>
             )}
 
             {item.type === 'Klausimynas' && (

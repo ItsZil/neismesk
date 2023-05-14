@@ -1,4 +1,5 @@
 ﻿using MySql.Data.MySqlClient;
+using MySqlX.XDevAPI.Common;
 using neismesk.Models;
 using neismesk.Repositories.Image;
 using neismesk.ViewModels.Item;
@@ -134,16 +135,15 @@ namespace neismesk.Repositories.Item
 
             using (var connection = new MySqlConnection(_connectionString))
             {
-                using (MySqlCommand command = new MySqlCommand("SELECT ads.*, ad_type.type AS ad_type, " +
-                    "categories.name AS category_name, status.name AS status_name, " +
-                    "COUNT(ad_lottery_participants.id) AS participants_count, " +
+                using (MySqlCommand command = new MySqlCommand("SELECT ads.*, ad_type.type AS ad_type, categories.name AS category_name, status.name AS status_name, " +
+                    "COUNT(ad_lottery_participants.id) AS participants_count " +
                     "FROM ads " +
                     "JOIN ad_type ON ads.fk_type = ad_type.id " +
                     "JOIN categories ON ads.fk_category = categories.id " +
                     "JOIN status ON ads.fk_status = status.id " +
                     "LEFT JOIN ad_lottery_participants ON ads.id = ad_lottery_participants.fk_ad " +
                     "WHERE ads.fk_user = @userId " +
-                    "GROUP BY ads.id, ad_type.type, categories.name", connection))
+                    "GROUP BY ads.id, ad_type.type, categories.name ", connection))
                 {
                     await connection.OpenAsync();
                     command.Parameters.AddWithValue("@userId", userId);
@@ -646,5 +646,74 @@ namespace neismesk.Repositories.Item
             }
             return lotteryParticipants;
         }
-    }
+
+        public async Task<bool> InsertOffer(int itemId, OfferModel offer)
+        {
+            using MySqlConnection connection = GetConnection();
+            await connection.OpenAsync();
+
+            using MySqlCommand command = new MySqlCommand(
+                    "INSERT INTO ad_trading_offers (fk_main_item, fk_offer_item, offer_message) VALUES (@fk_main_item, @fk_offer_item, @offer_message)", connection);
+
+            // Add parameters
+            command.Parameters.AddWithValue("@fk_main_item", itemId);
+            command.Parameters.AddWithValue("@fk_offer_item", offer.SelectedItem);
+            command.Parameters.AddWithValue("@offer_message", offer.Message);
+
+            await command.ExecuteNonQueryAsync();
+            return true;
+        }
+
+
+        public async Task<List<TradingViewModel>> GetOffers(int itemId)
+        {
+            List<TradingViewModel> results = new List<TradingViewModel>();
+
+            using MySqlConnection connection = GetConnection();
+            await connection.OpenAsync();
+
+
+            using MySqlCommand command = new MySqlCommand(
+                "SELECT t.fk_offer_item, t.offer_message, a.name, a.description, a.location, a.end_datetime, CONCAT(u.name, ' ', u.surname) AS user " +
+                "FROM ad_trading_offers AS t " +
+                "INNER JOIN ads AS a ON a.id = t.fk_offer_item " +
+        "JOIN users AS u ON a.fk_user = u.user_id " +
+                "WHERE t.fk_main_item = @itemId ",
+                connection);
+
+            command.Parameters.AddWithValue("@itemId", itemId);
+
+
+            using (DbDataReader reader = await command.ExecuteReaderAsync())
+            {
+                while (await reader.ReadAsync())
+                {
+                    int id = reader.GetInt32("fk_offer_item");
+                    string message = reader.GetString("offer_message");
+                    string name = reader.GetString("name");
+                    string description = reader.GetString("description");
+                    string location = reader.GetString("location");
+                    DateTime end_time = reader.GetDateTime("end_datetime");
+                    string user = reader.GetString("user");
+
+                    TradingViewModel result = new TradingViewModel
+                    {
+                        Id = id,
+                        Message = message,
+                        Name = name,
+                        Description = description,
+                        Location = location,
+                        EndDateTime = end_time,
+                        Images = await _imageRepo.GetByAd(Convert.ToInt32(reader["fk_offer_item"])),
+                        User = user
+                    };
+                results.Add(result);
+            }
+        }
+
+            return results;
+                           
+        }
+
+}
 }
