@@ -50,7 +50,6 @@ export const ItemViewPage = () => {
                 try {
                     const response = await axios.get('api/item/getUserItems');
                     setUserItems(response.data);
-                    console.log(userItems);
                 } catch (error) {
                     //toast('Įvyko klaida, susisiekite su administratoriumi!');
                 }
