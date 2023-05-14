@@ -31,7 +31,7 @@ namespace neismesk.Services
 
             // Update item status to 'Ištrinktas laimėtojas'
             await _itemRepo.UpdateItemStatus(winner.ItemId, 2);
-            await _itemRepo.UpdateItemStatus(winner.UserItemId, 2);
+            await _itemRepo.UpdateItemStatus(winner.UserItemId, 3);
         }
     }
 }
