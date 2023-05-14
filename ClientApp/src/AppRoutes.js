@@ -8,6 +8,7 @@ import SearchResultsPage  from "./components/SearchResultsPage/SearchResultsPage
 import SearchResultsByCategoryPage  from "./components/SearchResultsByCategoryPage/SearchResultsByCategoryPage";
 import ChangePasswordPage from "./components/ChangePasswordPage/ChangePasswordPage";
 import VerifyEmailPage from "./components/VerifyEmailPage/VerifyEmailPage";
+import RepairShopCreationPage from "./components/RepairShopCreationPage/RepairShopCreationPage";
 
 // User authentication
 import { LoginPage } from "./components/LoginPage/LoginPage";
@@ -84,6 +85,10 @@ const AppRoutes = [
       element: <VerifyEmailPage />
   },
   {
+    path: '/taisykla/nauja',
+    element: <RepairShopCreationPage />
+  },
+   {
       path: '/laimejimas/:itemId',
       element: <ItemWinnerViewPage />
   }

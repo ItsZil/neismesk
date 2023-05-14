@@ -204,6 +204,9 @@ getItemsByCategory(categoryId) {
                             Privatumo politika
                         </Link>
                         <Link tag={Link} to="https://www.sandbox.paypal.com/donate/?hosted_button_id=CSYYU9CP8BSG6" className="links">Parama</Link>
+                        <Link tag={Link} className="links" to="/taisykla/nauja">
+                            Reklamos registracija
+                        </Link>
                     </div>
                 </footer>
             </>

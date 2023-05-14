@@ -16,7 +16,7 @@ namespace neismesk.Controllers.Item
 {
     [ApiController]
     [Route("api/[controller]")]
-    public class ItemController : ControllerBase
+    public class ItemController : Controller
     {
         private readonly TypeRepo _typeRepo;
         private readonly CategoryRepo _categoryRepo;
