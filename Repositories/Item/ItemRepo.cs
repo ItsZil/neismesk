@@ -689,14 +689,14 @@ namespace neismesk.Repositories.Item
                 {
                     TradingViewModel result = new TradingViewModel
                     {
-                        Id = reader.GetInt32("fk_offer_item");
-                        Message = reader.GetString("offer_message");
-                        Name = reader.GetString("name");
-                        Description = reader.GetString("description");
-                        Location = reader.GetString("location");
-                        EndDateTime = reader.GetDateTime("end_datetime");
-                        Images = await _imageRepo.GetByAd(Convert.ToInt32(reader["fk_offer_item"]));
-                        User = reader.GetString("user");
+                        Id = reader.GetInt32("fk_offer_item"),
+                        Message = reader.GetString("offer_message"),
+                        Name = reader.GetString("name"),
+                        Description = reader.GetString("description"),
+                        Location = reader.GetString("location"),
+                        EndDateTime = reader.GetDateTime("end_datetime"),
+                        Images = await _imageRepo.GetByAd(Convert.ToInt32(reader["fk_offer_item"])),
+                        User = reader.GetString("user"),
                     };
                 results.Add(result);
             }
