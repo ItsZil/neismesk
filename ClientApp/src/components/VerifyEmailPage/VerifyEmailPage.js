@@ -26,11 +26,11 @@ const VerifyEmailPage = () => {
             fetch("api/user/verifyEmail", requestOptions)
                 .then(response => {
                     if (response.status === 200) {
-                        toast('El. pašto adresas sėkmingai patvirtintas!');
+                        toast.success('El. pašto adresas sėkmingai patvirtintas!');
                         navigate("/prisijungimas");
                     }
                     else if (response.status === 404) {
-                        toast("Neteisingi nuorodos duomenys. Bandykite iš naujo arba susisiekite su administratoriumi.", {
+                        toast.error("Neteisingi nuorodos duomenys. Bandykite iš naujo arba susisiekite su administratoriumi.", {
                             style: {
                                 backgroundColor: 'red',
                                 color: 'white',
@@ -38,7 +38,7 @@ const VerifyEmailPage = () => {
                         });
                     }
                     else {
-                        toast("Įvyko klaida, susisiekite su administratoriumi!", {
+                        toast.error("Įvyko klaida, susisiekite su administratoriumi!", {
                             style: {
                                 backgroundColor: 'red',
                                 color: 'white',

@@ -55,34 +55,20 @@ const ChangePasswordPage = () => {
             fetch("api/user/changePassword", requestOptions)
                 .then(response => {
                     if (response.status === 200) {
-                        toast('Slaptažodis sėkmingai pakeistas!');
+                        toast.success('Slaptažodis sėkmingai pakeistas!');
                         navigate("/prisijungimas");
                     }
                     else if (response.status === 401) {
-                        toast("Neteisingi nuorodos duomenys. Pakartokite slaptažodžio pakeitimo užklausą.", {
-                            style: {
-                                backgroundColor: 'red',
-                                color: 'white',
-                            },
-                        });
+                        toast.error("Neteisingi nuorodos duomenys. Pakartokite slaptažodžio pakeitimo užklausą.");
                     }
                     else if (response.status === 300) {
-                        toast("Pasibaigė laikotarpios pakeisti slaptažodžiui. Pakartokite slaptažodžio pakeitimo užklausą.", {
-                            style: {
-                                backgroundColor: 'red',
-                                color: 'white',
-                            },
-                        });
+                        toast.error("Pasibaigė laikotarpios pakeisti slaptažodžiui. Pakartokite slaptažodžio pakeitimo užklausą.")
                     }
                     else {
-                        toast("Įvyko klaida, susisiekite su administratoriumi!", {
-                            style: {
-                                backgroundColor: 'red',
-                                color: 'white',
-                            },
-                        });
+                        toast.error("Įvyko klaida, susisiekite su administratoriumi!");
+                    }
                 }
-            })
+            );
         }
     }
 

@@ -80,3 +80,7 @@ footer {
     right: 0;
     z-index: 100;
 }
+
+#nav-dropdown {
+    min-width: auto !important;
+}

@@ -27,7 +27,7 @@ function ItemUpdatePage() {
         })
         .catch(error => {
             console.log(error);
-            toast("Įvyko klaida, susisiekite su administratoriumi!");
+            toast.error("Įvyko klaida, susisiekite su administratoriumi!");
         })
 }, []);
 
@@ -45,7 +45,7 @@ useEffect(() => {
         }
         else
         {
-          toast('Įvyko klaida, susisiekite su administratoriumi!');
+          toast.error('Įvyko klaida, susisiekite su administratoriumi!');
         }
       }
   };
@@ -71,11 +71,11 @@ useEffect(() => {
         } catch (error) {
           if (error.response.status === 401) {
             navigate('/prisijungimas');
-            toast('Turite būti prisijungęs!');
+            toast.error('Turite būti prisijungęs!');
           }
           else
           {
-            toast('Įvyko klaida, susisiekite su administratoriumi!');
+            toast.error('Įvyko klaida, susisiekite su administratoriumi!');
           }
         }
     };
@@ -89,7 +89,7 @@ if (!isLoggedInAsAdmin)
 {
     if (item && viewerId && item.userId !== viewerId) {
       navigate('/');
-      toast('Jūs nesate šio skelbimo savininkas');
+      toast.error('Jūs nesate šio skelbimo savininkas');
     }
 }
 
@@ -140,7 +140,7 @@ if (!isLoggedInAsAdmin)
       navigate(`/skelbimas/${itemId}`);
     } catch (error) {
       console.log(error);
-      toast('Ivyko klaida, susisiekite su administratoriumi!');
+      toast.error('Ivyko klaida, susisiekite su administratoriumi!');
     }
   };
 
@@ -195,7 +195,7 @@ function handleDeleteImage(id) {
         });
     }
     catch (error) {
-        toast("Įvyko klaida, susisiekite su administratoriumi!");
+        toast.error("Įvyko klaida, susisiekite su administratoriumi!");
         console.log(error);
     }
 }

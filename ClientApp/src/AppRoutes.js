@@ -19,78 +19,84 @@ import { DetailedItemInfoPage } from "./components/DetailedItemInfoPage/Detailed
 import ItemCreationPage from "./components/ItemCreation/ItemCreationPage";
 import { ItemWinnerViewPage } from "./components/ItemWinnerViewPage/ItemWinnerViewPage";
 
+import { AdminRepairShopListPage } from "./components/AdminRepairShopListPage/AdminRepairShopListPage";
+
 const AppRoutes = [
-  {
-    path: '/apie-mus',
-    element: <AboutUs />
-  },
-  {
-    path: '/prisijungimas',
-    element: <LoginPage />
-  },
-  {
-    index: true,
-    element: <HomePage />
-  },
-  {
-    path: '/registracija',
-    element: <RegistrationPage />
-  },
-  {
-  path: '/pamirsau-slaptazodi',
-  element: <ForgotPasswordPage />
-  },
-  {
-  path: '/pagalba',
-  element: <HelpPage />
-  },
-  {
-    path: '/profile',
-    element: <ProfilePage />
-  },
-  {
-    path: '/pamirsau-slaptazodi',
-    element: <ForgotPasswordPage />
-  },
-  {
-      path: '/skelbimas/:itemId',
-      element: <ItemViewPage />
-  },
-  {
-      path: '/skelbimas/redaguoti/:itemId',
-      element: <ItemUpdatePage />
-  },
-  {
-      path: '/skelbimas/naujas',
-      element: <ItemCreationPage />
-  },
-  {
-      path: '/skelbimas/detailedItem/:itemId',
-      element: <DetailedItemInfoPage />
-  },
-  {
-    path: '/search/:searchQuery',
-    element: <SearchResultsPage />
-  },
-  {
-    path: '/search/category/:categoryId',
-    element: <SearchResultsByCategoryPage />
-  },
-  {
-    path: '/changepassword',
-    element: <ChangePasswordPage />
-  },
-  {
-      path: '/verifyemail',
-      element: <VerifyEmailPage />
-  },
-  {
-    path: '/taisykla/nauja',
-    element: <RepairShopCreationPage />
-  },
-   {
-      path: '/laimejimas/:itemId',
-      element: <ItemWinnerViewPage />
-  }
+    {
+        path: '/apie-mus',
+        element: <AboutUs />
+    },
+    {
+        path: '/prisijungimas',
+        element: <LoginPage />
+    },
+    {
+        index: true,
+        element: <HomePage />
+    },
+    {
+        path: '/registracija',
+        element: <RegistrationPage />
+    },
+    {
+        path: '/pamirsau-slaptazodi',
+        element: <ForgotPasswordPage />
+    },
+    {
+        path: '/pagalba',
+        element: <HelpPage />
+    },
+    {
+        path: '/profile',
+        element: <ProfilePage />
+    },
+    {
+        path: '/pamirsau-slaptazodi',
+        element: <ForgotPasswordPage />
+    },
+    {
+        path: '/skelbimas/:itemId',
+        element: <ItemViewPage />
+    },
+    {
+        path: '/skelbimas/redaguoti/:itemId',
+        element: <ItemUpdatePage />
+    },
+    {
+        path: '/skelbimas/naujas',
+        element: <ItemCreationPage />
+    },
+    {
+        path: '/skelbimas/detailedItem/:itemId',
+        element: <DetailedItemInfoPage />
+    },
+    {
+        path: '/search/:searchQuery',
+        element: <SearchResultsPage />
+    },
+    {
+        path: '/search/category/:categoryId',
+        element: <SearchResultsByCategoryPage />
+    },
+    {
+        path: '/changepassword',
+        element: <ChangePasswordPage />
+    },
+    {
+        path: '/verifyemail',
+        element: <VerifyEmailPage />
+    },
+    {
+        path: '/taisykla/nauja',
+        element: <RepairShopCreationPage />
+    },
+    {
+        path: '/laimejimas/:itemId',
+        element: <ItemWinnerViewPage />
+    },
+    {
+        path: '/admin/taisyklos',
+        element: <AdminRepairShopListPage />
+    }
 ];
 export default AppRoutes;

@@ -13,6 +13,7 @@ export const ItemWinnerViewPage = () => {
     const [message, setMessage] = useState('');
     const [item, setItem] = useState(null);
     const [posterEmail, setPosterEmail] = useState(null);
+    const [repairShopList, setRepairShopList] = useState(null);
     const [sending, setSending] = useState(false);
     const navigate = useNavigate();
 
@@ -29,12 +30,12 @@ export const ItemWinnerViewPage = () => {
                 }
             } catch (error) {
                 if (error.response.status === 401) {
-                    navigate('/login');
-                    toast('Turite būti prisijungęs!');
+                    navigate('/prisijungimas');
+                    toast.error('Turite būti prisijungęs!');
                 }
                 else {
                     navigate('/index');
-                    toast('Įvyko klaida, susisiekite su administratoriumi!');
+                    toast.error('Įvyko klaida, susisiekite su administratoriumi!');
                 }
             }
         };
@@ -47,7 +48,7 @@ export const ItemWinnerViewPage = () => {
                 const response = await axios.get(`api/item/getItem/${itemId}`);
                 setItem(response.data);
             } catch (error) {
-                toast('Įvyko klaida, susisiekite su administratoriumi!');
+                toast.error('Įvyko klaida, susisiekite su administratoriumi!');
             }
         };
         fetchItem();
@@ -59,13 +60,27 @@ export const ItemWinnerViewPage = () => {
                 const response = await axios.get(`api/user/getUserEmail/${item.userId}`);
                 setPosterEmail(response.data);
             } catch (error) {
-                toast('Įvyko klaida, susisiekite su administratoriumi!');
+                toast.error('Įvyko klaida, susisiekite su administratoriumi!');
             }
         };
         if (item && item.userId) {
             fetchPosterEmail();
         }
     }, [item]);
+
+    useEffect(() => {
+        const fetchRepairShops = async () => {
+            try {
+                const response = await axios.get('api/repairshop/getRepairShops');
+                setRepairShopList(response.data);
+            } catch (error) {
+                toast.error('Įvyko klaida, susisiekite su administratoriumi!');
+            }
+        };
+        if (canAccess) {
+            fetchRepairShops();
+        }
+    }, [canAccess]);
 
     const handleMessageChange = (event) => {
         setMessage(event.target.value);
@@ -79,7 +94,7 @@ export const ItemWinnerViewPage = () => {
         event.preventDefault();
 
         if (phone.length < 9) {
-            toast('Įveskite telefono numerį!');
+            toast.error('Įveskite telefono numerį!');
             return;
         }
 
@@ -96,20 +111,20 @@ export const ItemWinnerViewPage = () => {
         axios.post('api/item/submitWinnerDetails', data)
             .then(response => {
                 if (response.data) {
-                    toast('Sėkmingai išsiųstas pranešimas skelbėjui!');
+                    toast.success('Sėkmingai išsiųstas pranešimas skelbėjui!');
                 }
                 else {
-                    toast('Įvyko klaida, susisiekite su administratoriumi!');
+                    toast.error('Įvyko klaida, susisiekite su administratoriumi!');
                     setSending(false);
                 }
             })
             .catch(error => {
-                toast('Įvyko klaida, susisiekite su administratoriumi!');
+                toast.error('Įvyko klaida, susisiekite su administratoriumi!');
                 setSending(false);
             });
     };
 
-    return item && viewerId && canAccess && posterEmail ? (
+    return item && viewerId && canAccess && posterEmail && repairShopList ? (
         <div className='outerBoxWrapper'>
             <Toaster />
             <Container className="my-5">
@@ -137,6 +152,20 @@ export const ItemWinnerViewPage = () => {
                                 <Card.Title>Laimėjote: {item.name}</Card.Title>
                                 <Card.Text>{item.description}</Card.Text>
                                 <hr></hr>
+                                {repairShopList.filter(shop => shop.approved).length > 0 ? (
+                                    <div><Card.Text>Jeigu įrenginys turi defektą, susisiekite su vienu iš mūsų rekomenduojamų patikimų taisyklų:</Card.Text>
+                                    <ul>
+                                        {repairShopList
+                                            .filter(shop => shop.approved)
+                                            .map(shop => (
+                                                <li key={shop.id}>
+                                                    {shop.name} - {shop.address}, {shop.city}, {shop.phone_number}
+                                                </li>
+                                            ))}
+                                        </ul>
+                                        <hr></hr>
+                                    </div>
+                                ) : null }
                                 <Card.Text>Norint suderinti atsiėmimą ar pristatymą, pateikite savo kontaktinius duomenis, su kuriais skelbėjas galės su Jumis susisiekti:</Card.Text>
                                 <Form onSubmit={handleSubmit}>
                                     <Form.Group>

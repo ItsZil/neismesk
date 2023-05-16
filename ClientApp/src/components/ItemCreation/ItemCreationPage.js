@@ -58,14 +58,14 @@ const ItemCreationPage = () => {
             })
             .catch(error => {
                 console.log(error);
-                toast("Įvyko klaida, susisiekite su administratoriumi!");
+                toast.error("Įvyko klaida, susisiekite su administratoriumi!");
             });
     }, []);
 
     useEffect(() => {
         if (images.length < 1) return;
         if (images.length > 6) {
-            toast("Negalima įkelti daugiau nei 6 nuotraukų!", {
+            toast.error("Negalima įkelti daugiau nei 6 nuotraukų!", {
                 style: {
                     backgroundColor: 'red',
                     color: 'white',
@@ -82,7 +82,7 @@ const ItemCreationPage = () => {
             });
         }
         catch (error) {
-            toast("Įvyko klaida, susisiekite su administratoriumi!");
+            toast.error("Įvyko klaida, susisiekite su administratoriumi!");
             console.log(error);
         }
     }
@@ -94,7 +94,7 @@ const ItemCreationPage = () => {
             });
         }
         catch (error) {
-            toast("Įvyko klaida, susisiekite su administratoriumi!");
+            toast.error("Įvyko klaida, susisiekite su administratoriumi!");
             console.log(error);
         }
     }

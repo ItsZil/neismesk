@@ -25,7 +25,7 @@ export const LoginPage = () => {
               }
               else
               {
-                toast('Įvyko klaida, susisiekite su administratoriumi!');
+                toast.error('Įvyko klaida, susisiekite su administratoriumi!');
               }
             }
         };
@@ -49,7 +49,7 @@ export const LoginPage = () => {
                     window.location.href = "/";
                 }
                 else if (response.status === 404) {
-                    toast("Prisijungimo duomenys neteisingi!", {
+                    toast.error("Prisijungimo duomenys neteisingi!", {
                         style: {
                             backgroundColor: 'red',
                             color: 'white',
@@ -57,7 +57,7 @@ export const LoginPage = () => {
                     });
                 }
                 else if (response.status === 401) {
-                    toast("El. pašto adresas nepatvirtintas. Patikrinkite savo elektroninį paštą!", {
+                    toast.error("El. pašto adresas nepatvirtintas. Patikrinkite savo elektroninį paštą!", {
                         style: {
                             backgroundColor: 'red',
                             color: 'white',
@@ -65,7 +65,7 @@ export const LoginPage = () => {
                     });
                 }
                 else {
-                    toast("Įvyko klaida, susisiekite su administratoriumi!", {
+                    toast.error("Įvyko klaida, susisiekite su administratoriumi!", {
                         style: {
                             backgroundColor: 'red',
                             color: 'white',

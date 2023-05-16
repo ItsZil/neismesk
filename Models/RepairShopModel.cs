@@ -14,5 +14,7 @@
 
         public string City { get; set; }
 
+        public bool? Approved { get; set; }
+
     }
 }

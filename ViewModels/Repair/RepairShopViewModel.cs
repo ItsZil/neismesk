@@ -4,6 +4,9 @@ namespace neismesk.ViewModels.Repair
 {
     public class RepairShopViewModel
     {
+        [JsonProperty("id")]
+        public int Id { get; set; }
+        
         [JsonProperty("name")]
         public string Name { get; set; }
 
@@ -18,5 +21,8 @@ namespace neismesk.ViewModels.Repair
         
         [JsonProperty("city")]
 		public string City { get; set; }
+
+        [JsonProperty("approved")]
+        public bool Approved { get; set; }
     }
 }

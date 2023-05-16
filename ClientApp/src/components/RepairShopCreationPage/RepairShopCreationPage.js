@@ -19,31 +19,16 @@ const RepairShopCreationPage = () => {
     function checkFields() {
         const phoneRegex = /^(86|\+3706)/;
         if (name === '' || phone_number === '' || email === '' || address === '' || city === '' ) {
-            toast.error('Reikia užpildyti visus laukus!', {
-                style: {
-                    backgroundColor: 'red',
-                    color: 'white',
-                },
-            });
+            toast.error('Reikia užpildyti visus laukus!');
             return false;
         }
         else if (!/\S+@\S+\.\S+/.test(email)) {
-            toast.error('Įveskite teisingą el. paštą!', {
-                style: {
-                    backgroundColor: 'red',
-                    color: 'white',
-                },
-            });
+            toast.error('Įveskite teisingą el. paštą!');
             return false;
         }
         else if (!phoneRegex.test(phone_number) || phone_number.length >= 14)
         {
-            toast.error('Įveskite teisingą telefono numerį!', {
-                style: {
-                    backgroundColor: 'red',
-                    color: 'white',
-                },
-            });
+            toast.error('Įveskite teisingą telefono numerį!');
             return false;
         }
         else {
@@ -64,12 +49,7 @@ const RepairShopCreationPage = () => {
                 axios.post("api/repairshop/create", formData)
                     .then(response => {
                         if (response.status === 200) {
-                            toast.success('Sėkmingai užregistravote reklamą, su Jumis susisieks administracija dėl sekančių žingsnių!', {
-                                style: {
-                                    backgroundColor: 'rgb(14, 160, 14)',
-                                    color: 'white',
-                                },
-                            });
+                            toast.success('Sėkmingai užregistravote reklamą, su Jumis susisieks administracija dėl sekančių žingsnių!');
                             navigate(`/`)
                         }
                         else {
