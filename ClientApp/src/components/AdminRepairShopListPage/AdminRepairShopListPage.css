@@ -1,0 +1,10 @@
+﻿.outerBoxWrapper {
+    padding-top: 80px;
+    padding-bottom: 80px;
+}
+
+hr {
+    margin-top: 5%;
+    margin-bottom: 5%;
+    border: grey solid 1px;
+}

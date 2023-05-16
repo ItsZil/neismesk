@@ -51,5 +51,34 @@ namespace neismesk.Repositories.RepairShop
 
             return id;
         }
+
+        public async Task<List<RepairShopModel>> GetRepairShops()
+        {
+            using MySqlConnection connection = GetConnection();
+            await connection.OpenAsync();
+
+            using MySqlCommand command = new MySqlCommand(
+                "SELECT * FROM repair_shop", connection);
+
+            List<RepairShopModel> repairShops = new List<RepairShopModel>();
+            using (DbDataReader reader = await command.ExecuteReaderAsync())
+            {
+                while (await reader.ReadAsync())
+                {
+                    RepairShopModel repairShop = new RepairShopModel()
+                    {
+                        Id = Convert.ToInt32(reader["id"]),
+                        Name = Convert.ToString(reader["name"]),
+                        Phone_number = Convert.ToString(reader["phone_number"]),
+                        Email = Convert.ToString(reader["email"]),
+                        Address = Convert.ToString(reader["address"]),
+                        City = Convert.ToString(reader["city"]),
+                        Approved = Convert.ToBoolean(reader["approved"])
+                    };
+                    repairShops.Add(repairShop);
+                }
+            }
+            return repairShops;
+        }
     }
 }

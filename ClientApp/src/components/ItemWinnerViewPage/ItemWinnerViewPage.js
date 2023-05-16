@@ -29,7 +29,7 @@ export const ItemWinnerViewPage = () => {
                 }
             } catch (error) {
                 if (error.response.status === 401) {
-                    navigate('/login');
+                    navigate('/prisijungimas');
                     toast('Turite būti prisijungęs!');
                 }
                 else {

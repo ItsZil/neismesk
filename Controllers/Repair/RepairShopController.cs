@@ -15,6 +15,7 @@ namespace neismesk.Controllers.Repair
         {
             _repairShopRepo = new RepairShopRepo();
         }
+
         [HttpPost("create")]
         public async Task<IActionResult> CreateRepairShop()
         {
@@ -32,11 +33,24 @@ namespace neismesk.Controllers.Repair
                 repair_shop.Id = await _repairShopRepo.Create(repair_shop);
                 return Ok();
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-                return BadRequest();
+                return BadRequest(ex.Message);
             }
+        }
 
+        [HttpGet("getRepairShops")]
+        public async Task<IActionResult> GetRepairShops()
+        {
+            try
+            {
+                List<RepairShopModel> repair_shops = await _repairShopRepo.GetRepairShops();
+                return Ok(repair_shops);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
         }
     }
 }
