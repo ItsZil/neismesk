@@ -54,7 +54,7 @@ export class NavMenu extends Component {
         })
         .catch(error => {
             console.log(error);
-            toast("Įvyko klaida, susisiekite su administratoriumi!");
+            toast.error("Įvyko klaida, susisiekite su administratoriumi!");
         })
     }
     

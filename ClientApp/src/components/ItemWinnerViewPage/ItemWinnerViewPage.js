@@ -30,11 +30,11 @@ export const ItemWinnerViewPage = () => {
             } catch (error) {
                 if (error.response.status === 401) {
                     navigate('/prisijungimas');
-                    toast('Turite būti prisijungęs!');
+                    toast.error('Turite būti prisijungęs!');
                 }
                 else {
                     navigate('/index');
-                    toast('Įvyko klaida, susisiekite su administratoriumi!');
+                    toast.error('Įvyko klaida, susisiekite su administratoriumi!');
                 }
             }
         };
@@ -47,7 +47,7 @@ export const ItemWinnerViewPage = () => {
                 const response = await axios.get(`api/item/getItem/${itemId}`);
                 setItem(response.data);
             } catch (error) {
-                toast('Įvyko klaida, susisiekite su administratoriumi!');
+                toast.error('Įvyko klaida, susisiekite su administratoriumi!');
             }
         };
         fetchItem();
@@ -59,7 +59,7 @@ export const ItemWinnerViewPage = () => {
                 const response = await axios.get(`api/user/getUserEmail/${item.userId}`);
                 setPosterEmail(response.data);
             } catch (error) {
-                toast('Įvyko klaida, susisiekite su administratoriumi!');
+                toast.error('Įvyko klaida, susisiekite su administratoriumi!');
             }
         };
         if (item && item.userId) {
@@ -79,7 +79,7 @@ export const ItemWinnerViewPage = () => {
         event.preventDefault();
 
         if (phone.length < 9) {
-            toast('Įveskite telefono numerį!');
+            toast.error('Įveskite telefono numerį!');
             return;
         }
 
@@ -96,15 +96,15 @@ export const ItemWinnerViewPage = () => {
         axios.post('api/item/submitWinnerDetails', data)
             .then(response => {
                 if (response.data) {
-                    toast('Sėkmingai išsiųstas pranešimas skelbėjui!');
+                    toast.success('Sėkmingai išsiųstas pranešimas skelbėjui!');
                 }
                 else {
-                    toast('Įvyko klaida, susisiekite su administratoriumi!');
+                    toast.error('Įvyko klaida, susisiekite su administratoriumi!');
                     setSending(false);
                 }
             })
             .catch(error => {
-                toast('Įvyko klaida, susisiekite su administratoriumi!');
+                toast.error('Įvyko klaida, susisiekite su administratoriumi!');
                 setSending(false);
             });
     };

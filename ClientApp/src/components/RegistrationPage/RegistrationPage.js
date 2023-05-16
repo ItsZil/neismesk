@@ -30,7 +30,7 @@ const RegistrationPage = () => {
               }
               else
               {
-                toast('Įvyko klaida, susisiekite su administratoriumi!');
+                toast.error('Įvyko klaida, susisiekite su administratoriumi!');
               }
             }
         };
@@ -79,11 +79,11 @@ const RegistrationPage = () => {
             fetch("api/user/register", requestOptions)
                 .then(response => {
                     if (response.status === 200) {
-                        toast('Sėkmingai prisiregistravote. Elektroninio pašto patvirtinimas išsiųstas.');
+                        toast.success('Sėkmingai prisiregistravote. Elektroninio pašto patvirtinimas išsiųstas.');
                         navigate("/prisijungimas");
                     }
                     else if (response.status === 401) {
-                        toast("Nepavyko išsiųsti patvirtinimo laiško! Susisiekite su administratoriumi.", {
+                        toast.error("Nepavyko išsiųsti patvirtinimo laiško! Susisiekite su administratoriumi.", {
                             style: {
                                 backgroundColor: 'red',
                                 color: 'white',
@@ -91,7 +91,7 @@ const RegistrationPage = () => {
                         });
                     }
                     else {
-                        toast("Įvyko klaida, susisiekite su administratoriumi!", {
+                        toast.error("Įvyko klaida, susisiekite su administratoriumi!", {
                             style: {
                                 backgroundColor: 'red',
                                 color: 'white',

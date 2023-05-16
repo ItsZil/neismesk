@@ -24,7 +24,7 @@ export const DetailedItemInfoPage = () => {
                 setItem(response.data);
 
             } catch (error) {
-                toast('Įvyko klaida, susisiekite su administratoriumi!');
+                toast.error('Įvyko klaida, susisiekite su administratoriumi!');
             }
         };
 
@@ -43,7 +43,7 @@ export const DetailedItemInfoPage = () => {
                     setIsLoggedInAsAdmin(false);
                 }
                 else {
-                    toast('Įvyko klaida, susisiekite su administratoriumi!');
+                    toast.error('Įvyko klaida, susisiekite su administratoriumi!');
                 }
             }
         };
@@ -58,10 +58,10 @@ export const DetailedItemInfoPage = () => {
             } catch (error) {
                 if (error.response.status === 401) {
                     navigate('/prisijungimas');
-                    toast('Turite būti prisijungęs!');
+                    toast.error('Turite būti prisijungęs!');
                 }
                 else {
-                    toast('Įvyko klaida, susisiekite su administratoriumi!');
+                    toast.error('Įvyko klaida, susisiekite su administratoriumi!');
                 }
             }
         };
@@ -87,7 +87,7 @@ export const DetailedItemInfoPage = () => {
                 const response = await axios.get(`api/item/getQuestionsAndAnswers/${itemId}`);
                 setItemQuestions_Answers(response.data);
             } catch (error) {
-                toast('Įvyko klaida, susisiekite su administratoriumi!');
+                toast.error('Įvyko klaida, susisiekite su administratoriumi!');
             }
         };
 
@@ -100,7 +100,7 @@ export const DetailedItemInfoPage = () => {
                  const response = await axios.get(`api/item/getOffers/${itemId}`);
                  setItemOffers(response.data);
              } catch (error) {
-                 toast('Įvyko klaida, susisiekite su administratoriumi!');
+                 toast.error('Įvyko klaida, susisiekite su administratoriumi!');
              }
          };
     
@@ -115,7 +115,7 @@ export const DetailedItemInfoPage = () => {
                     setItemLotteryParticipants(response.data);
                     console.log(response.data);
                 } catch (error) {
-                    toast('Įvyko klaida, susisiekite su administratoriumi!');
+                    toast.error('Įvyko klaida, susisiekite su administratoriumi!');
                 }
             };
     
@@ -132,19 +132,19 @@ export const DetailedItemInfoPage = () => {
             await axios.post(`/api/item/chooseQuestionnaireWinner`, requestBody)
             .then(response => {
                 if (response) {
-                    toast('Išsirinkote, kam padovanoti! Laimėtojui išsiųstas el. laiškas dėl susisiekimo.');
+                    toast.success('Išsirinkote, kam padovanoti! Laimėtojui išsiųstas el. laiškas dėl susisiekimo.');
                     navigate(`/`);
                 }
                 else {
-                    toast('Įvyko klaida, susisiekite su administratoriumi!');
+                    toast.error('Įvyko klaida, susisiekite su administratoriumi!');
                 }
             })
             .catch(error => {
                 if (error.response.status === 401) {
-                    toast('Turite būti prisijungęs!');
+                    toast.success('Turite būti prisijungęs!');
                 }
                 else {
-                    toast('Įvyko klaida, susisiekite su administratoriumi!');   
+                    toast.error('Įvyko klaida, susisiekite su administratoriumi!');   
                 }
             });
             setSubmitting(false);
@@ -162,20 +162,20 @@ export const DetailedItemInfoPage = () => {
         await axios.post(`/api/item/chooseOfferWinner`, requestBody)
             .then(response => {
                 if (response) {
-                    toast('Išsirinkote, su kuo mainyti! Laimėtojui išsiųstas el. laiškas dėl susisiekimo.');
+                    toast.success('Išsirinkote, su kuo mainyti! Laimėtojui išsiųstas el. laiškas dėl susisiekimo.');
                     navigate(`/`);
                 }
                 else {
-                    toast('Įvyko klaida, susisiekite su administratoriumi!');
+                    toast.error('Įvyko klaida, susisiekite su administratoriumi!');
                 }
             })
             .catch(error => {
                 if (error.response.status === 401) {
-                    toast('Turite būti prisijungęs!');
+                    toast.error('Turite būti prisijungęs!');
                 }
                 else {
                     console.log(error);
-                    toast('Įvyko klaida, susisiekite su administratoriumi!');
+                    toast.error('Įvyko klaida, susisiekite su administratoriumi!');
                 }
             });
         setSubmitting(false);

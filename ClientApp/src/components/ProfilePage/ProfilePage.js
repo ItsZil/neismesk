@@ -59,7 +59,7 @@ const ProfilePage = () => {
         const new_password = formData.get('new_password');
 
         if ((name === '' || surname === '' || email === '') && new_password === '' && old_password === '') {
-            toast('Vardas, pavardė arba el. paštas negali būti tušti!', {
+            toast.error('Vardas, pavardė arba el. paštas negali būti tušti!', {
                 style: {
                     backgroundColor: 'red',
                     color: 'white',
@@ -68,7 +68,7 @@ const ProfilePage = () => {
             return false;
         }
         else if ((new_password !== '' && old_password === '') || old_password !== '' && new_password === '') {
-            toast('Visi lauktai turi būti užpildyti norint keisti slaptažodi!', {
+            toast.error('Visi lauktai turi būti užpildyti norint keisti slaptažodi!', {
                 style: {
                     backgroundColor: 'red',
                     color: 'white',
@@ -98,7 +98,7 @@ const ProfilePage = () => {
             axios.post("api/user/updateProfileDetails", formData)
             .then(response => {
                 if (response.status === 200) {
-                    toast('Duomenys sėkmingai išsaugoti!', {
+                    toast.success('Duomenys sėkmingai išsaugoti!', {
                         style: {
                             backgroundColor: 'rgb(14, 160, 14)',
                             color: 'white',
@@ -106,20 +106,15 @@ const ProfilePage = () => {
                     });
                 }
                 else {
-                    toast("Įvyko klaida, susisiekite su administratoriumi!");
+                    toast.error("Įvyko klaida, susisiekite su administratoriumi!");
                 }
             })
             .catch(error => {
                 if (error.response.data) {
-                    toast(error.response.data, {
-                        style: {
-                            backgroundColor: 'red',
-                            color: 'white',
-                        },
-                    });
+                    toast.error(error.response.data);
                 }
                 else {
-                    toast("Įvyko klaida, susisiekite su administratoriumi!");
+                    toast.error("Įvyko klaida, susisiekite su administratoriumi!");
                 }
             });
         }

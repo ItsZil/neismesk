@@ -31,7 +31,7 @@ export const ItemViewPage = () => {
                 }, 1000);
 
             } catch (error) {
-                toast('Įvyko klaida, susisiekite su administratoriumi!');
+                toast.error('Įvyko klaida, susisiekite su administratoriumi!');
             }
         };
 
@@ -51,7 +51,7 @@ export const ItemViewPage = () => {
                     const response = await axios.get('api/item/getUserItems');
                     setUserItems(response.data);
                 } catch (error) {
-                    //toast('Įvyko klaida, susisiekite su administratoriumi!');
+                    //toast.error('Įvyko klaida, susisiekite su administratoriumi!');
                 }
             };
             fetchUserItems();
@@ -62,7 +62,7 @@ export const ItemViewPage = () => {
                     const response = await axios.get(`api/item/isUserParticipatingInLottery/${itemId}`);
                     setIsUserParticipating(response.data);
                 } catch (error) {
-                    //toast('Įvyko klaida, susisiekite su administratoriumi!');
+                    //toast.error('Įvyko klaida, susisiekite su administratoriumi!');
                 }
             };
             fetchIsUserParticipating();
@@ -75,7 +75,7 @@ export const ItemViewPage = () => {
                 const response = await axios.get('api/user/getCurrentUserId');
                 setViewerId(response.data);
             } catch (error) {
-                //toast('Įvyko klaida, susisiekite su administratoriumi!');
+                //toast.error('Įvyko klaida, susisiekite su administratoriumi!');
             }
         };
         fetchViewerId();
@@ -93,7 +93,7 @@ export const ItemViewPage = () => {
                     setIsLoggedInAsAdmin(false);
                 }
                 else {
-                    toast('Įvyko klaida, susisiekite su administratoriumi!');
+                    toast.error('Įvyko klaida, susisiekite su administratoriumi!');
                 }
             }
         };
@@ -119,14 +119,14 @@ export const ItemViewPage = () => {
         event.preventDefault();
 
         if (item.type === 'Keitimas' && !selectedItem) {
-            toast('Pasirinkite skelbimą, kurį norite pasiūlyti keitimui.');
+            toast.error('Pasirinkite skelbimą, kurį norite pasiūlyti keitimui.');
             return;
         }
         else if (item.type === 'Klausimynas') {
             const unansweredQuestions = item.questions.filter(q => !answers[q.id]);
 
             if (unansweredQuestions.length > 0) {
-                toast('Atsakykite į visus klausimus.');
+                toast.error('Atsakykite į visus klausimus.');
                 return;
             }
         }
@@ -142,7 +142,7 @@ export const ItemViewPage = () => {
                 axios.post(`api/item/enterLottery/${itemId}`, data)
                     .then(response => {
                         if (response.data) {
-                            toast('Sėkmingai prisijungėte prie loterijos!');
+                            toast.success('Sėkmingai prisijungėte prie loterijos!');
 
                             setIsUserParticipating(true);
                             setItem({
@@ -151,15 +151,15 @@ export const ItemViewPage = () => {
                             });
                         }
                         else {
-                            toast('Įvyko klaida, susisiekite su administratoriumi!');
+                            toast.error('Įvyko klaida, susisiekite su administratoriumi!');
                         }
                     })
                     .catch(error => {
                         if (error.response.status === 401) {
-                            toast('Turite būti prisijungęs!');
+                            toast.error('Turite būti prisijungęs!');
                         }
                         else {
-                            toast('Įvyko klaida, susisiekite su administratoriumi!');
+                            toast.error('Įvyko klaida, susisiekite su administratoriumi!');
                         }
                     });
             }
@@ -167,7 +167,7 @@ export const ItemViewPage = () => {
                 axios.post(`api/item/leaveLottery/${itemId}`, data)
                     .then(response => {
                         if (response.data) {
-                            toast('Sėkmingai nebedalyvaujate loterijoje!');
+                            toast.success('Sėkmingai nebedalyvaujate loterijoje!');
 
                             setIsUserParticipating(false);
                             setItem({
@@ -176,15 +176,15 @@ export const ItemViewPage = () => {
                             });
                         }
                         else {
-                            toast('Įvyko klaida, susisiekite su administratoriumi!');
+                            toast.error('Įvyko klaida, susisiekite su administratoriumi!');
                         }
                     })
                     .catch(error => {
                         if (error.response.status === 401) {
-                            toast('Turite būti prisijungęs!');
+                            toast.error('Turite būti prisijungęs!');
                         }
                         else {
-                            toast('Įvyko klaida, susisiekite su administratoriumi!');
+                            toast.error('Įvyko klaida, susisiekite su administratoriumi!');
                         }
                     });
             }
@@ -194,7 +194,7 @@ export const ItemViewPage = () => {
             axios.post(`api/item/submitAnswers/${itemId}`, answersList)
                 .then(response => {
                     if (response.data) {
-                        toast('Sėkmingai atsakėte į klausimus!');
+                        toast.success('Sėkmingai atsakėte į klausimus!');
 
                         setIsUserParticipating(true);
                         setItem({
@@ -203,15 +203,15 @@ export const ItemViewPage = () => {
                         });
                     }
                     else {
-                        toast('Įvyko klaida, susisiekite su administratoriumi!');
+                        toast.error('Įvyko klaida, susisiekite su administratoriumi!');
                     }
                 })
                 .catch(error => {
                     if (error.response.status === 401) {
-                        toast('Turite būti prisijungęs!');
+                        toast.error('Turite būti prisijungęs!');
                     }
                     else {
-                        toast('Įvyko klaida, susisiekite su administratoriumi!');
+                        toast.error('Įvyko klaida, susisiekite su administratoriumi!');
                     }
                 });
         }
@@ -223,7 +223,7 @@ export const ItemViewPage = () => {
             axios.post(`api/item/submitOffer/${itemId}`, formData)
                 .then(response => {
                     if (response.data) {
-                        toast('Jūsų pasiūlymas sėkmingai išsiųstas!');
+                        toast.success('Jūsų pasiūlymas sėkmingai išsiųstas!');
 
                         setItem({
                             ...item,
@@ -231,15 +231,15 @@ export const ItemViewPage = () => {
                         });
                     }
                     else {
-                        toast('Įvyko klaida, susisiekite su administratoriumi!');
+                        toast.error('Įvyko klaida, susisiekite su administratoriumi!');
                     }
                 })
                 .catch(error => {
                     if (error.response.status === 401) {
-                        toast('Turite būti prisijungęs!');
+                        toast.error('Turite būti prisijungęs!');
                     }
                     else {
-                        toast('Įvyko klaida, susisiekite su administratoriumi!');
+                        toast.error('Įvyko klaida, susisiekite su administratoriumi!');
                     }
                 });
         }

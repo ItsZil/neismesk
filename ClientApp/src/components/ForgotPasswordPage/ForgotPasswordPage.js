@@ -21,34 +21,19 @@ const ForgotPasswordPage = () => {
             .then(response => {
                 setIsSubmitting(false);
                 if (response.status === 200) {
-                    toast('Nuoroda į slaptažodžio pakeitimą sėkmingai išsiųsta.');
+                    toast.success('Nuoroda į slaptažodžio pakeitimą sėkmingai išsiųsta.');
                 }
                 else if (response.status === 404) {
-                    toast("Nerastas vartotojas su pateiktais duomenimis!", {
-                        style: {
-                            backgroundColor: 'red',
-                            color: 'white',
-                        },
-                    });
+                    toast.error("Nerastas vartotojas su pateiktais duomenimis!");
                 }
                 else if (response.status === 401) {
-                    toast("Klaida išsiunčiant pakeitimo žinutę. Bandykite dar kartą.", {
-                        style: {
-                            backgroundColor: 'red',
-                            color: 'white',
-                        },
-                    });
+                    toast.error("Klaida išsiunčiant pakeitimo žinutę. Bandykite dar kartą.");
                 }
                 else {
-                    toast("Įvyko klaida, susisiekite su administratoriumi!", {
-                        style: {
-                            backgroundColor: 'red',
-                            color: 'white',
-                        },
-                    });
+                    toast.error("Įvyko klaida, susisiekite su administratoriumi!");
                 }
-
-            })
+            }
+        );
     }
 
     return (
