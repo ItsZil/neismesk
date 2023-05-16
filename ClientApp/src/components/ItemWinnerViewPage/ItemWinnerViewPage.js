@@ -162,8 +162,9 @@ export const ItemWinnerViewPage = () => {
                                                     {shop.name} - {shop.address}, {shop.city}, {shop.phone_number}
                                                 </li>
                                             ))}
-                                    <hr></hr>
-                                    </ul></div>
+                                        </ul>
+                                        <hr></hr>
+                                    </div>
                                 ) : null }
                                 <Card.Text>Norint suderinti atsiėmimą ar pristatymą, pateikite savo kontaktinius duomenis, su kuriais skelbėjas galės su Jumis susisiekti:</Card.Text>
                                 <Form onSubmit={handleSubmit}>
