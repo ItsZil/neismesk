@@ -16,6 +16,7 @@ export class NavMenu extends Component {
             isClicked: false,
             isLogged: false,
             isLoggedIn: false, // Assume the user is not logged in by default
+            isLoggedInAsAdmin: false,
             dropdownOpen: false,
             selectedCategory: 'Filtras',
             userAvatar: './images/profile.png',
@@ -73,16 +74,16 @@ export class NavMenu extends Component {
           }
         
   axios.get('/api/item/search', {
-    params: {
-      searchWord: this.state.searchQuery
-    }
-  })
-  .then((response) => {
-    this.props.navigate(`/search/${this.state.searchQuery}`, { state: { searchResults: response.data, searchQuery: this.state.searchQuery } });
-  })
-  .catch((error) => {
-    console.error(error);
-  });
+        params: {
+          searchWord: this.state.searchQuery
+        }
+      })
+      .then((response) => {
+        this.props.navigate(`/search/${this.state.searchQuery}`, { state: { searchResults: response.data, searchQuery: this.state.searchQuery } });
+      })
+      .catch((error) => {
+        console.error(error);
+      });
 };
       
 getItemsByCategory(categoryId) {
@@ -105,6 +106,14 @@ getItemsByCategory(categoryId) {
                 this.setState({ isLogged: true});
             }
         })
+
+        axios.get('api/user/isLoggedIn/1')
+            .then(response => {
+                if (response.status === 200) {
+                    this.setState({ isLoggedInAsAdmin: true });
+                }
+            }
+        )
     };
 
     handleLogoutClick = () => {
@@ -114,10 +123,10 @@ getItemsByCategory(categoryId) {
                 this.setState({ isLogged: false});
             }
             else if (response.status === 401) { // 401 - Unauthorized
-                alert('Already logged out');
+                toast.error('Jūs jau esate atsijungę!');
             }
             else { // 500 - Internal server error
-                alert('Unexpected response, check console logs');
+                toast.error('Įvyko klaida, susisiekite su administratoriumi!');
             }
         })
     }
@@ -178,6 +187,9 @@ getItemsByCategory(categoryId) {
                             {this.state.isLogged ? (
                                 <NavDropdown title={<Image alt="Profilio nuotrauka" src={avatar} roundedCircle style={{ height: '75px', width: '75px' }} />} onClick={this.handleLoginClick}>
                                     <NavDropdown.Item href="/profile" onClick={this.handleClick}>Profilis</NavDropdown.Item>
+                                    {this.state.isLoggedInAsAdmin ? (
+                                        <NavDropdown.Item href="/admin/taisyklos" onClick={this.handleClick}>Taisyklos</NavDropdown.Item>
+                                    ) : null}
                                     <NavDropdown.Item href="/prisijungimas" onClick={() => { this.handleLogoutClick() }}>Atsijungti</NavDropdown.Item>
                                 </NavDropdown>
                             ) : (

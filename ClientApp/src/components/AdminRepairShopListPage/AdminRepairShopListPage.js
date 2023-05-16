@@ -7,7 +7,7 @@ import axios from 'axios';
 
 export const AdminRepairShopListPage = () => {
     const [canAccess, setCanAccess] = useState(null);
-    const [repairShopList, setRepairShopList] = useState([]);
+    const [repairShopList, setRepairShopList] = useState(null);
     const navigate = useNavigate();
 
     useEffect(() => {
@@ -22,13 +22,13 @@ export const AdminRepairShopListPage = () => {
                     navigate('/');
                 }
             } catch (error) {
-                if (error.response.status === 401) {
-                    navigate('/prisijungimas');
-                    toast.error('Turite būti prisijungęs!');
+                if (error.response.status !== 401) {
+                    navigate('/');
+                    toast.error('Įvyko klaida, susisiekite su administratoriumi!');
                 }
                 else {
-                    navigate('/index');
-                    toast.error('Įvyko klaida, susisiekite su administratoriumi!');
+                    toast.error('Neturite prieigos prie šio puslapio!')
+                    navigate('/');
                 }
             }
         };
@@ -44,7 +44,9 @@ export const AdminRepairShopListPage = () => {
                 toast.error('Įvyko klaida, susisiekite su administratoriumi!');
             }
         };
-        fetchRepairShops();
+        if (canAccess) {
+            fetchRepairShops();
+        }
     }, [canAccess]);
 
     const handleSubmit = (event, index) => {
@@ -78,6 +80,7 @@ export const AdminRepairShopListPage = () => {
         <div className='outerBoxWrapper'>
             <Toaster />
             <Container className='my-5'>
+                <h3 style={{ textAlign: "center", marginBottom: "50px" }}>Taisyklų reklamų sąrašas</h3>
                 <Table striped bordered hover>
                     <thead>
                         <tr>
