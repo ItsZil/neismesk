@@ -1,6 +1,6 @@
 ﻿import React, { useState, useEffect } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
-import { Col, Container, Row, Form, Button, Card, Spinner } from 'react-bootstrap';
+import { useNavigate } from 'react-router-dom';
+import { Table, Container, Spinner, Button } from 'react-bootstrap';
 import toast, { Toaster } from 'react-hot-toast';
 import './AdminRepairShopListPage.css'
 import axios from 'axios';
@@ -18,17 +18,17 @@ export const AdminRepairShopListPage = () => {
                 if (response.status === 200) {
                     setCanAccess(true);
                 } else {
-                    toast('Neturite prieigos prie šio puslapio!')
+                    toast.error('Neturite prieigos prie šio puslapio!')
                     navigate('/');
                 }
             } catch (error) {
                 if (error.response.status === 401) {
                     navigate('/prisijungimas');
-                    toast('Turite būti prisijungęs!');
+                    toast.error('Turite būti prisijungęs!');
                 }
                 else {
                     navigate('/index');
-                    toast('Įvyko klaida, susisiekite su administratoriumi!');
+                    toast.error('Įvyko klaida, susisiekite su administratoriumi!');
                 }
             }
         };
@@ -40,36 +40,76 @@ export const AdminRepairShopListPage = () => {
             try {
                 const response = await axios.get('api/repairshop/getRepairShops');
                 setRepairShopList(response.data);
-                console.log(response.data);
             } catch (error) {
-                toast('Įvyko klaida, susisiekite su administratoriumi!');
+                toast.error('Įvyko klaida, susisiekite su administratoriumi!');
             }
         };
         fetchRepairShops();
     }, [canAccess]);
 
-    const handleSubmit = (event) => {
+    const handleSubmit = (event, index) => {
         event.preventDefault();
 
-        axios.post('api/item/submitWinnerDetails')
+        const updatedShop = { ...repairShopList[index] };
+
+        axios.post('api/repairshop/changeApproval', updatedShop)
             .then(response => {
                 if (response.data) {
-                    toast('Sėkmingai išsiųstas pranešimas skelbėjui!');
-                }
-                else {
-                    toast('Įvyko klaida, susisiekite su administratoriumi!');
+                    updatedShop.approved = !updatedShop.approved;
+                    
+                    const updatedList = [...repairShopList];
+                    updatedList[index] = updatedShop;
+                    setRepairShopList(updatedList);
+
+                    toast.success('Sėkmingai patvirtinta taisykla!');
+                } else {
+                    const updatedList = repairShopList.filter((_, i) => i !== index);
+                    setRepairShopList(updatedList);
+
+                    toast.success('Sėkmingai ištrinta taisykla!');
                 }
             })
             .catch(error => {
-                toast('Įvyko klaida, susisiekite su administratoriumi!');
+                toast.error('Įvyko klaida, susisiekite su administratoriumi!');
             });
     };
 
     return canAccess && repairShopList ? (
         <div className='outerBoxWrapper'>
             <Toaster />
-            <Container className="my-5">
-                
+            <Container className='my-5'>
+                <Table striped bordered hover>
+                    <thead>
+                        <tr>
+                            <th>Pavadinimas</th>
+                            <th>Telefono numeris</th>
+                            <th>El. paštas</th>
+                            <th>Adresas</th>
+                            <th>Miestas</th>
+                            <th>Patvirtinta</th>
+                            <th>Veiksmai</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {repairShopList.map((shop, index) => (
+                            <tr key={index}>
+                                <td>{shop.name}</td>
+                                <td>{shop.phone_number}</td>
+                                <td>{shop.email}</td>
+                                <td>{shop.address}</td>
+                                <td>{shop.city}</td>
+                                <td>{shop.approved ? 'Taip' : 'Ne'}</td>
+                                <td>
+                                    <Button
+                                        variant={shop.approved ? 'danger' : 'success'}
+                                        onClick={(event) => handleSubmit(event, index)}>
+                                        {shop.approved ? 'Ištrinti' : 'Patvirtinti'}
+                                    </Button>
+                                </td>
+                            </tr>
+                        ))}
+                    </tbody>
+                </Table>
             </Container>
         </div>
     ) : (

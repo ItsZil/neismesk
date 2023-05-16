@@ -1,3 +1,5 @@
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using MySql.Data.MySqlClient;
 using neismesk.Models;
 using neismesk.ViewModels.Repair;
@@ -52,7 +54,7 @@ namespace neismesk.Repositories.RepairShop
             return id;
         }
 
-        public async Task<List<RepairShopModel>> GetRepairShops()
+        public async Task<List<RepairShopViewModel>> GetRepairShops()
         {
             using MySqlConnection connection = GetConnection();
             await connection.OpenAsync();
@@ -60,12 +62,12 @@ namespace neismesk.Repositories.RepairShop
             using MySqlCommand command = new MySqlCommand(
                 "SELECT * FROM repair_shop", connection);
 
-            List<RepairShopModel> repairShops = new List<RepairShopModel>();
+            List<RepairShopViewModel> repairShops = new List<RepairShopViewModel>();
             using (DbDataReader reader = await command.ExecuteReaderAsync())
             {
                 while (await reader.ReadAsync())
                 {
-                    RepairShopModel repairShop = new RepairShopModel()
+                    RepairShopViewModel repairShop = new RepairShopViewModel()
                     {
                         Id = Convert.ToInt32(reader["id"]),
                         Name = Convert.ToString(reader["name"]),
@@ -79,6 +81,25 @@ namespace neismesk.Repositories.RepairShop
                 }
             }
             return repairShops;
+        }
+        
+        public async Task<bool> ChangeApproval(int id, bool approval)
+        {
+            using MySqlConnection connection = GetConnection();
+            await connection.OpenAsync();
+
+            string command = "UPDATE repair_shop SET approved = 1 WHERE id = @Id"; // Approve
+            if (approval)
+            {
+                // Delete the repair shop, we are unapproving it because it is already approved.
+                command = "DELETE FROM repair_shop WHERE id = @Id";
+            }
+            using MySqlCommand cmd = new MySqlCommand(command, connection);
+            cmd.Parameters.AddWithValue("@Id", id);
+
+            await cmd.ExecuteNonQueryAsync();
+
+            return !approval;
         }
     }
 }

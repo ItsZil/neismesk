@@ -2,6 +2,8 @@
 using neismesk.Models;
 using System.Data;
 using neismesk.Repositories.RepairShop;
+using neismesk.ViewModels.Repair;
+using Microsoft.AspNetCore.Authorization;
 
 namespace neismesk.Controllers.Repair
 {
@@ -40,12 +42,28 @@ namespace neismesk.Controllers.Repair
         }
 
         [HttpGet("getRepairShops")]
+        [Authorize]
         public async Task<IActionResult> GetRepairShops()
         {
             try
             {
-                List<RepairShopModel> repair_shops = await _repairShopRepo.GetRepairShops();
+                List<RepairShopViewModel> repair_shops = await _repairShopRepo.GetRepairShops();
                 return Ok(repair_shops);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
+        [HttpPost("changeApproval")]
+        [Authorize]
+        public async Task<IActionResult> ChangeApproval(RepairShopViewModel repairShop)
+        {
+            try
+            {
+                bool result = await _repairShopRepo.ChangeApproval(repairShop.Id, repairShop.Approved);
+                return Ok(result);
             }
             catch (Exception ex)
             {
