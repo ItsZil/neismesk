@@ -121,7 +121,8 @@ getItemsByCategory(categoryId) {
         .then(response => {
             if (response.status === 200) { // 200 - Ok
                 this.setState({ isLogged: false});
-                this.props.navigate(`/prisijungimas`);
+                window.location.reload();
+                window.location.href = "/prisijungimas";
             }
             else if (response.status === 401) { // 401 - Unauthorized
                 toast.error('Jūs jau esate atsijungę!');
