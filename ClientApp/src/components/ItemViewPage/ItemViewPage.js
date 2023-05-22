@@ -352,10 +352,10 @@ export const ItemViewPage = () => {
                                         <p>Laimėtojas bus išrinktas {new Date(item.endDateTime).toLocaleString('lt-LT')}</p>
                                         <Row>
                                             <Col>
-                                                {!isUserParticipating ? (
-                                                    <Button variant="primary" type="submit" disabled={isPastEndTime || item.userId === viewerId} onClick={(event) => handleSubmit(event, true)}>Dalyvauti</Button>
-                                                ) : (
+                                                {isUserParticipating ? (
                                                     <Button variant="primary" type="submit" disabled={isPastEndTime || item.userId === viewerId} onClick={(event) => handleSubmit(event, false)}>Nebedalyvauti</Button>
+                                                ) : (
+                                                    <Button variant="primary" type="submit" disabled={isPastEndTime || item.userId === viewerId} onClick={(event) => handleSubmit(event, true)}>Dalyvauti</Button>
                                                 )}
                                             </Col>
                                             <Col className="d-flex justify-content-end">
