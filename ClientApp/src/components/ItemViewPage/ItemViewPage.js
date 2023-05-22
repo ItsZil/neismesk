@@ -62,7 +62,7 @@ export const ItemViewPage = () => {
                     const response = await axios.get(`api/item/isUserParticipatingInLottery/${itemId}`);
                     setIsUserParticipating(response.data);
                 } catch (error) {
-                    //toast.error('Įvyko klaida, susisiekite su administratoriumi!');
+                    setIsUserParticipating(false);
                 }
             };
             fetchIsUserParticipating();
@@ -138,7 +138,7 @@ export const ItemViewPage = () => {
         };
 
         if (item.type === 'Loterija') {
-            if (isParticipating) {
+            if (!isParticipating) {
                 axios.post(`api/item/enterLottery/${itemId}`, data)
                     .then(response => {
                         if (response.data) {
@@ -278,10 +278,13 @@ export const ItemViewPage = () => {
                             <Card.Header>{item.category}</Card.Header>
                             <Card.Body>
                                 <Card.Title>{item.name}</Card.Title>
-                                {item.status != "Sukurta" ? (
-                                    <Card.Text>Šis skelbimas nebegalioja.</Card.Text>
-                                ) : null}
                                 <Card.Text>{item.description}</Card.Text>
+                                {item.status !== "Sukurta" || isPastEndTime ? (
+                                    <div>
+                                        <hr></hr>
+                                        <Card.Text>Šis skelbimas nebegalioja.</Card.Text>
+                                    </div>
+                                ) : null}
                                 <hr></hr>
                                 {item.type === 'Keitimas' && (
                                     <Form onSubmit={handleSubmit}>
@@ -352,10 +355,10 @@ export const ItemViewPage = () => {
                                         <p>Laimėtojas bus išrinktas {new Date(item.endDateTime).toLocaleString('lt-LT')}</p>
                                         <Row>
                                             <Col>
-                                                {!isUserParticipating ? (
-                                                    <Button variant="primary" type="submit" disabled={isPastEndTime || item.userId === viewerId} onClick={(event) => handleSubmit(event, true)}>Dalyvauti</Button>
+                                                {isUserParticipating ? (
+                                                    <Button variant="primary" type="submit" disabled={isPastEndTime || item.userId === viewerId} onClick={(event) => handleSubmit(event, true)}>Nebedalyvauti</Button>
                                                 ) : (
-                                                    <Button variant="primary" type="submit" disabled={isPastEndTime || item.userId === viewerId} onClick={(event) => handleSubmit(event, false)}>Nebedalyvauti</Button>
+                                                    <Button variant="primary" type="submit" disabled={isPastEndTime || item.userId === viewerId} onClick={(event) => handleSubmit(event, false)}>Dalyvauti</Button>
                                                 )}
                                             </Col>
                                             <Col className="d-flex justify-content-end">
