@@ -118,6 +118,11 @@ export const ItemViewPage = () => {
     const handleSubmit = (event, isParticipating) => {
         event.preventDefault();
 
+        if (viewerId === null) {
+            toast.error('Turite būti prisijungęs!');
+            return;
+        }
+
         if (item.type === 'Keitimas' && !selectedItem) {
             toast.error('Pasirinkite skelbimą, kurį norite pasiūlyti keitimui.');
             return;
@@ -355,7 +360,7 @@ export const ItemViewPage = () => {
                                         <p>Laimėtojas bus išrinktas {new Date(item.endDateTime).toLocaleString('lt-LT')}</p>
                                         <Row>
                                             <Col>
-                                                {isUserParticipating ? (
+                                                {isUserParticipating && viewerId !== null ? (
                                                     <Button variant="primary" type="submit" disabled={isPastEndTime || item.userId === viewerId} onClick={(event) => handleSubmit(event, true)}>Nebedalyvauti</Button>
                                                 ) : (
                                                     <Button variant="primary" type="submit" disabled={isPastEndTime || item.userId === viewerId} onClick={(event) => handleSubmit(event, false)}>Dalyvauti</Button>
