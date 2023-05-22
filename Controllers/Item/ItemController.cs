@@ -275,6 +275,11 @@ namespace neismesk.Controllers.Item
         [Authorize]
         public async Task<IActionResult> IsUserParticipatingInLottery(int id)
         {
+            if (!User.Identity.IsAuthenticated)
+            {
+                return Unauthorized();
+            }
+
             int userId = Convert.ToInt32(HttpContext.User.FindFirst("user_id").Value);
             try
             {
@@ -333,6 +338,11 @@ namespace neismesk.Controllers.Item
         [Authorize]
         public async Task<IActionResult> LeaveLottery(int id)
         {
+            if (!User.Identity.IsAuthenticated)
+            {
+                return Unauthorized();
+            }
+
             int userId = Convert.ToInt32(HttpContext.User.FindFirst("user_id").Value);
             try
             {

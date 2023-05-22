@@ -706,5 +706,37 @@ namespace neismesk.Repositories.Item
                            
         }
 
-}
+        public async Task<List<ItemViewModel>> GetPastEndDateItems()
+        {
+            List<ItemViewModel> items = new List<ItemViewModel>();
+
+            using MySqlConnection connection = GetConnection();
+            await connection.OpenAsync();
+
+            using MySqlCommand command = new MySqlCommand(
+                "SELECT ads.id, ads.name, ads.description, ads.location, ads.end_datetime, ads.fk_status, ads.fk_user, ads.fk_winner, status.name AS status_name " +
+                "FROM ads " +
+                "JOIN status ON ads.fk_status = status.id " +
+                "WHERE end_datetime < NOW() AND fk_status = 1", connection);
+
+            using (DbDataReader reader = await command.ExecuteReaderAsync())
+            {
+                while (await reader.ReadAsync())
+                {
+                    ItemViewModel item = new ItemViewModel
+                    {
+                        Id = reader.GetInt32("id"),
+                        Name = reader.GetString("name"),
+                        Description = reader.GetString("description"),
+                        Location = reader.GetString("location"),
+                        EndDateTime = reader.GetDateTime("end_datetime"),
+                        Status = reader.GetString("status_name"),
+                        UserId = reader.GetInt32("fk_user")
+                    };
+                    items.Add(item);
+                }
+            }
+            return items;
+        }
+    }
 }
