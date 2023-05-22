@@ -121,6 +121,7 @@ getItemsByCategory(categoryId) {
         .then(response => {
             if (response.status === 200) { // 200 - Ok
                 this.setState({ isLogged: false});
+                this.props.navigate(`/prisijungimas`);
             }
             else if (response.status === 401) { // 401 - Unauthorized
                 toast.error('Jūs jau esate atsijungę!');
@@ -190,7 +191,7 @@ getItemsByCategory(categoryId) {
                                     {this.state.isLoggedInAsAdmin ? (
                                         <NavDropdown.Item href="/admin/taisyklos" onClick={this.handleClick}>Taisyklos</NavDropdown.Item>
                                     ) : null}
-                                    <NavDropdown.Item href="/prisijungimas" onClick={() => { this.handleLogoutClick() }}>Atsijungti</NavDropdown.Item>
+                                    <NavDropdown.Item  onClick={() => { this.handleLogoutClick() }}>Atsijungti</NavDropdown.Item>
                                 </NavDropdown>
                             ) : (
                                 <NavDropdown className="custom-dropdown" title={<Image alt="Profilio nuotrauka" src={avatar} roundedCircle style={{ height: '75px', width: '75px' }} />} onClick={this.handleLoginClick}>
