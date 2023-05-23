@@ -275,6 +275,11 @@ namespace neismesk.Controllers.Item
         [Authorize]
         public async Task<IActionResult> IsUserParticipatingInLottery(int id)
         {
+            if (!User.Identity.IsAuthenticated)
+            {
+                return Unauthorized();
+            }
+
             int userId = Convert.ToInt32(HttpContext.User.FindFirst("user_id").Value);
             try
             {
@@ -309,9 +314,13 @@ namespace neismesk.Controllers.Item
         }
 
         [HttpPost("enterLottery/{id}")]
-        [Authorize]
         public async Task<IActionResult> EnterLottery(int id)
         {
+            if (!User.Identity.IsAuthenticated)
+            {
+                return Unauthorized();
+            }
+            
             int userId = Convert.ToInt32(HttpContext.User.FindFirst("user_id").Value);
             try
             {
@@ -329,6 +338,11 @@ namespace neismesk.Controllers.Item
         [Authorize]
         public async Task<IActionResult> LeaveLottery(int id)
         {
+            if (!User.Identity.IsAuthenticated)
+            {
+                return Unauthorized();
+            }
+
             int userId = Convert.ToInt32(HttpContext.User.FindFirst("user_id").Value);
             try
             {
@@ -405,16 +419,14 @@ namespace neismesk.Controllers.Item
         }
 
         [HttpPost("submitAnswers/{itemId}")]
-        [Authorize]
         public async Task<IActionResult> SubmitAnswers(int itemId, [FromBody] List<Answer> answers)
         {
-            int userId = Convert.ToInt32(HttpContext.User.FindFirst("user_id").Value);
-
-            if (userId == null)
+            if (!User.Identity.IsAuthenticated)
             {
                 return Unauthorized();
             }
-
+            
+            int userId = Convert.ToInt32(HttpContext.User.FindFirst("user_id").Value);
             try
             {
                 var result = await _itemRepo.InsertAnswers(itemId, answers, userId);
@@ -428,16 +440,14 @@ namespace neismesk.Controllers.Item
         }
 
         [HttpPost("chooseQuestionnaireWinner")]
-        [Authorize]
         public async Task<IActionResult> ChooseQuestionnaireWinner([FromBody] QuestionnaireWinner winner)
         {
-            int userId = Convert.ToInt32(HttpContext.User.FindFirst("user_id").Value);
-
-            if (userId == null)
+            if (!User.Identity.IsAuthenticated)
             {
                 return Unauthorized();
             }
 
+            int userId = Convert.ToInt32(HttpContext.User.FindFirst("user_id").Value);
             try
             {
                 _questionnaireService.NotifyWinner(winner, userId);
@@ -451,16 +461,14 @@ namespace neismesk.Controllers.Item
         }
 
         [HttpPost("chooseOfferWinner")]
-        [Authorize]
         public async Task<IActionResult> ChooseOfferWinner([FromBody] OfferWinner winner)
         {
-            int userId = Convert.ToInt32(HttpContext.User.FindFirst("user_id").Value);
-
-            if (userId == null)
+            if (!User.Identity.IsAuthenticated)
             {
                 return Unauthorized();
             }
-
+            
+            int userId = Convert.ToInt32(HttpContext.User.FindFirst("user_id").Value);
             try
             {
                 _offerService.NotifyWinner(winner, userId);
@@ -490,7 +498,6 @@ namespace neismesk.Controllers.Item
         }
 
         [HttpPost("submitOffer/{itemId}")]
-        [Authorize]
         public async Task<IActionResult> SubmitOffer(int itemId)
         {
             var form = await Request.ReadFormAsync();

@@ -79,7 +79,7 @@ namespace neismesk.Utilities
             }
         }
 
-        public async Task notifyUserItemExpiration(string email, string itemName)
+        public async Task notifyUserItemExpiration(string email, string itemName, bool isLottery = false)
         {
             message.To.Clear();
             message.To.Add(new MailAddress(email));
@@ -87,11 +87,14 @@ namespace neismesk.Utilities
             message.Subject = "Jūsų skelbimo galiojimo laikas pasibaigė";
             message.Body = $"<html><body>" +
                            $"<p>Sveiki,</p>" +
-                           $"<p>Pasibaigė Jūsų skelbimo <b>„{itemName}“</b> galiojimo laikas.</p>" +
-                           $"<p>Dėl nepakankamo dalyvių skaičiaus skelbimas buvo atšauktas.</p>" +
-                           $"<p>Linkėjimai,</p>" +
-                           $"<p>neismesk.lt komanda</p>" +
-                           $"</body></html>";
+                           $"<p>Pasibaigė Jūsų skelbimo <b>„{itemName}“</b> galiojimo laikas.</p>";
+
+            if (isLottery)
+                message.Body += $"<p>Dėl nepakankamo dalyvių skaičiaus skelbimas buvo atšauktas.</p>";
+            
+             message.Body += $"<p>Linkėjimai,</p>" +
+                             $"<p>neismesk.lt komanda</p>" +
+                             $"</body></html>";
 
             try
             {

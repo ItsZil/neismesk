@@ -59,7 +59,7 @@ namespace neismesk.Services
                 else
                 {
                     // Send email notification to poster that the item ad has expired due to not enough participants.
-                    await emailer.notifyUserItemExpiration(posterUserEmail, lottery.Name);
+                    await emailer.notifyUserItemExpiration(posterUserEmail, lottery.Name, true);
 
                     // Update item status to 'Atšauktas'
                     await _itemRepo.UpdateItemStatus(lottery.Id, 4);

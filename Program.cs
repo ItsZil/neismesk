@@ -11,7 +11,8 @@ namespace neismesk
             // Add services to the container.
             builder.Services.AddControllersWithViews();
             builder.Services.AddHostedService<LotteryService>();
-            
+            builder.Services.AddHostedService<ItemStatusService>();
+
             builder.Logging.AddSerilog(new LoggerConfiguration()
                 .MinimumLevel.Information()
                 .Enrich.FromLogContext()

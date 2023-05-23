@@ -154,7 +154,7 @@ const ItemCreationPage = () => {
                         }
                         else if (response.status === 401) {
                             toast.error('Turite būti prisijungęs!')
-                            navigate('/prisijungti');
+                            navigate('/prisijungimas');
                         }
                         else {
                             toast.error("Įvyko klaida, susisiekite su administratoriumi!");
@@ -163,7 +163,7 @@ const ItemCreationPage = () => {
                     .catch(error => {
                         if (error.response.status === 401) {
                             toast.error('Turite būti prisijungęs!')
-                            navigate('/prisijungti');
+                            navigate('/prisijungimas');
                         }
                         else {
                             toast.error("Įvyko klaida, susisiekite su administratoriumi!");
