@@ -205,16 +205,13 @@ getItemsByCategory(categoryId) {
                 </Navbar>
                 <footer>
                     <div className="links">
-                        <Link tag={Link} to="/help">
+                        <Link tag={Link} to="/pagalba">
                             Pagalba
                         </Link>
-                        <Link tag={Link} className="links" to="/">
-                            Populiariausi klausimai
-                        </Link>
-                        <Link tag={Link} className="links" to="/about-us">
+                        <Link tag={Link} className="links" to="/apie-mus">
                             Apie mus
                         </Link>
-                        <Link tag={Link} className="links" to="/">
+                        <Link tag={Link} className="links" to="/privatumo-politika">
                             Privatumo politika
                         </Link>
                         <Link tag={Link} to="https://www.sandbox.paypal.com/donate/?hosted_button_id=CSYYU9CP8BSG6" className="links">Parama</Link>

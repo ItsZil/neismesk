@@ -125,7 +125,7 @@ namespace neismesk.Controllers.Item
                     Type = Convert.ToInt32(form["type"]),
                     Images = form.Files.GetFiles("images").ToList(),
                     Questions = form["questions"].ToList(),
-                    EndDate = DateTime.Now.AddDays(14),
+                    EndDate = Convert.ToDateTime(form["endDate"]),
                 };
 
                 item.Id = await _itemRepo.Create(item);
