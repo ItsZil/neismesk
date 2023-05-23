@@ -20,11 +20,16 @@ import ItemCreationPage from "./components/ItemCreation/ItemCreationPage";
 import { ItemWinnerViewPage } from "./components/ItemWinnerViewPage/ItemWinnerViewPage";
 
 import { AdminRepairShopListPage } from "./components/AdminRepairShopListPage/AdminRepairShopListPage";
+import { Policy } from "./components/PolicyPage/Policy";
 
 const AppRoutes = [
     {
         path: '/apie-mus',
         element: <AboutUs />
+    },
+    {
+        path: '/privatumo-politika',
+        element: <Policy />
     },
     {
         path: '/prisijungimas',
