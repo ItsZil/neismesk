@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router';
+import { Carousel, Col, Container, Row, Form, Button, Card, Spinner, Collapse } from 'react-bootstrap';
 import './LoginPage.css'
 import toast, { Toaster } from 'react-hot-toast';
 import axios from 'axios';
@@ -32,7 +33,8 @@ export const LoginPage = () => {
         fetchUserLogin();
       }, []);
 
-    const handleSubmit = () => {
+    const handleSubmit = (event) => {
+        event.preventDefault();
         const requestOptions = {
             method: "POST",
             headers: { "Content-Type": "application/json" },
@@ -77,30 +79,60 @@ export const LoginPage = () => {
     
 
     return (
+        <div className='page-container'>
         <div className='outerBoxWrapper'>
-            <Toaster />
-            <div className='outerBox'>
-                <div className='innerBox'>
-                    <h2 className='boxLabel'>Prisijungimas</h2>
-                    <div className='inputWrapper'>
-                        <input type='email' name='email' id='email' value={email} onChange={(e) => setEmail(e.target.value)} placeholder='El. paštas'></input>
-                    </div>
-                    <div className='inputWrapper'>
-                        <input type="password" name='password' id='password' value={password} onChange={(e) => setPassword(e.target.value)} placeholder='Slaptažodis'></input>
-                    </div>
-                    <div className='login'>
-                        <button className='loginButton' onClick={() => handleSubmit()} type='submit'>Prisijungti</button>
-                    </div>
-                    <div className='forgotPassword'>
-                        <a href='\pamirsau-slaptazodi' className='forgotPasswordButton' >Pamiršau slaptažodį</a>
-                    </div>
-                    <hr></hr>
-                    <div className='register'>
-                        <p className='noAccount'>Neturite paskyros?</p>
-                        <button className='registerButton'><a className='redirect' href='\registracija'>Registruotis</a></button>
-                    </div>
-                </div>
-            </div>
-        </div>
+          <Card className='custom-card'>
+          <Toaster />
+          <Card.Header className='header d-flex justify-content-between align-items-center'>
+            <div className='text-center'>Prisijungimas</div>
+          </Card.Header>
+              <Card.Body>
+              <Form>
+              <Form.Group className='text-center'>
+                <Form.Control
+                  className='input'
+                  type='email'
+                  name='email'
+                  id='email'
+                  value={email}
+                  onChange={(event) => setEmail(event.target.value)}
+                  placeholder='Įveskite el. paštą'
+                />
+              </Form.Group>
+              <Form.Group className='text-center'>
+                <Form.Control
+                  className='input'
+                  type='password'
+                  name='password'
+                  id='password'
+                  value={password}
+                  onChange={(event) => setPassword(event.target.value)}
+                  placeholder='Įveskite slaptažodį'
+                />
+              </Form.Group>
+              <div className='text-center'>
+                <Button className='btn btn-primary' onClick={(event) => handleSubmit(event)} type='submit'>
+                  Prisijungti
+                </Button>
+              </div>
+              <div className='forgotPassword text-center'>
+                <a href='/pamirsau-slaptazodi' className='forgotPasswordButton'>
+                  Pamiršau slaptažodį
+                </a>
+              </div>
+              <hr />
+              <div className='register text-center'>
+                <p className='noAccount'>Neturite paskyros?</p>
+                <Button className='btn btn-primary'>
+                  <a className='redirect' href='/registracija'>
+                    Registruotis
+                  </a>
+                </Button>
+              </div>
+            </Form>
+          </Card.Body>
+        </Card>
+      </div>
+    </div>
     )
 }
