@@ -35,6 +35,12 @@ export const LoginPage = () => {
 
     const handleSubmit = (event) => {
         event.preventDefault();
+
+        if (password.length < 8 || /^(?=.*\d)(?=.*[!@#$%^&*])(?=.*[a-z])(?=.*[A-Z]).{8,}$/.test(password) === false) {
+            toast.error("Prisijungimo duomenys neteisingi!");
+            return;
+        }
+
         const requestOptions = {
             method: "POST",
             headers: { "Content-Type": "application/json" },
@@ -51,28 +57,13 @@ export const LoginPage = () => {
                     window.location.href = "/";
                 }
                 else if (response.status === 404) {
-                    toast.error("Prisijungimo duomenys neteisingi!", {
-                        style: {
-                            backgroundColor: 'red',
-                            color: 'white',
-                        },
-                    });
+                    toast.error("Prisijungimo duomenys neteisingi!");
                 }
                 else if (response.status === 401) {
-                    toast.error("El. pašto adresas nepatvirtintas. Patikrinkite savo elektroninį paštą!", {
-                        style: {
-                            backgroundColor: 'red',
-                            color: 'white',
-                        },
-                    });
+                    toast.error("El. pašto adresas nepatvirtintas. Patikrinkite savo elektroninį paštą!");
                 }
                 else {
-                    toast.error("Įvyko klaida, susisiekite su administratoriumi!", {
-                        style: {
-                            backgroundColor: 'red',
-                            color: 'white',
-                        },
-                    });
+                    toast.error("Įvyko klaida, susisiekite su administratoriumi!");
                 }
             })
     }
