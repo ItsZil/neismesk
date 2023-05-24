@@ -71,3 +71,17 @@ button {
     margin-bottom: 10%;
     font-size: 4vmin;
 }
+
+.form-control-description {
+    border: 1px solid #ced4da;
+  }
+
+.page-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+
+  .custom-card {
+    width: 700px; 
+  }
