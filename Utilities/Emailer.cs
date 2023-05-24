@@ -45,7 +45,11 @@ namespace neismesk.Utilities
             message.To.Add(new MailAddress(result.Rows[0]["email"].ToString()));
             
             message.Subject = "Pasikeiskite slaptažodį";
-            message.Body = $"<html><body><p>Norėdami pasikeisti slaptažodį, spauskite <a href=\"{resetURL}\">čia</a>.</p></body></html>";
+            message.Body = $"<html><body><p>Sveiki,</p>" +
+                $"<p>Norėdami pasikeisti slaptažodį, spauskite <a href=\"{resetURL}\">čia</a>.</p>" +
+                $"<p>Linkėjimai,</p>" +
+                $"<p>neismesk.lt komanda</p>" +
+                $"</body></html>";
             
             try
             {
@@ -64,8 +68,12 @@ namespace neismesk.Utilities
             message.To.Clear();
             message.To.Add(new MailAddress(email));
             
-            message.Subject = "Patvirtinkite savo pašto adresą";
-            message.Body = $"<html><body><p>Norėdami patvirtinti savo pašto adresą, spauskite <a href=\"{verifyURL}\">čia</a>.</p></body></html>";
+            message.Subject = "Patvirtinkite savo el. pašto adresą";
+            message.Body = $"<html><body><p>Sveiki,</p>" +
+                $"<p>Norėdami patvirtinti savo pašto adresą, spauskite <a href=\"{verifyURL}\">čia</a>.</p>" +
+                $"<p>Linkėjimai,</p>" +
+                $"<p>neismesk.lt komanda</p>" +
+                $"</body></html>";
 
             try
             {

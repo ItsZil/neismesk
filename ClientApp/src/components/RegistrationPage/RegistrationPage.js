@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router';
 import './RegistrationPage.css'
-import { Carousel, Col, Container, Row, Form, Button, Card, Spinner, Collapse } from 'react-bootstrap';
+import { Form, Button, Card } from 'react-bootstrap';
 import toast, { Toaster } from 'react-hot-toast';
 import axios from 'axios';
 

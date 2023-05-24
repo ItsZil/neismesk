@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import toast, { Toaster } from 'react-hot-toast';
 import axios from 'axios';
+import { Form, Button, Card } from 'react-bootstrap';
 import { useNavigate } from 'react-router';
 import './ItemCreationPage.css'
 
@@ -19,7 +20,7 @@ const ItemCreationPage = () => {
     const questionArray = [
         {
             type: "text",
-            id: 1,
+            id: "1",
             value: ""
         }
     ];
@@ -125,7 +126,8 @@ const ItemCreationPage = () => {
         }
     }
 
-    const handleCreate = () => {
+    const handleCreate = (event) => {
+        event.preventDefault()
         if (checkFields()) {
             try {
                 const formData = new FormData();
@@ -183,69 +185,105 @@ const ItemCreationPage = () => {
     const today = new Date().toISOString().split('T')[0];
 
     return (
-        <div className='itemOuterBox'>
-            <Toaster />
-            <div className='itemInnerBox'>
-                <h2 className='itemBoxLabel'>Skelbimo sukūrimas</h2>
-                <div className='itemInputWrapper'>
-                    <input type='file' name='images' multiple accept='image/*' onChange={(e) => setImages([...e.target.files])}></input>
-                </div>
-                <div className='itemInputWrapper'>
-                    {getAllImages()}
-                </div>
-                <div className='itemInputWrapper'>
-                    <input type='text' name='name' id='name' value={name} onChange={(e) => setName(e.target.value)} placeholder='Pavadinimas'></input>
-                </div>
-                <div className='itemInputWrapper'>
-                    <textarea name='description' id='description' value={description} onChange={(e) => setDescription(e.target.value)} placeholder='Aprašymas'></textarea>
-                </div>
-                <div className='itemInputWrapper'>
-                    <input type='text' name='location' id='location' value={location} onChange={(e) => setLocation(e.target.value)} placeholder='Gyvenamoji vieta'></input>
-                </div>
-                <div className='itemInputWrapper'>
-                    <select value={category} onChange={(e) => setCategory(e.target.value)} >
-                        <option>Pasirinkite kategoriją</option>
-                        {getAllCategories()}
-                    </select>
-                </div>
-                <div className='itemInputWrapper'>
-                    <select value={itemType} onChange={(e) => setType(e.target.value)} >
-                        <option>Pasirinkite, kaip norite atiduoti</option>
-                        {getAllItemTypes()}
-                    </select>
-                </div>
-                <div className='itemInputWrapper'>
-                    <input type="date" value={endDate} onChange={(e) => setEndDate(e.target.value)} min={today} />
-                </div>
-                {itemType === '2' && (
-                    <>
-                        {questions.map((item, i) => {
-                            return (
-                                <div className='itemInputWrapper'>
-                                    <input
-                                        onChange={handleChange}
-                                        value={item.value}
-                                        id={i}
-                                        type={item.type}
-                                        placeholder='Įrašykite klausimą'
-                                        className='questionInput'
-                                    />
-                                    <div className='addQuestion'>
-                                        {questions.length - 1 === i && <button className='addQuestionButton' onClick={addInput}>+</button>}
-                                    </div>
-                                </div>
-                            );
-                        })}
-                    </>
-                )}
-                <div style={{ display: 'flex', paddingTop: '20px' }}>
-                    <div className='createButton'>
-                        <button className='create' onClick={() => handleCreate()} type='submit'>Sukurti</button>
-                    </div>
-                    <div className='cancelButton'>
-                        <button className='cancel' onClick={() => handleCancel()} type='button'>Atšaukti</button>
-                    </div>
-                </div>
+        <div className='page-container'>
+            <div className='outerBoxWrapper'>
+                <Card className='custom-card'>
+                    <Toaster />
+                    <Card.Header className='header d-flex justify-content-between align-items-center'>
+                        <div className='text-center'>Skelbimo sukūrimas</div>
+                    </Card.Header>
+                    <Card.Body>
+                        <Form>
+                            <Form.Group className='mb-3'>
+                                <Form.Control
+                                    type='file'
+                                    name='images'
+                                    multiple accept='image/*'
+                                    onChange={(e) => setImages([...e.target.files])} />
+                            </Form.Group>
+                            <Form.Group>
+                                {getAllImages()}
+                            </Form.Group>
+                            <Form.Group className='text-center mt-3'>
+                                <Form.Control
+                                    className='input'
+                                    type='text'
+                                    name='name'
+                                    id='name'
+                                    value={name}
+                                    onChange={(event) => setName(event.target.value)}
+                                    placeholder='Pavadinimas'
+                                />
+                            </Form.Group>
+                            <Form.Group className='text-center form-control-description mb-3'>
+                                <Form.Control
+                                    as='textarea'
+                                    name='description'
+                                    id='description'
+                                    value={description}
+                                    onChange={(e) => setDescription(e.target.value)}
+                                    placeholder='Aprašymas' />
+                            </Form.Group>
+                            <Form.Group className='text-center'>
+                                <Form.Control
+                                    className='input'
+                                    type='text'
+                                    name='location'
+                                    id='location'
+                                    value={location}
+                                    onChange={(event) => setLocation(event.target.value)}
+                                    placeholder='Gyvenamoji vieta'
+                                />
+                            </Form.Group>
+                            <Form.Group className='text-center mb-3'>
+                                <Form.Select value={category} onChange={(e) => setCategory(e.target.value)}>
+                                    <option>Pasirinkite kategoriją</option>
+                                    {getAllCategories()}
+                                </Form.Select>
+                            </Form.Group>
+                            <Form.Group className='text-center mb-3'>
+                                <Form.Select value={itemType} onChange={(e) => setType(e.target.value)}>
+                                    <option>Pasirinkite, kaip norite atiduoti</option>
+                                    {getAllItemTypes()}
+                                </Form.Select>
+                            </Form.Group>
+                            {itemType === '2' && (
+                                <>
+                                    {questions.map((item, i) => {
+                                        return (
+                                            <Form.Group className="d-flex align-items-center mb-2">
+                                                <Form.Control
+                                                    onChange={handleChange}
+                                                    value={item.value}
+                                                    id={i.toString()}
+                                                    type={item.type}
+                                                    placeholder='Įrašykite klausimą'
+                                                    className='questionInput'
+                                                />
+                                                <div className='addQuestion mt-2 ml-5'>
+                                                    {questions.length - 1 === i && <Button className='btn btn-primary' onClick={addInput}>+</Button>}
+                                                </div>
+                                            </Form.Group>
+                                        );
+                                    })}
+                                </>
+                            )}
+                            <Form.Group>
+                                <Form.Control
+                                    type='date'
+                                    value={endDate || ''}
+                                    onChange={(e) => setEndDate(e.target.value)}
+                                    min={today}
+                                    placeholder='Select a date'
+                                />
+                            </Form.Group>
+                            <div className='d-flex justify-content-between'>
+                                <Button onClick={(event) => handleCreate(event)} type='submit'>Sukurti</Button>
+                                <Button variant='secondary' onClick={() => handleCancel()} type='button'>Atšaukti</Button>
+                            </div>
+                        </Form>
+                    </Card.Body>
+                </Card>
             </div>
         </div>
     )

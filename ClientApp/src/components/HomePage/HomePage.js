@@ -34,6 +34,7 @@ function HomePage() {
                                         <img
                                             className="d-block w-100"
                                             style={{ objectFit: "cover" }}
+                                            height="256"
                                             src={`data:image/png;base64,${image.data}`}
                                             alt={item.name}
                                         />
