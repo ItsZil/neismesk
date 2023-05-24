@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router';
 import './RegistrationPage.css'
+import { Carousel, Col, Container, Row, Form, Button, Card, Spinner, Collapse } from 'react-bootstrap';
 import toast, { Toaster } from 'react-hot-toast';
 import axios from 'axios';
 
@@ -54,9 +55,17 @@ const RegistrationPage = () => {
                 setMessage('Reikia užpildyti visus laukus!');
                 return false;
             }
+            else if (password.length >= 8 && /^(?=.*\d)(?=.*[!@#$%^&*])(?=.*[a-z])(?=.*[A-Z]).{8,}$/.test(password))
+            {
+                if  (!/\S+@\S+\.\S+/.test(email))
+                {
+                    setMatchMessage("Neteisingai įvestas el. paštas");
+                    return false;
+                }
             setMatchMessage("");
             setMessage("");
             return true;
+            }
         }
         else {
             setMatchMessage("Slaptažodiai turi sutapti!");
@@ -64,7 +73,8 @@ const RegistrationPage = () => {
         }
     }
 
-    const handleSubmit = () => {
+    const handleSubmit = (event) => {
+        event.preventDefault()
         if (checkFields()) {
             const requestOptions = {
                 method: "POST",
@@ -104,37 +114,88 @@ const RegistrationPage = () => {
     }
 
     return (
+        <div className='page-container'>
         <div className='outerBoxWrapper'>
+          <Card className='custom-card'>
             <Toaster />
-            <div className='outerBox'>
-                <div className='innerBox'>
-                    <h2 className='boxLabel'>Registracija</h2>
-                    <div className='inputWrapper'>
-                        <input type='text' name='name' id='name' value={name} onChange={(e) => setName(e.target.value)} placeholder='Vardas'></input>
-                    </div>
-                    <div className='inputWrapper'>
-                        <input type='text' name='surname' id='surname' value={surname} onChange={(e) => setSurname(e.target.value)} placeholder='Pavardė'></input>
-                    </div>
-                    <div className='inputWrapper'>
-                        <input type='email' name='email' id='email' value={email} onChange={(e) => setEmail(e.target.value)} placeholder='El. paštas'></input>
-                    </div>
-                    <div className='inputWrapper'>
-                        <input type="password" name='password' id='password' value={password} onChange={onChange} placeholder='Slaptažodis'></input>
-                    </div>
-                    <div className='inputWrapper'>
-                        <input type="password" name='confirmPassword' id='confirmPassword' value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)} placeholder='Pakartokite slaptažodį'></input>
-                    </div>
-                    <label className='warningText'>{message}</label>
-                    <label className='warningText'>{matchMessage}</label>
-                    <div className='registration'>
-                        <button onClick={() => handleSubmit()} type='submit'>Registruotis</button>
-                    </div>
-                    <div className='returnToLogin'>
-                        <a href="/prisijungimas" className='returnToLoginButton'>Grįžti į prisijungimą</a>
-                    </div>
+            <Card.Header className='header d-flex justify-content-between align-items-center'>
+              <div className='text-center'>Registracija</div>
+            </Card.Header>
+            <Card.Body>
+              <Form>
+                <Form.Group className='text-center'>
+                  <Form.Control
+                    className='input'
+                    type='text'
+                    name='name'
+                    id='name'
+                    value={name}
+                    onChange={(event) => setName(event.target.value)}
+                    placeholder='Vardas'
+                  />
+                </Form.Group>
+                <Form.Group className='text-center'>
+                  <Form.Control
+                    className='input'
+                    type='text'
+                    name='surname'
+                    id='surname'
+                    value={surname}
+                    onChange={(event) => setSurname(event.target.value)}
+                    placeholder='Pavardė'
+                  />
+                </Form.Group>
+                <Form.Group className='text-center'>
+                  <Form.Control
+                    className='input'
+                    type='email'
+                    name='email'
+                    id='email'
+                    value={email}
+                    onChange={(event) => setEmail(event.target.value)}
+                    placeholder='El. paštas'
+                  />
+                </Form.Group>
+                <Form.Group className='text-center'>
+                  <Form.Control
+                    className='input'
+                    type='password'
+                    name='password'
+                    id='password'
+                    value={password}
+                    onChange={onChange}
+                    placeholder='Slaptažodis'
+                  />
+                </Form.Group>
+                <Form.Group className='text-center'>
+                  <Form.Control
+                    className='input'
+                    type='password'
+                    name='confirmPassword'
+                    id='confirmPassword'
+                    value={confirmPassword}
+                    onChange={(event) => setConfirmPassword(event.target.value)}
+                    placeholder='Pakartokite slaptažodį'
+                  />
+                </Form.Group>
+                <Form.Label className='warningText'>{message}</Form.Label>
+                <Form.Label className='warningText'>{matchMessage}</Form.Label>
+                <div className='text-center'>
+                  <Button className='btn btn-primary' onClick={(event) => handleSubmit(event)} type='submit'>
+                    Registruotis
+                  </Button>
                 </div>
-            </div>
+                <hr/>
+                <div className='returnToLogin text-center'>
+                  <a href='/prisijungimas' className='returnToLoginButton'>
+                    Grįžti į prisijungimą
+                  </a>
+                </div>
+              </Form>
+            </Card.Body>
+          </Card>
         </div>
+      </div>
     )
 }
 export default RegistrationPage

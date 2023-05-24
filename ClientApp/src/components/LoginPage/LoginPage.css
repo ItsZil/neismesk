@@ -38,7 +38,7 @@ button {
 }
 
 .forgotPasswordButton, .noAccount {
-    color: rgb(240, 240, 240);
+    color: black
 }
 
 .boxLabel {
@@ -64,9 +64,6 @@ button {
     margin-top: 5%;
 }
 
-.loginButton:hover, .registerButton:hover {
-    background-color: rgb(229, 225, 225);
-}
 
 hr {
     margin-top: 10%;
@@ -76,5 +73,5 @@ hr {
 
 .redirect, .redirect:hover {
     text-decoration: none;
-    color:black;
+    color: white
 }

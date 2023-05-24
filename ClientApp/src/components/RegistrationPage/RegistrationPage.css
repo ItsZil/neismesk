@@ -12,6 +12,16 @@
     border-radius: 20px;
 }
 
+.page-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+
+  .custom-card {
+    width: 600px; 
+  }
+
 .innerBox {
     padding: 20px 10px;
 }
@@ -43,9 +53,13 @@ button {
 }
 
 .returnToLoginButton {
-    color: rgb(240, 240, 240);
+    color: black
 }
 
+.input
+{
+    margin-bottom: 20px;
+}
 .boxLabel {
     color:white;
     margin-bottom: 10%;
