@@ -21,11 +21,15 @@ const ChangePasswordPage = () => {
         }
         else {
             setMessage("Slaptažodis turi turėti mažąsias, didžiąsias raides, skaičius, spec. simbolius ir būti bent 8 simbolių ilgio!");
+
+            if (password.length > 0 && confirmPassword.length > 0) {
+                setMatchMessage("");   
+            }
         }
     }
 
     function checkFields() {
-        if (password === confirmPassword) {
+        if (password === confirmPassword && password.length >= 8 && confirmPassword.length >= 8) {
             setMatchMessage("");
             setMessage("");
             return true;
@@ -107,35 +111,3 @@ const ChangePasswordPage = () => {
     )
 }
 export default ChangePasswordPage
-/*
-        <div className='outerBoxWrapper'>
-            <Card>
-                <Toaster />
-                <Card.Header className='header d-flex justify-content-between align-items-center'>
-                    <div>Slaptažodžio keitimas</div>
-                </Card.Header>
-                <Card.Body>
-                    <Form onSubmit={handleSubmit}>
-                        <Form.Group controlId="password">
-                            <Form.Label className="label">Naujas slaptažodis</Form.Label>
-                            <Form.Control type="password" name='password' id='password' value={password} onChange={onChange} placeholder='Slaptažodis' />
-                        </Form.Group>
-                        <Form.Group controlId="confirmPassword">
-                            <Form.Label className="label">Pakartoti naują slaptažodį</Form.Label>
-                            <Form.Control type="password" name='confirmPassword' id='confirmPassword' value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)} placeholder='Pakartokite slaptažodį' />
-                        </Form.Group>
-                        {message && <Alert variant="danger">{message}</Alert>}
-                        {matchMessage && <Alert variant="danger">{matchMessage}</Alert>}
-                        <Button className='change' type="submit">
-                            Patvirtinti
-                        </Button>
-                        <div className="returnToLogin">
-                            <a href="/prisijungimas" className="returnToLoginButton">Grįžti į prisijungimą</a>
-                        </div>
-                    </Form>
-                </Card.Body>
-            </Card>
-        </div>
-    )
-}
-                    */

@@ -20,7 +20,7 @@ const ForgotPasswordPage = () => {
         }
         else {
             return true;
-             }
+        }
     }
 
     const handleSubmit = (event) => {
@@ -34,41 +34,41 @@ const ForgotPasswordPage = () => {
                     setIsSubmitting(false);
                     if (response.status === 200) {
                         toast.success('Nuoroda į slaptažodžio pakeitimą sėkmingai išsiųsta.');
-                    } else if (response.status === 404) {
-                        toast.error('Nerastas vartotojas su pateiktais duomenimis!');
-                    } else if (response.status === 401) {
-                        toast.error('Klaida išsiunčiant pakeitimo žinutę. Bandykite dar kartą.');
-                    } else {
+                    }
+                    else {
                         toast.error('Įvyko klaida, susisiekite su administratoriumi!');
                     }
                 })
                 .catch((error) => {
                     setIsSubmitting(false);
-                    toast.error('Įvyko klaida, susisiekite su administratoriumi!');
+                    if (error.response.status === 404) {
+                        toast.error('Nerastas vartotojas su pateiktais duomenimis!');
+                    }
+                    else if (error.response.status === 401) {
+                        toast.error('Klaida išsiunčiant pakeitimo žinutę. Bandykite dar kartą.');
+                    }
+                    else {
+                        toast.error('Įvyko klaida, susisiekite su administratoriumi!');   
+                    }
                 });
         }
     };
-
-
-
-
 
     return (
         <div className='outerBoxWrapper'>
             <Card>
                 <Toaster />
                 <Card.Header className='header d-flex justify-content-between align-items-center'>
-                    <div>Įveskite savo el. pašto adresą, kurį naudojate prisijungimui prie šios svetainės</div>
+                    <div>Įveskite savo el. pašto adresą, kurį naudojate prisijungimui:</div>
                 </Card.Header>
                 <Card.Body>
                     <Form>
                         <Form.Group controlId="email">
-                            <Form.Label className="label">El. paštas</Form.Label>
                             <Form.Control type="email" placeholder="El. paštas" value={email} onChange={(e) => setEmail(e.target.value)} />
                         </Form.Group>
                         <Button className='submitForgotPasswordButton' type="submit" disabled={isSubmitting} onClick={(event) => handleSubmit(event)}>
-                        Patvirtinti
-                    </Button>
+                            Patvirtinti
+                        </Button>
                         <div className="returnToLogin">
                             <a href="/prisijungimas" className="returnToLoginButton">Grįžti į prisijungimą</a>
                         </div>
