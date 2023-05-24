@@ -1,7 +1,6 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import toast, { Toaster } from 'react-hot-toast';
-import { useParams } from 'react-router-dom';
-import { Carousel, Col, Container, Row, Form, Button, Card, Spinner, Collapse } from 'react-bootstrap';
+import { Form, Button, Card, Collapse } from 'react-bootstrap';
 import axios from 'axios';
 import { useNavigate } from 'react-router';
 import './RepairShopCreationPage.css'
@@ -123,7 +122,7 @@ const RepairShopCreationPage = () => {
           </Card.Body>
         </Card>
       </div>
-      
+
     )
 }
 export default RepairShopCreationPage
