@@ -13,6 +13,7 @@ const ItemCreationPage = () => {
     const [categories, setCategories] = useState([]);
     const [itemType, setType] = useState('Pasirinkite, kaip norite atiduoti');
     const [itemTypes, setItemTypes] = useState([]);
+    const [endDate, setEndDate] = useState('Pasirinkite datą');
     const navigate = useNavigate();
 
     const questionArray = [
@@ -46,6 +47,7 @@ const ItemCreationPage = () => {
             return newArr;
         });
     };
+
 
     useEffect(() => {
         Promise.all([
@@ -109,7 +111,7 @@ const ItemCreationPage = () => {
     }
 
     function checkFields() {
-        if (name === '' || description === '' || location === '' || category === 'Pasirinkite kategoriją' || itemType === 'Pasirinkite, kaip norite atiduoti') {
+        if (name === '' || description === '' || location === '' || category === 'Pasirinkite kategoriją' || itemType === 'Pasirinkite, kaip norite atiduoti' || endDate === 'Pasirinkite datą') {
             toast.error('Reikia užpildyti visus laukus!', {
                 style: {
                     backgroundColor: 'red',
@@ -132,6 +134,7 @@ const ItemCreationPage = () => {
                 formData.append('location', location);
                 formData.append('category', category);
                 formData.append('type', itemType);
+                formData.append('endDate', endDate);
                 for (let i = 0; i < questions.length; i++) {
                     formData.append('questions', questions[i].value);
                 }
@@ -151,7 +154,7 @@ const ItemCreationPage = () => {
                         }
                         else if (response.status === 401) {
                             toast.error('Turite būti prisijungęs!')
-                            navigate('/prisijungti');
+                            navigate('/prisijungimas');
                         }
                         else {
                             toast.error("Įvyko klaida, susisiekite su administratoriumi!");
@@ -160,7 +163,7 @@ const ItemCreationPage = () => {
                     .catch(error => {
                         if (error.response.status === 401) {
                             toast.error('Turite būti prisijungęs!')
-                            navigate('/prisijungti');
+                            navigate('/prisijungimas');
                         }
                         else {
                             toast.error("Įvyko klaida, susisiekite su administratoriumi!");
@@ -176,6 +179,8 @@ const ItemCreationPage = () => {
     const handleCancel = () => {
         navigate("/");
     }
+
+    const today = new Date().toISOString().split('T')[0];
 
     return (
         <div className='itemOuterBox'>
@@ -208,6 +213,9 @@ const ItemCreationPage = () => {
                         <option>Pasirinkite, kaip norite atiduoti</option>
                         {getAllItemTypes()}
                     </select>
+                </div>
+                <div className='itemInputWrapper'>
+                    <input type="date" value={endDate} onChange={(e) => setEndDate(e.target.value)} min={today} />
                 </div>
                 {itemType === '2' && (
                     <>
