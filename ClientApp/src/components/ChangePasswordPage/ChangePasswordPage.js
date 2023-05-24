@@ -2,6 +2,8 @@
 import { useNavigate } from 'react-router';
 import './ChangePasswordPage.css'
 import toast, { Toaster } from 'react-hot-toast';
+import { Form, Button, Alert, Card } from 'react-bootstrap';
+import axios from 'axios';
 
 const ChangePasswordPage = () => {
 
@@ -38,7 +40,8 @@ const ChangePasswordPage = () => {
         }
     }
 
-    const handleSubmit = () => {
+    const handleSubmit = (event) => {
+        event.preventDefault()
         if (checkFields()) {
             const urlParams = new URLSearchParams(window.location.search);
             const email = urlParams.get('email');
@@ -68,33 +71,71 @@ const ChangePasswordPage = () => {
                         toast.error("Įvyko klaida, susisiekite su administratoriumi!");
                     }
                 }
-            );
+                );
         }
     }
 
     return (
         <div className='outerBoxWrapper'>
-            <Toaster />
-            <div className='outerBox'>
-                <div className='innerBox'>
-                    <h2 className='boxLabel'>Slaptažodžio keitimas</h2>
-                    <div className='inputWrapper'>
-                        <input type="password" name='password' id='password' value={password} onChange={onChange} placeholder='Slaptažodis'></input>
-                    </div>
-                    <div className='inputWrapper'>
-                        <input type="password" name='confirmPassword' id='confirmPassword' value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)} placeholder='Pakartokite slaptažodį'></input>
-                    </div>
-                    <label className='warningText'>{message}</label>
-                    <label className='warningText'>{matchMessage}</label>
-                    <div className='change'>
-                        <button onClick={() => handleSubmit()} type='submit'>Keisti</button>
-                    </div>
-                    <div className='returnToLogin'>
-                        <a href="/prisijungimas" className='returnToLoginButton'>Grįžti į prisijungimą</a>
-                    </div>
-                </div>
-            </div>
+            <Card>
+                <Toaster />
+                <Card.Header className='header d-flex justify-content-between align-items-center'>
+                    <div>Slaptažodžio keitimas</div>
+                </Card.Header>
+                <Card.Body>
+                    <Form>
+                        <Form.Group controlId="password">
+                            <Form.Label className="label">Naujas slaptažodis</Form.Label>
+                            <Form.Control type="password" name='password' id='password' value={password} onChange={onChange} placeholder='Slaptažodis' />
+                        </Form.Group>
+                        <Form.Group controlId="confirmPassword">
+                            <Form.Label className="label">Pakartoti naują slaptažodį</Form.Label>
+                            <Form.Control type="password" name='confirmPassword' id='confirmPassword' value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)} placeholder='Pakartokite slaptažodį' />
+                        </Form.Group>
+                        {message && <Alert variant="danger">{message}</Alert>}
+                        {matchMessage && <Alert variant="danger">{matchMessage}</Alert>}
+                        <Button className='change' type="submit" onClick={(event) => handleSubmit(event)} >
+                            Patvirtinti
+                        </Button>
+                        <div className="returnToLogin">
+                            <a href="/prisijungimas" className="returnToLoginButton">Grįžti į prisijungimą</a>
+                        </div>
+                    </Form>
+                </Card.Body>
+            </Card>
         </div>
     )
 }
 export default ChangePasswordPage
+/*
+        <div className='outerBoxWrapper'>
+            <Card>
+                <Toaster />
+                <Card.Header className='header d-flex justify-content-between align-items-center'>
+                    <div>Slaptažodžio keitimas</div>
+                </Card.Header>
+                <Card.Body>
+                    <Form onSubmit={handleSubmit}>
+                        <Form.Group controlId="password">
+                            <Form.Label className="label">Naujas slaptažodis</Form.Label>
+                            <Form.Control type="password" name='password' id='password' value={password} onChange={onChange} placeholder='Slaptažodis' />
+                        </Form.Group>
+                        <Form.Group controlId="confirmPassword">
+                            <Form.Label className="label">Pakartoti naują slaptažodį</Form.Label>
+                            <Form.Control type="password" name='confirmPassword' id='confirmPassword' value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)} placeholder='Pakartokite slaptažodį' />
+                        </Form.Group>
+                        {message && <Alert variant="danger">{message}</Alert>}
+                        {matchMessage && <Alert variant="danger">{matchMessage}</Alert>}
+                        <Button className='change' type="submit">
+                            Patvirtinti
+                        </Button>
+                        <div className="returnToLogin">
+                            <a href="/prisijungimas" className="returnToLoginButton">Grįžti į prisijungimą</a>
+                        </div>
+                    </Form>
+                </Card.Body>
+            </Card>
+        </div>
+    )
+}
+                    */
