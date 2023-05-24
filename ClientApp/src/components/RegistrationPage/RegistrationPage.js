@@ -41,7 +41,7 @@ const RegistrationPage = () => {
     const onChange = (e) => {
         let password = e.target.value;
         setPassword(password);
-        if (password.length >= 8 && /^(?=.*\d)(?=.*[!@#$%^&*])(?=.*[a-z])(?=.*[A-Z]).{8,}$/.test(password)) {
+        if (password.length >= 8 && /^(?=.*\d)(?=.*[!@#$%^&*+\-])(?=.*[a-z])(?=.*[A-Z]).{8,}$/.test(password)) {
             setMessage("");
         }
         else {
@@ -55,7 +55,7 @@ const RegistrationPage = () => {
                 setMessage('Reikia užpildyti visus laukus!');
                 return false;
             }
-            else if (password.length >= 8 && /^(?=.*\d)(?=.*[!@#$%^&*])(?=.*[a-z])(?=.*[A-Z]).{8,}$/.test(password))
+            else if (password.length >= 8 && /^(?=.*\d)(?=.*[!@#$%^&*+\-])(?=.*[a-z])(?=.*[A-Z]).{8,}$/.test(password))
             {
                 if  (!/\S+@\S+\.\S+/.test(email))
                 {

@@ -38,7 +38,7 @@ const ProfilePage = () => {
     const onNewPasswordChange = (e) => {
         let password = e.target.value;
         setUser({ ...user, new_password: password })
-        if (password.length >= 8 && /^(?=.*\d)(?=.*[!@#$%^&*])(?=.*[a-z])(?=.*[A-Z]).{8,}$/.test(password)) {
+        if (password.length >= 8 && /^(?=.*\d)(?=.*[!@#$%^&*+\-])(?=.*[a-z])(?=.*[A-Z]).{8,}$/.test(password)) {
             if (password === user.old_password) {
                 setMessage("Naujas slaptažodis negali sutapti su senuoju!");
             }

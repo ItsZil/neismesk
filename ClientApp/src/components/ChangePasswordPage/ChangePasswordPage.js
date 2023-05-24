@@ -1,4 +1,4 @@
-﻿import React, { useState, useEffect } from 'react';
+﻿import React, { useState } from 'react';
 import { useNavigate } from 'react-router';
 import './ChangePasswordPage.css'
 import toast, { Toaster } from 'react-hot-toast';
@@ -14,7 +14,7 @@ const ChangePasswordPage = () => {
     const onChange = (e) => {
         let password = e.target.value;
         setPassword(password);
-        if (password.length >= 8 && /^(?=.*\d)(?=.*[!@#$%^&*])(?=.*[a-z])(?=.*[A-Z]).{8,}$/.test(password)) {
+        if (password.length >= 8 && /^(?=.*\d)(?=.*[!@#$%^&*+\-])(?=.*[a-z])(?=.*[A-Z]).{8,}$/.test(password)) {
             setMessage("");
         }
         else {
@@ -23,7 +23,7 @@ const ChangePasswordPage = () => {
     }
 
     function checkFields() {
-        if (password === confirmPassword) {
+        if (password === confirmPassword && password.length >= 8 && confirmPassword.length >= 8 && /^(?=.*\d)(?=.*[!@#$%^&*+\-])(?=.*[a-z])(?=.*[A-Z]).{8,}$/.test(password)) {
             setMatchMessage("");
             setMessage("");
             return true;

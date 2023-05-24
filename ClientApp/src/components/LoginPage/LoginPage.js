@@ -36,7 +36,7 @@ export const LoginPage = () => {
     const handleSubmit = (event) => {
         event.preventDefault();
 
-        if (password.length < 8 || /^(?=.*\d)(?=.*[!@#$%^&*])(?=.*[a-z])(?=.*[A-Z]).{8,}$/.test(password) === false) {
+        if (password.length < 8 || /^(?=.*\d)(?=.*[!@#$%^&*+\-])(?=.*[a-z])(?=.*[A-Z]).{8,}$/.test(password) === false) {
             toast.error("Prisijungimo duomenys neteisingi!");
             return;
         }
