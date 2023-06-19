@@ -445,7 +445,7 @@ namespace neismesk.Repositories.Item
             await connection.OpenAsync();
 
             using MySqlCommand command = new MySqlCommand(
-               "SELECT id, name, description, fk_user, fk_status FROM ads " +
+               "SELECT id, name, description, fk_user, fk_status, end_datetime FROM ads " +
                 "WHERE (name LIKE CONCAT('%', @searchWord, '%') OR description LIKE CONCAT('%', @searchWord, '%')) " +
                 "AND fk_status = 1", connection);
             command.Parameters.AddWithValue("@searchWord", searchWord);
@@ -459,7 +459,8 @@ namespace neismesk.Repositories.Item
                     Name = reader.GetString("name"),
                     Description = reader.GetString("description"),
                     UserId = reader.GetInt32("fk_user"),
-                    Images = await _imageRepo.GetByAdFirst(reader.GetInt32("id"))
+                    Images = await _imageRepo.GetByAdFirst(reader.GetInt32("id")),
+                    EndDateTime = reader.GetDateTime("end_datetime")
                 };
                 foundItems.Add(item);
             }
