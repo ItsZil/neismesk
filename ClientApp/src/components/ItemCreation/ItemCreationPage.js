@@ -112,13 +112,14 @@ const ItemCreationPage = () => {
     }
 
     function checkFields() {
-        if (name === '' || description === '' || location === '' || category === 'Pasirinkite kategoriją' || itemType === 'Pasirinkite, kaip norite atiduoti' || endDate === 'Pasirinkite datą') {
-            toast.error('Reikia užpildyti visus laukus!', {
-                style: {
-                    backgroundColor: 'red',
-                    color: 'white',
-                },
-            });
+        let containsEmptyQuestions = false;
+        questions.forEach((question) => {
+            if (question.value.trim() === "") {
+                containsEmptyQuestions = true;
+            }
+        });
+        if (name === '' || description === '' || location === '' || category === 'Pasirinkite kategoriją' || itemType === 'Pasirinkite, kaip norite atiduoti' || endDate === 'Pasirinkite datą' || containsEmptyQuestions) {
+            toast.error('Reikia užpildyti visus laukus!');
             return false;
         }
         else {
@@ -146,12 +147,7 @@ const ItemCreationPage = () => {
                 axios.post("api/item/create", formData)
                     .then(response => {
                         if (response.status === 200) {
-                            toast.success('Sėkmingai sukūrėtė skelbimą!', {
-                                style: {
-                                    backgroundColor: 'rgb(14, 160, 14)',
-                                    color: 'white',
-                                },
-                            });
+                            toast.success('Sėkmingai sukūrėtė skelbimą!');
                             navigate(`/skelbimas/${response.data}`)
                         }
                         else if (response.status === 401) {
@@ -269,12 +265,20 @@ const ItemCreationPage = () => {
                                 </>
                             )}
                             <Form.Group>
+                                <Form.Label>Pasirinkite skelbimo pabaigos datą:</Form.Label>
                                 <Form.Control
-                                    type='date'
+                                    type='datetime-local'
                                     value={endDate || ''}
-                                    onChange={(e) => setEndDate(e.target.value)}
+                                    onChange={(e) => {
+                                        const selectedDate = new Date(e.target.value);
+                                        const currentDate = new Date();
+                                        if (selectedDate < currentDate) {
+                                            return;
+                                        }
+                                        setEndDate(e.target.value);
+                                    }}
                                     min={today}
-                                    placeholder='Select a date'
+                                    placeholder='Pasirinkite skelbimo pabaigos datą'
                                 />
                             </Form.Group>
                             <div className='d-flex justify-content-between'>
