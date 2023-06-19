@@ -28,19 +28,13 @@ function HomePage() {
                 {items.map((item) => (
                     <Col sm={4} key={item.id}>
                         <Card className="mb-4">
-                            <Carousel style={{ height: "250px" }} >
-                                {item.images && item.images.map((image, index) => (
-                                    <Carousel.Item key={index}>
-                                        <img
-                                            className="d-block w-100"
-                                            style={{ objectFit: "cover" }}
-                                            height="256"
-                                            src={`data:image/png;base64,${image.data}`}
-                                            alt={item.name}
-                                        />
-                                    </Carousel.Item>
-                                ))}
-                            </Carousel>
+                            <img
+                                className="d-block w-100"
+                                style={{ objectFit: "cover" }}
+                                height="256"
+                                src={item.images && item.images.length > 0 ? `data:image/png;base64,${item.images[0].data}` : ""}
+                                alt={item.name}
+                            />
                             <Card.Body>
                                 <Card.Title>{item.name}</Card.Title>
                                 <Card.Text>{item.description}</Card.Text>
